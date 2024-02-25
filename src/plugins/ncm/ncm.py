@@ -44,5 +44,4 @@ def ncm_get_record(song_id: int):
         f.flush()
     return MessageSegment.record("file:///" + f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/{song_name}.mp3")
 
-ncm_get_record(1389911993)
     

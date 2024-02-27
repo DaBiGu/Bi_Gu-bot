@@ -27,7 +27,8 @@
 ## `sleep`
 
 * `/sleep` 开始睡觉
-* `/awake` 结束睡觉，返回本次睡眠总时长
+* `/awake` 结束睡觉，返回本次睡眠总时长和本周平均睡眠时间
+* `/sleep status` 查询本周平均睡眠时间
 
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态

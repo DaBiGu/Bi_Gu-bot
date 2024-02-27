@@ -7,6 +7,9 @@
 * `/crypto [name]` 返回`[name]`币种过去24小时的15分钟k线图
 * 数据来自于[okx合约api](https://www.okx.com/docs-v5/en/#overview)
 
+## `help`
+* `/help` 返回当前支持的指令列表
+
 ## `ncm`
 * `/ncm search [keyword] [num]` 网易云搜歌, 返回前`num`首搜索`keyword`的歌曲信息
 * `/ncm id [song id]` 返回`id`歌曲的分享卡片

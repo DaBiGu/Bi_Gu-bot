@@ -5,7 +5,10 @@ from datetime import datetime, timedelta
 def get_last_status(data):
     return data[-1][1] if data else None
 
-def get_average_sleep_duration(data):
+def get_average_sleep_duration(user_id):
+    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
+    with open(csv_path, mode = "r", encoding = "utf-8") as file:
+        data = list(csv.reader(file))
     today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
     start_of_week = today - timedelta(days = today.weekday())
     end_of_week = start_of_week + timedelta(days = 6)
@@ -32,12 +35,12 @@ def record_sleep(user_id):
         data = list(csv.reader(file))
     user_last_status = get_last_status(data, user_id)
     if user_last_status == "Awake" or user_last_status == None:
-        data.append([time.time(), "Sleep"])
+        to_write = [time.time(), "Sleep"]
         sleep_time = datetime.now()
 
     with open(csv_path, mode = "a", newline = '') as file:
         writer = csv.writer(file)
-        writer.writerows(data)
+        writer.writerow(to_write)
     return sleep_time
 
 def record_awake(user_id):
@@ -50,11 +53,9 @@ def record_awake(user_id):
     if not user_last_status: return -1
     if user_last_status == "Sleep":
         last_sleep_time = data[-1][0]
-        data.append([time.time(), "Awake"])
-    
-    average_sleep_duration = get_average_sleep_duration(data)
-    
+        to_write = [time.time(), "Awake"]  
     with open(csv_path, mode = "a", newline = '') as file:
         writer = csv.writer(file)
-        writer.writerows(data) 
+        writer.writerow(to_write) 
+    average_sleep_duration = get_average_sleep_duration(user_id)
     return [last_sleep_time, average_sleep_duration]

@@ -33,7 +33,7 @@ def record_sleep(user_id):
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
-    user_last_status = get_last_status(data, user_id)
+    user_last_status = get_last_status(data)
     if user_last_status == "Awake" or user_last_status == None:
         to_write = [time.time(), "Sleep"]
         sleep_time = datetime.now()

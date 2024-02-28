@@ -12,21 +12,25 @@ def get_average_sleep_duration(user_id: str) -> float:
         data = list(csv.reader(file))
     today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
     start_of_week = today - timedelta(days = today.weekday())
-    end_of_week = start_of_week + timedelta(days = 6)
-    start_of_week, end_of_week = datetime.timestamp(start_of_week), datetime.timestamp(end_of_week)
-    sleep_durations = []
-    start_index, stop_index = -1, -1
-    for i in range(len(data)):
-        if float(data[i][0]) >= start_of_week:
-            start_index = i
-            break
-    for i in range(len(data)-1, 0, -1):
-        if float(data[i][0]) < end_of_week:
-            stop_index = i
-            break
-    for i in range(0,len(data[start_index:stop_index]), 2):
-        sleep_durations.append(float(data[i+1][0]) - float(data[i][0]))
-    return sum(sleep_durations) / len(sleep_durations)
+    start_of_each_day = [datetime.timestamp(start_of_week + timedelta(days = i)) for i in range(8)]
+    sleep_durations_day = []
+    for i in range(len(start_of_each_day) - 1):
+        start_of_day = start_of_each_day[i]
+        end_of_day = start_of_each_day[i+1] - 1
+        sleep_durations = []
+        start_index, stop_index = -1, -1
+        for j in range(len(data)):
+            if float(data[j][0]) >= start_of_day:
+                start_index = j
+                break
+        for j in range(len(data)-1, 0, -1):
+            if float(data[i][0]) < end_of_day:
+                stop_index = j
+                break
+        for i in range(0,len(data[start_index:stop_index]), 2):
+            sleep_durations.append(float(data[i+1][0]) - float(data[i][0]))
+        sleep_durations_day = sum(sleep_durations)
+    return sum(sleep_durations_day) / len(sleep_durations_day)
 
 def record_sleep(user_id: str) -> datetime | None:
     sleep_time = None

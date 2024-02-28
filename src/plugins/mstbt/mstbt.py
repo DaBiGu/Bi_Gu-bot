@@ -22,7 +22,7 @@ def get_mstbt_times(data: List[List[str]], user_id: str) -> int:
 def get_mstbt_times_week(data: List[List[str]], user_id: str) -> int:
     today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
     start_of_week = today - timedelta(days = today.weekday())
-    end_of_week = start_of_week + timedelta(days = 6)
+    end_of_week = start_of_week + timedelta(days = 7) - 1
     start_of_week, end_of_week = datetime.timestamp(start_of_week), datetime.timestamp(end_of_week)
     count = 0
     for row in data:

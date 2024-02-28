@@ -6,7 +6,7 @@ from sys import path
 path.append("D:/Bi_Gu-bot/passwords")
 from passwords import get_passwords
 
-def get_market_data():
+def get_market_data() -> str:
     api_info = {"flag": "0", "api_key": get_passwords("okx_api_key"),
             "api_secret_key": get_passwords("okx_api_secret_key"), "passphrase": get_passwords("okx_passphrase")}
     marketDataAPI = MarketData.MarketAPI(**api_info, debug = False)

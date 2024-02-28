@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import csv
 import datetime
+from typing import List
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
-def today_work_analysis(user_id):
+def today_work_analysis(user_id: str) -> tuple[MessageSegment, float]:
     csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.csv"
     with open(csv_path, 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -33,7 +34,7 @@ def today_work_analysis(user_id):
     plt.savefig(f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.png")
     return [MessageSegment.image("file:///" + f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.png"), work_total_time]
 
-def merge_same_work(work_time_list, work_id_list):
+def merge_same_work(work_time_list: List[float], work_id_list: List[str]) -> tuple[List[float], List[str]]:
     work_time_dict = {}
     for i in range(len(work_id_list)):
         if work_id_list[i] in work_time_dict:
@@ -42,4 +43,4 @@ def merge_same_work(work_time_list, work_id_list):
             work_time_dict[work_id_list[i]] = work_time_list[i]
     _work_time_list = list(work_time_dict.values())
     _work_id_list = list(work_time_dict.keys())
-    return _work_time_list, _work_id_list
+    return [_work_time_list, _work_id_list]

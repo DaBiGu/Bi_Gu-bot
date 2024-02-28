@@ -1,14 +1,15 @@
 import csv, time
 from datetime import datetime
+from typing import List
 
-def get_current_work_status(data, user_id):
+def get_current_work_status(data: List[List[str]], user_id: str) -> List[str] | None:
     for row in data[::-1]:
         if row:
             if row[0] == user_id:
                 return row
     return None
 
-def start_work(user_id, work_id):
+def start_work(user_id: str, work_id: str) -> datetime | int:
     csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.csv"
     # create separate csv file for user (if not exist)
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
@@ -35,7 +36,7 @@ def start_work(user_id, work_id):
 
     return current_time
     
-def stop_work(user_id):
+def stop_work(user_id: str) -> tuple[str | int, str | None]:
     result = []
     csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.csv"
     to_write = None

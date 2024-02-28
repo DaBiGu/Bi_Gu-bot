@@ -1,11 +1,12 @@
 import csv
 import time
 from datetime import datetime, timedelta
+from typing import List, Union
 
-def get_last_status(data):
+def get_last_status(data: List[List[str]]) -> str | None:
     return data[-1][1] if data else None
 
-def get_average_sleep_duration(user_id):
+def get_average_sleep_duration(user_id: str) -> float:
     csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
@@ -27,7 +28,7 @@ def get_average_sleep_duration(user_id):
         sleep_durations.append(float(data[i+1][0]) - float(data[i][0]))
     return sum(sleep_durations) / len(sleep_durations)
 
-def record_sleep(user_id):
+def record_sleep(user_id: str) -> datetime | None:
     sleep_time = None
     csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
@@ -43,7 +44,7 @@ def record_sleep(user_id):
         writer.writerow(to_write)
     return sleep_time
 
-def record_awake(user_id):
+def record_awake(user_id: str) -> tuple[float | int, float]:
     last_sleep_time = -2
     csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass

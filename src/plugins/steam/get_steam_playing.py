@@ -1,10 +1,11 @@
 import requests
+from typing import List, Union
 
 from sys import path
 path.append("D:/Bi_Gu-bot/passwords")
 from passwords import get_passwords
 
-def get_steam_playing(steam_id):
+def get_steam_playing(steam_id: str) -> tuple[str, str | None]:
     headers = {
     'authority': 'api.steampowered.com',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',

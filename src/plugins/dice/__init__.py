@@ -13,7 +13,7 @@ __plugin_meta__ = PluginMetadata(
     config=Config,
 )
 
-def roll_dice(dice_num, dice_face, dice_add = 0):
+def roll_dice(dice_num: int, dice_face: int, dice_add: int = 0) -> str:
     result = []
     for _ in range(dice_num):
         result.append(random.randint(1, dice_face) + dice_add)

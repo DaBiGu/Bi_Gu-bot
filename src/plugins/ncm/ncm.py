@@ -9,7 +9,7 @@ from sys import path
 path.append("D:/Bi_Gu-bot/passwords")
 from passwords import get_passwords
 
-def ncm_search_song(keyword: str, limit: int = 10):
+def ncm_search_song(keyword: str, limit: int = 10) -> MessageSegment:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
     song_names, song_artists, song_ids = [], [], []
     for song in search_result:
@@ -34,7 +34,7 @@ def ncm_search_song(keyword: str, limit: int = 10):
     plt.savefig("D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
     return MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/search_result.png")
 
-def ncm_get_record(song_id: int):
+def ncm_get_record(song_id: int) -> MessageSegment:
     apis.login.LoginViaCellphone(get_passwords("ncm_phone_number"), get_passwords("ncm_password"))
     record_url = apis.track.GetTrackAudio(song_id)["data"][0]["url"]
     song_name = apis.track.GetTrackDetail(song_id)["songs"][0]["name"]

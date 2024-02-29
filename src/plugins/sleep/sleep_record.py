@@ -29,7 +29,7 @@ def get_average_sleep_duration(user_id: str) -> float:
                 break
         for i in range(0,len(data[start_index:stop_index]), 2):
             sleep_durations.append(float(data[i+1][0]) - float(data[i][0]))
-        sleep_durations_day = sum(sleep_durations)
+        sleep_durations_day.append(sum(sleep_durations))
     return sum(sleep_durations_day) / len(sleep_durations_day)
 
 def record_sleep(user_id: str) -> datetime | None:
@@ -39,13 +39,14 @@ def record_sleep(user_id: str) -> datetime | None:
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
     user_last_status = get_last_status(data)
+    to_write = None
     if user_last_status == "Awake" or user_last_status == None:
         to_write = [time.time(), "Sleep"]
         sleep_time = datetime.now()
-
-    with open(csv_path, mode = "a", newline = '') as file:
-        writer = csv.writer(file)
-        writer.writerow(to_write)
+    if to_write:
+        with open(csv_path, mode = "a", newline = '') as file:
+            writer = csv.writer(file)
+            writer.writerow(to_write)
     return sleep_time
 
 def record_awake(user_id: str) -> tuple[float | int, float]:
@@ -56,11 +57,13 @@ def record_awake(user_id: str) -> tuple[float | int, float]:
         data = list(csv.reader(file))
     user_last_status = get_last_status(data)
     if not user_last_status: return -1
+    to_write = None
     if user_last_status == "Sleep":
         last_sleep_time = data[-1][0]
         to_write = [time.time(), "Awake"]  
-    with open(csv_path, mode = "a", newline = '') as file:
-        writer = csv.writer(file)
-        writer.writerow(to_write) 
+    if to_write:
+        with open(csv_path, mode = "a", newline = '') as file:
+            writer = csv.writer(file)
+            writer.writerow(to_write) 
     average_sleep_duration = get_average_sleep_duration(user_id)
     return [last_sleep_time, average_sleep_duration]

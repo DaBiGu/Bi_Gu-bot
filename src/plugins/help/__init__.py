@@ -22,6 +22,7 @@ helper_message = "以下是所有的指令列表:\n \
     /roll xdy 掷x个y面骰子\n \
     /roll xdy+z 掷x个y面骰子,加z点修正值\n \
     /setu 返回随机色图\n \
+    /setu search 对消息记录中的图片回复该指令进行以图搜图\n \
     /setu [tags] 返回指定tags的色图; 可以传入多个tag, 以空格分隔\n \
     /sleep 开始睡觉并记录睡觉时间\n \
     /awake 结束睡觉, 查看本次睡觉时长和本周平均睡眠时长\n \

@@ -24,6 +24,7 @@
 ## `setu`
 
 * `/setu` 返回随机色图
+* `/setu search` 对消息记录中的图片回复该指令进行以图搜图
 * `/setu [tags]` 返回指定`tags`的色图；可以传入多个tag
 * 数据来自于[色图api](https://github.com/yuban10703/SetuAPI)
 

@@ -35,7 +35,7 @@ async def search_handle(event: MessageEvent):
             source_url = seg.data.get("url")
             break
     if source_url: result = search_setu(source_url)
-    result_str = ""
+    result_str = "Search result(s):\n"
     for item in result:
         result_str += f"{item}\n"
     await search.finish(result_str)

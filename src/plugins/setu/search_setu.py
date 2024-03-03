@@ -25,6 +25,3 @@ def extract_MD5(url: str) -> str:
     md5_pattern = re.compile(r"[a-fA-F0-9]{32}")
     md5_values = md5_pattern.findall(url)
     return md5_values[0]
-    
-
-print(search_setu("https://multimedia.nt.qq.com.cn/gchatpic_new/2306096281/2147563170-2972887728-503CE557F63697DC9D89F5ADD79B99DF/0?term=255&is_origin=1"))

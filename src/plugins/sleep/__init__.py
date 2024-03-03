@@ -5,7 +5,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot.adapters import Event
 
 from .config import Config
-from .sleep_record import record_sleep, record_awake, get_average_sleep_duration
+from .sleep_record import record_sleep, record_awake, get_daily_sleep_duration
 import time
 
 __plugin_meta__ = PluginMetadata(
@@ -27,11 +27,11 @@ def second_to_hms(seconds):
 
 @sleep.handle()
 async def sleep_handle(event: Event, args = CommandArg()):
+    user_id = event.get_user_id()
     if cmd_params := args.extract_plain_text():
         if cmd_params == "status":
-            avg = get_average_sleep_duration(event.get_user_id())
-            avg_str = second_to_hms(avg)
-            await awake.finish(message = event.get_user_id() + "本周平均睡觉时长" + avg_str)
+            await sleep.send(message = f"{user_id}的本周睡眠时长统计如下:")
+            await sleep.finish(message = get_daily_sleep_duration(user_id))
     else:
         user_id = event.get_user_id()
         current_time = record_sleep(user_id)
@@ -43,7 +43,7 @@ async def sleep_handle(event: Event, args = CommandArg()):
 @awake.handle()
 async def awake_handle(event: Event):
     user_id = event.get_user_id()
-    [awake_time, average_sleep_duration] = record_awake(user_id)
+    awake_time = record_awake(user_id)
     if awake_time == -1:
         await awake.finish(message = user_id + "清醒得很\n再次记录起床时间请先用/sleep睡觉")
     elif awake_time == -2:
@@ -52,10 +52,10 @@ async def awake_handle(event: Event):
         sleep_duration = time.time() - float(awake_time)
         
         sleep_duration_str = second_to_hms(sleep_duration)
-        average_sleep_duration_str = second_to_hms(average_sleep_duration)
 
-        await awake.send(message = user_id + "睡觉时长" + sleep_duration_str + "\n早安新的一天开始了哦！")
-        await awake.finish(message = user_id + "本周平均睡觉时长" + average_sleep_duration_str)
+        await awake.send(message = user_id + "睡觉时长" + sleep_duration_str + "\n早安新的一天开始了哦!")
+        await awake.send(message = f"{user_id}的本周睡眠时长统计如下:")
+        await awake.finish(message = get_daily_sleep_duration(user_id))
 
 
 

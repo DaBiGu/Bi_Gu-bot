@@ -24,7 +24,7 @@ def get_average_sleep_duration(user_id: str) -> float:
                 start_index = j
                 break
         for j in range(len(data)-1, 0, -1):
-            if float(data[i][0]) < end_of_day:
+            if float(data[j][0]) < end_of_day:
                 stop_index = j
                 break
         for i in range(0,len(data[start_index:stop_index]), 2):

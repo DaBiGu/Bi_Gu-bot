@@ -34,7 +34,7 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
             if start_index == -1: continue
             sleep_durations.append(float(data[i+1][0]) - float(data[i][0]))
         sleep_durations_day.append(sum(sleep_durations))
-    average_sleep_duration = np.mean(sleep_durations_day)
+    average_sleep_duration = np.mean([x for x in sleep_durations_day if x != 0])
     plt.style.use('default')
     plt.figure(figsize = (10, 5))
     sleep_durations_name = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]

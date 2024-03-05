@@ -32,7 +32,7 @@ def get_mstbt_times_week(data: List[List[str]], user_id: str) -> int:
     return count + 1
 
 def mstbt_record(user_id: str) -> tuple[str | None, int, int]:
-    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/mstbt.csv"
+    csv_path = f"./src/data/mstbt/mstbt.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))

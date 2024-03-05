@@ -21,7 +21,7 @@ def get_setu(setu_tags: list[str] = None) -> Message:
     }
 
     img_response = requests.get(img_url, headers=img_headers)
-    with open("D:/Bi_Gu-bot/Bi_Gu-bot/src/plugins/setu/setu.png", "wb") as f:
+    with open("./src/plugins/setu/setu.png", "wb") as f:
         f.write(img_response.content)
-    return Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/plugins/setu/setu.png"),MessageSegment.text(img_details)])
+    return Message([MessageSegment.image("file:///" + "./src/plugins/setu/setu.png"),MessageSegment.text(img_details)])
 

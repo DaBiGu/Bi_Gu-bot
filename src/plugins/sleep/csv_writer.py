@@ -2,7 +2,7 @@ import csv, time
 from datetime import datetime
 
 def write_csv(user_id):
-    csv_file = "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data.csv"
+    csv_file = "./src/data/sleep/user_data.csv"
     
     with open(csv_file, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
@@ -33,7 +33,7 @@ def write_csv(user_id):
 
 def read_csv(user_id):
     awake_time = -2
-    csv_file = "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data.csv"
+    csv_file = "./src/data/sleep/user_data.csv"
     
     with open(csv_file, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))

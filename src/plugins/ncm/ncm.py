@@ -31,17 +31,17 @@ def ncm_search_song(keyword: str, limit: int = 10) -> MessageSegment:
           col_label_cell_kw={"facecolor":"#a5d8ff"},
           cell_kw={"facecolor":"#e7f5ff"},
           )
-    plt.savefig("D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
-    return MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/search_result.png")
+    plt.savefig("./src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
+    return MessageSegment.image("file:///" + "./src/data/ncm/search_result.png")
 
 def ncm_get_record(song_id: int) -> MessageSegment:
     apis.login.LoginViaCellphone(get_passwords("ncm_phone_number"), get_passwords("ncm_password"))
     record_url = apis.track.GetTrackAudio(song_id)["data"][0]["url"]
     song_name = apis.track.GetTrackDetail(song_id)["songs"][0]["name"]
     record = requests.get(record_url).content
-    with open(f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/{song_name}.mp3", "wb") as f:
+    with open(f"./src/data/ncm/{song_name}.mp3", "wb") as f:
         f.write(record)
         f.flush()
-    return MessageSegment.record("file:///" + f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/ncm/{song_name}.mp3")
+    return MessageSegment.record("file:///" + f"./src/data/ncm/{song_name}.mp3")
 
     

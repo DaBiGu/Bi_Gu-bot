@@ -59,6 +59,6 @@ def get_crypto_kline(crypto_name: str) -> MessageSegment:
         "base_mpf_style": "binance-dark",
     }
     mpf.plot(df, type="candle", volume = True, style = binance_dark, title = f"{instrument_ID} 15m Kline"
-             , figratio = (16, 8), panel_ratios=(4, 1), savefig = "D:/Bi_Gu-bot/Bi_Gu-bot/src/plugins/crypto/mpfplot.png")
-    return MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/plugins/crypto/mpfplot.png")
+             , figratio = (16, 8), panel_ratios=(4, 1), savefig = "./src/plugins/crypto/mpfplot.png")
+    return MessageSegment.image("file:///" + "./src/plugins/crypto/mpfplot.png")
 

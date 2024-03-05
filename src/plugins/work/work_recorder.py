@@ -10,7 +10,7 @@ def get_current_work_status(data: List[List[str]], user_id: str) -> List[str] | 
     return None
 
 def start_work(user_id: str, work_id: str) -> datetime | int:
-    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.csv"
+    csv_path = f"./src/data/work/user_data/{user_id}.csv"
     # create separate csv file for user (if not exist)
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     # read csv file into data
@@ -38,7 +38,7 @@ def start_work(user_id: str, work_id: str) -> datetime | int:
     
 def stop_work(user_id: str) -> tuple[str | int, str | None]:
     result = []
-    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/work/user_data/{user_id}.csv"
+    csv_path = f"./src/data/work/user_data/{user_id}.csv"
     to_write = None
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     with open(csv_path, mode = "r", encoding = "utf-8") as file:

@@ -10,7 +10,7 @@ def get_last_status(data: List[List[str]]) -> str | None:
     return data[-1][1] if data else None
 
 def get_daily_sleep_duration(user_id: str) -> MessageSegment:
-    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
+    csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
     today = datetime.strptime(datetime.today().strftime("%Y-%m-%d"), "%Y-%m-%d")
@@ -46,12 +46,12 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     plt.title(f"{user_id}'s daily sleep duration of the week", fontweight = "bold")
     plt.ylabel("Sleep duration (h)")
     plt.legend()
-    plt.savefig(f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.png", dpi = 300, bbox_inches = "tight")
-    return MessageSegment.image("file:///" + f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.png")
+    plt.savefig(f"./src/data/sleep/user_data/{user_id}.png", dpi = 300, bbox_inches = "tight")
+    return MessageSegment.image("file:///" + f"./src/data/sleep/user_data/{user_id}.png")
 
 def record_sleep(user_id: str) -> datetime | None:
     sleep_time = None
-    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
+    csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
@@ -68,7 +68,7 @@ def record_sleep(user_id: str) -> datetime | None:
 
 def record_awake(user_id: str) -> float | int:
     last_sleep_time = -2
-    csv_path = f"D:/Bi_Gu-bot/Bi_Gu-bot/src/data/sleep/user_data/{user_id}.csv"
+    csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))

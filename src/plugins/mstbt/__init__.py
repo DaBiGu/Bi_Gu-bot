@@ -35,9 +35,9 @@ skd = on_command("懂哥")
 @skd.handle()
 async def skd_handle_func(args = CommandArg()):
     if args.extract_plain_text() == "工口":
-        await skd.finish(Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/gongkou.png")]))
+        await skd.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/gongkou.png")]))
     elif args.extract_plain_text() == "手冲":
-        await skd.finish(Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/shouchong.png")]))
+        await skd.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/shouchong.png")]))
     else:
         await skd.finish("我好想做上科大的狗啊")
 
@@ -48,7 +48,7 @@ _gk = on_command("工口")
 async def gk_handle_func():
     global gk_time
     gk_time = time.time()
-    await _gk.finish(Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/gongkou.png")]))
+    await _gk.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/gongkou.png")]))
 
 _sc = on_command("手冲", aliases= {"mstbt"})
 @_sc.handle()
@@ -63,14 +63,14 @@ async def sc_handle_func(event: Event):
     random.seed(time.time())
     global gk_time
     if random.randint(1, 100) == 1 or (gk_time is not None and time.time() - gk_time <= 300):
-        await _sc.send(Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/shouchong.gif")]))
+        await _sc.send(Message([MessageSegment.image("file:///" + "./src/data/mstbt/shouchong.gif")]))
         await _sc.send("你触发了至臻手冲!")
     else:
-        await _sc.send(Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/shouchong.png")]))
+        await _sc.send(Message([MessageSegment.image("file:///" + "./src/data/mstbt/shouchong.png")]))
     await _sc.finish(message_str)
 
 yuyu = on_command("玉玉", aliases= {"yuyu"})
 
 @yuyu.handle()
 async def yuyu_handle_func():
-    await yuyu.finish(Message([MessageSegment.image("file:///" + "D:/Bi_Gu-bot/Bi_Gu-bot/src/data/mstbt/yuyu.gif")]))
+    await yuyu.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/yuyu.gif")]))

@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-import csv
-import datetime, os
+import datetime, os, csv
 from typing import List
 from nonebot.adapters.onebot.v11.message import MessageSegment
 

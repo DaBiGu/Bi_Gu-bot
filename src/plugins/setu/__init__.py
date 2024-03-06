@@ -1,9 +1,8 @@
-from typing import Annotated
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command, on_fullmatch
 from nonebot.adapters.onebot.v11 import MessageEvent
-from nonebot.params import CommandArg, Fullmatch
+from nonebot.params import CommandArg
 
 from .config import Config
 from .get_setu import get_setu

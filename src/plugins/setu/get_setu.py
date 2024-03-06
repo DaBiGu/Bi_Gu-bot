@@ -1,6 +1,6 @@
-import requests
+import requests, os
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-import os
+
 def get_setu(setu_tags: list[str] = None) -> Message:
     if setu_tags is not None:
         print(setu_tags)

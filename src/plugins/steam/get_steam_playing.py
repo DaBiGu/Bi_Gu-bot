@@ -1,5 +1,4 @@
 import requests
-from typing import List, Union
 
 from sys import path
 path.append("D:/Bi_Gu-bot/passwords")

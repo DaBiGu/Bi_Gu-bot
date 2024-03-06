@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from .config import Config
-from .ncm import ncm_search_song, ncm_get_record
+from .ncm import ncm_search_song
 
 __plugin_meta__ = PluginMetadata(
     name="ncm",

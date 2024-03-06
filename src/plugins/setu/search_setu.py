@@ -1,6 +1,7 @@
 from saucenao_api import SauceNao
-import re
 from typing import List, Dict
+
+import re
 
 from sys import path
 path.append("D:/Bi_Gu-bot/passwords")

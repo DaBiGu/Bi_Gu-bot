@@ -1,7 +1,6 @@
-import csv
-import time, os
+import time, os, csv
 from datetime import datetime, timedelta
-from typing import List, Union
+from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
 from nonebot.adapters.onebot.v11.message import MessageSegment

@@ -1,7 +1,7 @@
 from nonebot.adapters.onebot.v11.message import MessageSegment
 import okx.MarketData as MarketData
 import okx.PublicData as PublicData
-import datetime, time
+import datetime, time, os
 import pandas as pd
 import mplfinance as mpf
 
@@ -59,6 +59,6 @@ def get_crypto_kline(crypto_name: str) -> MessageSegment:
         "base_mpf_style": "binance-dark",
     }
     mpf.plot(df, type="candle", volume = True, style = binance_dark, title = f"{instrument_ID} 15m Kline"
-             , figratio = (16, 8), panel_ratios=(4, 1), savefig = "./src/plugins/crypto/mpfplot.png")
-    return MessageSegment.image("file:///" + "./src/plugins/crypto/mpfplot.png")
+             , figratio = (16, 8), panel_ratios=(4, 1), savefig = os.getcwd() + "/src/plugins/crypto/mpfplot.png")
+    return MessageSegment.image("file:///" + os.getcwd() + "/src/plugins/crypto/mpfplot.png")
 

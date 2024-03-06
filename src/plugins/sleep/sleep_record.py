@@ -1,5 +1,5 @@
 import csv
-import time
+import time, os
 from datetime import datetime, timedelta
 from typing import List, Union
 import numpy as np
@@ -46,8 +46,8 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     plt.title(f"{user_id}'s daily sleep duration of the week", fontweight = "bold")
     plt.ylabel("Sleep duration (h)")
     plt.legend()
-    plt.savefig(f"./src/data/sleep/user_data/{user_id}.png", dpi = 300, bbox_inches = "tight")
-    return MessageSegment.image("file:///" + f"./src/data/sleep/user_data/{user_id}.png")
+    plt.savefig(os.getcwd() + f"/src/data/sleep/user_data/{user_id}.png", dpi = 300, bbox_inches = "tight")
+    return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/sleep/user_data/{user_id}.png")
 
 def record_sleep(user_id: str) -> datetime | None:
     sleep_time = None

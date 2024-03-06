@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import csv
-import datetime
+import datetime, os
 from typing import List
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
@@ -31,8 +31,8 @@ def today_work_analysis(user_id: str) -> tuple[MessageSegment, float]:
     plt.style.use('default')
     plt.rcParams["font.sans-serif"] = ["SimHei"]
     plt.pie(work_time_list, labels=work_id_list, autopct='%1.2f%%', textprops={'fontsize': 30})
-    plt.savefig(f"./src/data/work/user_data/{user_id}.png")
-    return [MessageSegment.image("file:///" + f"./src/data/work/user_data/{user_id}.png"), work_total_time]
+    plt.savefig(os.getcwd() + f"/src/data/work/user_data/{user_id}.png")
+    return [MessageSegment.image("file:///" + os.getcwd() + f"/src/data/work/user_data/{user_id}.png"), work_total_time]
 
 def merge_same_work(work_time_list: List[float], work_id_list: List[str]) -> tuple[List[float], List[str]]:
     work_time_dict = {}

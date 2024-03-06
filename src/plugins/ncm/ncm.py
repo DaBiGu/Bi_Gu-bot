@@ -2,6 +2,7 @@ from pyncm import apis
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests
+import os
 from plottable import Table, ColDef
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
@@ -31,8 +32,8 @@ def ncm_search_song(keyword: str, limit: int = 10) -> MessageSegment:
           col_label_cell_kw={"facecolor":"#a5d8ff"},
           cell_kw={"facecolor":"#e7f5ff"},
           )
-    plt.savefig("./src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
-    return MessageSegment.image("file:///" + "./src/data/ncm/search_result.png")
+    plt.savefig(os.getcwd() + "/src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
+    return MessageSegment.image("file:///" + os.getcwd() + "/src/data/ncm/search_result.png")
 
 def ncm_get_record(song_id: int) -> MessageSegment:
     apis.login.LoginViaCellphone(get_passwords("ncm_phone_number"), get_passwords("ncm_password"))
@@ -42,6 +43,6 @@ def ncm_get_record(song_id: int) -> MessageSegment:
     with open(f"./src/data/ncm/{song_name}.mp3", "wb") as f:
         f.write(record)
         f.flush()
-    return MessageSegment.record("file:///" + f"./src/data/ncm/{song_name}.mp3")
+    return MessageSegment.record("file:///" + os.getcwd() + f"/src/data/ncm/{song_name}.mp3")
 
     

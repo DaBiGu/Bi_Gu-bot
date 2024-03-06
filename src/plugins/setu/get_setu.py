@@ -1,5 +1,6 @@
 import requests
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
+import os
 def get_setu(setu_tags: list[str] = None) -> Message:
     if setu_tags is not None:
         print(setu_tags)
@@ -23,5 +24,5 @@ def get_setu(setu_tags: list[str] = None) -> Message:
     img_response = requests.get(img_url, headers=img_headers)
     with open("./src/plugins/setu/setu.png", "wb") as f:
         f.write(img_response.content)
-    return Message([MessageSegment.image("file:///" + "./src/plugins/setu/setu.png"),MessageSegment.text(img_details)])
+    return Message([MessageSegment.image("file:///" + os.getcwd() + "/src/plugins/setu/setu.png"),MessageSegment.text(img_details)])
 

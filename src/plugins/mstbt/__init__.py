@@ -5,10 +5,11 @@ from nonebot.adapters import Event
 
 from .config import Config
 from .mstbt import mstbt_record
+from ..setu import get_setu
 from nonebot import on_command
 from nonebot.params import CommandArg
 
-import time, random
+import time, random, os
 
 __plugin_meta__ = PluginMetadata(
     name="mstbt",
@@ -35,20 +36,21 @@ skd = on_command("懂哥")
 @skd.handle()
 async def skd_handle_func(args = CommandArg()):
     if args.extract_plain_text() == "工口":
-        await skd.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/gongkou.png")]))
+        await skd.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/gongkou.png")]))
     elif args.extract_plain_text() == "手冲":
-        await skd.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/shouchong.png")]))
+        await skd.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/shouchong.png")]))
     else:
         await skd.finish("我好想做上科大的狗啊")
 
 gk_time = None
+mstbt_counter = 0
 
 _gk = on_command("工口")
 @_gk.handle()
 async def gk_handle_func():
     global gk_time
     gk_time = time.time()
-    await _gk.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/gongkou.png")]))
+    await _gk.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/gongkou.png")]))
 
 _sc = on_command("手冲", aliases= {"mstbt"})
 @_sc.handle()
@@ -61,16 +63,26 @@ async def sc_handle_func(event: Event):
     else:
         message_str = f"{event.get_user_id()}成功记录第1次手冲"
     random.seed(time.time())
-    global gk_time
+    global gk_time, mstbt_counter
     if random.randint(1, 100) == 1 or (gk_time is not None and time.time() - gk_time <= 300):
-        await _sc.send(Message([MessageSegment.image("file:///" + "./src/data/mstbt/shouchong.gif")]))
+        await _sc.send(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/shouchong.gif")]))
         await _sc.send("你触发了至臻手冲!")
+        await _sc.send(Message(["你获得了手冲奖励：一张随机色图"]) + get_setu())
     else:
-        await _sc.send(Message([MessageSegment.image("file:///" + "./src/data/mstbt/shouchong.png")]))
+        await _sc.send(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/shouchong.png")]))
+        _mstbt = random.randint(1, 20)
+        mstbt_counter += _mstbt
+        if _mstbt == 1:
+            await _sc.send("你获得了手冲奖励...吗?")
+            await _sc.send(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/eat_icecream.png")]))
+        elif mstbt_counter >= 50:
+            await _sc.send(Message(["你获得了手冲奖励：一张随机色图"]) + get_setu())
+            mstbt_counter = 0
     await _sc.finish(message_str)
+    
 
 yuyu = on_command("玉玉", aliases= {"yuyu"})
 
 @yuyu.handle()
 async def yuyu_handle_func():
-    await yuyu.finish(Message([MessageSegment.image("file:///" + "./src/data/mstbt/yuyu.gif")]))
+    await yuyu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/yuyu.gif")]))

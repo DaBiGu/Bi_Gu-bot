@@ -20,7 +20,9 @@ steam = on_command("steam")
 async def steam_handle(args = CommandArg()):
     steam_id = args.extract_plain_text()
     steam_status = get_steam_playing(steam_id)
-    if steam_status[1] == None:
+    if steam_status[0] is None:
+        message = f"找不到id为{steam_id}的用户"
+    elif steam_status[1] is None:
         message = f"{steam_status[0]} 没在玩游戏"
     else:
         message = f"{steam_status[0]} 正在玩 {steam_status[1]}"

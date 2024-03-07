@@ -4,7 +4,7 @@ from sys import path
 path.append("D:/Bi_Gu-bot/passwords")
 from passwords import get_passwords
 
-def get_steam_playing(steam_id: str) -> tuple[str, str | None]:
+def get_steam_playing(steam_id: str) -> tuple[str | None, str | None]:
     headers = {
     'authority': 'api.steampowered.com',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -27,10 +27,10 @@ def get_steam_playing(steam_id: str) -> tuple[str, str | None]:
     }
 
     response = requests.get('https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/', params=params, headers=headers)
+    username, isplaying = None, None
     data = response.json()
-    username = data["response"]["players"][0]["personaname"]
-    if "gameextrainfo" in data["response"]["players"][0]:
-        isplaying = data["response"]["players"][0]["gameextrainfo"]
-    else:
-        isplaying = None
+    if data["response"]["players"]:
+        username = data["response"]["players"][0]["personaname"]
+        if "gameextrainfo" in data["response"]["players"][0]:
+            isplaying = data["response"]["players"][0]["gameextrainfo"]
     return [username, isplaying]

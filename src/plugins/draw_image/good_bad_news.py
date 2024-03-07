@@ -20,7 +20,7 @@ def auto_warp(text_list: List[str], font: ImageFont, image: Image, force: bool =
         current_text = result[-1] + text_list[0]
         if judge_shape(current_text)[0]:
             result.append(text_list.pop(0))
-            if judge_shape("\n".join(result)):
+            if judge_shape("\n".join(result))[1]:
                 return "\n".join(result[:-1]) if force else None
         else:
             result[-1] += text_list.pop(0)

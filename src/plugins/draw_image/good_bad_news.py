@@ -65,22 +65,22 @@ def get_text_mask(text: str, img: np.ndarray) -> np.ndarray:
                 text_wrap = auto_warp(text_cut, font, img_pil, force = True)
                 break
         else: break
-    bbox = draw.textbbox(center_pos, text_wrap, font = font, align = "center")
-    width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    center_pos = (center_pos[0] - width // 2, center_pos[1] - height // 3)
-    draw.text(center_pos, text_wrap, fill = (35, 48, 220), font = font, align = "center")
-    img = np.asarray(img_pil)
-    img_cny = cv2.Canny(img, 100, 200)
-    contour = cv2.findContours(img_cny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    img_ret = np.ones(shape, dtype = np.uint8) * 255
-    cv2.drawContours(img_ret, contour[0], -1, (0, 215, 255), 5)
-    img_ret = multiply_image(img, img_ret)
-    return img_ret
-    
-def put_text(img: np.ndarray, text: str, is_gray: bool) -> np.ndarray:
+        bbox = draw.textbbox(center_pos, text_wrap, font = font, align = "center")
+        width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        center_pos = (center_pos[0] - width // 2, center_pos[1] - height // 3)
+        draw.text(center_pos, text_wrap, fill = (35, 48, 220), font = font, align = "center")
+        img = np.asarray(img_pil)
+        img_cny = cv2.Canny(img, 100, 200)
+        contour = cv2.findContours(img_cny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        img_ret = np.ones(shape, dtype = np.uint8) * 255
+        cv2.drawContours(img_ret, contour[0], -1, (0, 215, 255), 5)
+        img_ret = multiply_image(img, img_ret)
+        return img_ret
+
+def put_text(img: np.ndarray, text: str, gray: bool) -> np.ndarray:
     text = text[:10000]
     text_mask = get_text_mask(text, img)
-    if is_gray:
+    if gray:
         text_mask = cv2.cvtColor(text_mask, cv2.COLOR_BGR2GRAY)
         text_mask = cv2.cvtColor(text_mask, cv2.COLOR_GRAY2BGR)
     img = overlay_image(text_mask, img)
@@ -88,12 +88,12 @@ def put_text(img: np.ndarray, text: str, is_gray: bool) -> np.ndarray:
 
 def draw_good_news(text: str) -> Message:
     good_news_image = cv2.imread(get_file_path("xi_bao.webp"))
-    good_news_image = put_text(good_news_image, text, is_gray = False)
+    good_news_image = put_text(good_news_image, text, False)
     cv2.imwrite(get_file_path("good_news.png"), good_news_image)
     return Message([MessageSegment.image("file:///" + get_file_path("good_news.png"))])
 
 def draw_bad_news(text: str) -> Message:
     bad_news_image = cv2.imread(get_file_path("bei_bao.webp"))
-    bad_news_image = put_text(bad_news_image, text, is_gray = True)
+    bad_news_image = put_text(bad_news_image, text, True)
     cv2.imwrite(get_file_path("bad_news.png"), bad_news_image)
     return Message([MessageSegment.image("file:///" + get_file_path("bad_news.png"))])

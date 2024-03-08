@@ -77,10 +77,10 @@ def get_text_mask(text: str, img: np.ndarray) -> np.ndarray:
     img_ret = multiply_image(img, img_ret)
     return img_ret
 
-def put_text(img: np.ndarray, text: str, gray: bool) -> np.ndarray:
+def put_text(img: np.ndarray, text: str, is_gray: bool) -> np.ndarray:
     text = text[:10000]
     text_mask = get_text_mask(text, img)
-    if gray:
+    if is_gray:
         text_mask = cv2.cvtColor(text_mask, cv2.COLOR_BGR2GRAY)
         text_mask = cv2.cvtColor(text_mask, cv2.COLOR_GRAY2BGR)
     img = overlay_image(text_mask, img)
@@ -88,12 +88,12 @@ def put_text(img: np.ndarray, text: str, gray: bool) -> np.ndarray:
 
 def draw_good_news(text: str) -> Message:
     good_news_image = cv2.imread(get_file_path("xi_bao.webp"))
-    good_news_image = put_text(good_news_image, text, False)
+    good_news_image = put_text(good_news_image, text, is_gray = False)
     cv2.imwrite(get_file_path("good_news.png"), good_news_image)
     return Message([MessageSegment.image("file:///" + get_file_path("good_news.png"))])
 
 def draw_bad_news(text: str) -> Message:
     bad_news_image = cv2.imread(get_file_path("bei_bao.webp"))
-    bad_news_image = put_text(bad_news_image, text, True)
+    bad_news_image = put_text(bad_news_image, text, is_gray = True)
     cv2.imwrite(get_file_path("bad_news.png"), bad_news_image)
     return Message([MessageSegment.image("file:///" + get_file_path("bad_news.png"))])

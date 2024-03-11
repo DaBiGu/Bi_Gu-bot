@@ -50,18 +50,25 @@ async def sleep_handle(event: Event, args = CommandArg()):
             await sleep.finish(message = user_id + "已经睡着了\n再次记录睡觉时间请先用/awake起床")
 
 @awake.handle()
-async def awake_handle(event: Event):
+async def awake_handle(event: Event, args = CommandArg()):
     user_id = event.get_user_id()
-    awake_time = record_awake(user_id)
+    if cmd_params := args.extract_plain_text():
+        if ":" in cmd_params:
+            hour, minute = map(int, cmd_params.split(":"))
+            awake_time = record_awake(user_id, hour, minute)
+        else:
+            await awake.finish(message = "格式错误,正确格式为: /awake [hour:minute]\n例如: /awake 7:00\n注意使用英文冒号")
+    else:
+        awake_time = record_awake(user_id)
     if awake_time == -1:
         await awake.finish(message = user_id + "清醒得很\n再次记录起床时间请先用/sleep睡觉")
     elif awake_time == -2:
         await awake.finish(message = user_id + "找不到你的睡觉记录\n请先用/sleep睡觉")
+    elif awake_time == -3:
+        await awake.finish(message = user_id + "起床时间早于上一次睡觉时间\n请重新输入")
     else:
-        sleep_duration = time.time() - float(awake_time)
-        
+        sleep_duration = float(awake_time)
         sleep_duration_str = second_to_hms(sleep_duration)
-
         await awake.send(message = user_id + "睡觉时长" + sleep_duration_str + "\n早安新的一天开始了哦!")
         await awake.send(message = f"{user_id}的本周睡眠时长统计如下:")
         await awake.finish(message = get_daily_sleep_duration(user_id))

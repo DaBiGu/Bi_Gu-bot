@@ -69,7 +69,7 @@ def record_sleep(user_id: str, hour: int = None, minute: int = None) -> datetime
             writer.writerow(to_write)
     return sleep_time
 
-def record_awake(user_id: str) -> float | int:
+def record_awake(user_id: str, hour: int = None, minute: int = None) -> float | int:
     last_sleep_time = -2
     csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
@@ -77,15 +77,24 @@ def record_awake(user_id: str) -> float | int:
         data = list(csv.reader(file))
     user_last_status = get_last_status(data)
     if not user_last_status: return -1
-    to_write = None
+    to_write, awake_time = None, None
     if user_last_status == "Sleep":
         last_sleep_time = data[-1][0]
-        to_write = [time.time(), "Awake"]  
+        if (hour is not None) and (minute is not None):
+            awake_time = datetime.datetime.timestamp(find_closest_time(hour, minute))
+            if awake_time < float(last_sleep_time): return -3
+            else:
+                to_write = [awake_time, "Awake"]
+        else:
+            to_write = [time.time(), "Awake"]  
     if to_write:
         with open(csv_path, mode = "a", newline = '') as file:
             writer = csv.writer(file)
             writer.writerow(to_write) 
-    return last_sleep_time
+    if awake_time:
+        return awake_time - float(last_sleep_time)
+    else:
+        return time.time() - last_sleep_time
 
 def find_closest_time(hour: int, minute: int) -> datetime.datetime:
     target_time = datetime.time(hour, minute)

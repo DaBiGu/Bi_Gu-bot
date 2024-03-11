@@ -1,5 +1,5 @@
 import time, os, csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
@@ -48,7 +48,7 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     plt.savefig(os.getcwd() + f"/src/data/sleep/user_data/{user_id}.png", dpi = 300, bbox_inches = "tight")
     return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/sleep/user_data/{user_id}.png")
 
-def record_sleep(user_id: str) -> datetime | None:
+def record_sleep(user_id: str, hour: int = None, minute: int = None) -> datetime | None:
     sleep_time = None
     csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
@@ -57,8 +57,12 @@ def record_sleep(user_id: str) -> datetime | None:
     user_last_status = get_last_status(data)
     to_write = None
     if user_last_status == "Awake" or user_last_status == None:
-        to_write = [time.time(), "Sleep"]
-        sleep_time = datetime.now()
+        if hour and minute:
+            sleep_time = find_closest_time(hour, minute)
+            to_write = [datetime.timestamp(sleep_time), "Sleep"]
+        else:
+            to_write = [time.time(), "Sleep"]
+            sleep_time = datetime.now()
     if to_write:
         with open(csv_path, mode = "a", newline = '') as file:
             writer = csv.writer(file)
@@ -82,3 +86,11 @@ def record_awake(user_id: str) -> float | int:
             writer = csv.writer(file)
             writer.writerow(to_write) 
     return last_sleep_time
+
+def find_closest_time(hour: int, minute: int) -> datetime:
+    target_time = time(hour, minute)
+    current_time = datetime.now().time()
+    if current_time > target_time:
+        return datetime.combine(datetime.today(), target_time)
+    else:
+        return datetime.combine(datetime.today() - timedelta(days = 1), target_time)

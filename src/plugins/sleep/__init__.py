@@ -32,11 +32,20 @@ async def sleep_handle(event: Event, args = CommandArg()):
         if cmd_params == "status":
             await sleep.send(message = f"{user_id}的本周睡眠时长统计如下:")
             await sleep.finish(message = get_daily_sleep_duration(user_id))
+        elif ":" in cmd_params:
+            hour, minute = map(int, cmd_params.split(":"))
+            current_time = record_sleep(user_id, hour, minute)
+            if current_time is not None:
+                await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
+            else:
+                await sleep.finish(message = user_id + "已经睡着了\n再次记录睡觉时间请先用/awake起床")
+        else:
+            await sleep.finish(message = "格式错误,正确格式为: /sleep [hour:minute]\n例如: /sleep 23:00\n注意使用英文冒号")
     else:
         user_id = event.get_user_id()
         current_time = record_sleep(user_id)
         if current_time is not None:
-            await sleep.finish(message = user_id + f"现在时间是{current_time}，已经记录你的睡觉时间了哦！" + "\n晚安好梦")
+            await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
         else:
             await sleep.finish(message = user_id + "已经睡着了\n再次记录睡觉时间请先用/awake起床")
 

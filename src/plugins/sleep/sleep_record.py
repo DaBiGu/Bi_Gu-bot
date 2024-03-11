@@ -15,22 +15,23 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     start_of_week = today - datetime.timedelta(days = today.weekday())
     start_of_each_day = [datetime.datetime.timestamp(start_of_week + datetime.timedelta(days = i)) for i in range(8)]
     sleep_durations_day = []
+    sorted_data = sorted(data, key = lambda x: float(x[0]))
     for i in range(len(start_of_each_day) - 1):
         start_of_day = start_of_each_day[i]
         end_of_day = start_of_each_day[i+1] - 1
         sleep_durations = []
         start_index, stop_index = -1, -1
-        for j in range(len(data)):
-            if float(data[j][0]) >= start_of_day:
+        for j in range(len(sorted_data)):
+            if float(sorted_data[j][0]) >= start_of_day:
                 start_index = j
                 break
-        for j in range(len(data)-1, 0, -1):
-            if float(data[j][0]) < end_of_day:
+        for j in range(len(sorted_data)-1, 0, -1):
+            if float(sorted_data[j][0]) < end_of_day:
                 stop_index = j
                 break
         for i in range(start_index, stop_index + 1, 2):
             if start_index == -1: continue
-            sleep_durations.append(float(data[i+1][0]) - float(data[i][0]))
+            sleep_durations.append(float(sorted_data[i+1][0]) - float(sorted_data[i][0]))
         sleep_durations_day.append(sum(sleep_durations))
     average_sleep_duration = np.mean([x for x in sleep_durations_day if x != 0])
     plt.style.use('default')

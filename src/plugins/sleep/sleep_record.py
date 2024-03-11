@@ -98,8 +98,7 @@ def record_awake(user_id: str, hour: int = None, minute: int = None) -> float | 
 
 def find_closest_time(hour: int, minute: int) -> datetime.datetime:
     target_time = datetime.time(hour, minute)
-    current_time = datetime.datetime.now().time()
-    if current_time > target_time:
-        return datetime.datetime.combine(datetime.datetime.today(), target_time)
-    else:
-        return datetime.datetime.combine(datetime.datetime.today() - datetime.timedelta(days = 1), target_time)
+    current_time = datetime.datetime.now()
+    yesterday_time = datetime.datetime.combine(datetime.datetime.today() - datetime.timedelta(days = 1), target_time)
+    today_time = datetime.datetime.combine(datetime.datetime.today(), target_time)
+    return yesterday_time if abs(current_time - yesterday_time) < abs(current_time - today_time) else today_time

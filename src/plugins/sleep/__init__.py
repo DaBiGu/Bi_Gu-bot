@@ -35,19 +35,23 @@ async def sleep_handle(event: Event, args = CommandArg()):
         elif ":" in cmd_params:
             hour, minute = map(int, cmd_params.split(":"))
             current_time = record_sleep(user_id, hour, minute)
-            if current_time is not None:
-                await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
-            else:
+            if current_time == -1:
                 await sleep.finish(message = user_id + "已经睡着了\n再次记录睡觉时间请先用/awake起床")
+            elif current_time == -2:
+                await sleep.finish(message = user_id + "非法记录:睡觉时间早于上一次起床时间\n请重新输入")
+            else:
+                await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
         else:
             await sleep.finish(message = "格式错误,正确格式为: /sleep [hour:minute]\n例如: /sleep 23:00\n注意使用英文冒号")
     else:
         user_id = event.get_user_id()
         current_time = record_sleep(user_id)
-        if current_time is not None:
-            await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
-        else:
+        if current_time == -1:
             await sleep.finish(message = user_id + "已经睡着了\n再次记录睡觉时间请先用/awake起床")
+        elif current_time == -2:
+            await sleep.finish(message = user_id + "非法记录:睡觉时间早于上一次起床时间\n请重新输入")
+        else:
+            await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
 
 @awake.handle()
 async def awake_handle(event: Event, args = CommandArg()):

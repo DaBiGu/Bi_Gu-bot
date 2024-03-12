@@ -16,6 +16,7 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     start_of_each_day = [datetime.datetime.timestamp(start_of_week + datetime.timedelta(days = i)) for i in range(8)]
     sleep_durations_day = []
     sorted_data = sorted(data, key = lambda x: float(x[0]))
+    print(sorted_data)
     for i in range(len(start_of_each_day) - 1):
         start_of_day = start_of_each_day[i]
         end_of_day = start_of_each_day[i+1] - 1
@@ -48,8 +49,8 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     plt.savefig(os.getcwd() + f"/src/data/sleep/user_data/{user_id}.png", dpi = 300, bbox_inches = "tight")
     return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/sleep/user_data/{user_id}.png")
 
-def record_sleep(user_id: str, hour: int = None, minute: int = None) -> datetime.datetime | None:
-    sleep_time = None
+def record_sleep(user_id: str, hour: int = None, minute: int = None) -> datetime.datetime | int:
+    sleep_time = -1
     csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "a", encoding = "utf-8") as _: pass
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
@@ -58,8 +59,10 @@ def record_sleep(user_id: str, hour: int = None, minute: int = None) -> datetime
     to_write = None
     print(hour, minute)
     if user_last_status == "Awake" or user_last_status == None:
+        last_awake_time = data[-1][0]
         if (hour is not None) and (minute is not None):
             sleep_time = find_closest_time(hour, minute)
+            if datetime.datetime.timestamp(sleep_time) < float(last_awake_time): sleep_time = -2
             to_write = [datetime.datetime.timestamp(sleep_time), "Sleep"]
         else:
             to_write = [time.time(), "Sleep"]
@@ -103,3 +106,6 @@ def find_closest_time(hour: int, minute: int) -> datetime.datetime:
     yesterday_time = datetime.datetime.combine(datetime.datetime.today() - datetime.timedelta(days = 1), target_time)
     today_time = datetime.datetime.combine(datetime.datetime.today(), target_time)
     return yesterday_time if abs(current_time - yesterday_time) < abs(current_time - today_time) else today_time
+
+
+get_daily_sleep_duration("2998125355")

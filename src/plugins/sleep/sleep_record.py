@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11.message import MessageSegment
 def get_last_status(data: List[List[str]]) -> str | None:
     return data[-1][1] if data else None
 
-def get_daily_sleep_duration(user_id: str) -> MessageSegment:
+async def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     csv_path = f"./src/data/sleep/user_data/{user_id}.csv"
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))

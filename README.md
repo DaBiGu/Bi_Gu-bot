@@ -31,7 +31,9 @@
 ## `sleep`
 
 * `/sleep` 开始睡觉
+* `/sleep [hh:mm]` 手动指定睡觉时间
 * `/awake` 结束睡觉，返回本次睡眠总时长和本周睡眠情况统计
+* `/awake [hh:mm]` 手动指定起床时间
 * `/sleep status` 查询本周睡眠情况统计
 
 ## `steam`

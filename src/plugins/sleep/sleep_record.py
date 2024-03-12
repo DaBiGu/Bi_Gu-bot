@@ -106,6 +106,3 @@ def find_closest_time(hour: int, minute: int) -> datetime.datetime:
     yesterday_time = datetime.datetime.combine(datetime.datetime.today() - datetime.timedelta(days = 1), target_time)
     today_time = datetime.datetime.combine(datetime.datetime.today(), target_time)
     return yesterday_time if abs(current_time - yesterday_time) < abs(current_time - today_time) else today_time
-
-
-get_daily_sleep_duration("2998125355")

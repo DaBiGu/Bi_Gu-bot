@@ -29,7 +29,9 @@ def get_crypto_kline(crypto_name: str) -> MessageSegment:
     volume = [float(x[7]) for x in result]
     df = pd.DataFrame({"Open": open_price, "High": highest_price, "Low": lowest_price, "Close": close_price, "Volume": volume}
                       , index = pd.DatetimeIndex(times))
-    
+    df["20ma"] = df["Close"].rolling(window = 20).mean()
+    df["upper_band"] = df["20ma"] + 2 * df["Close"].rolling(window = 20).std()
+    df["lower_band"] = df["20ma"] - 2 * df["Close"].rolling(window = 20).std()
     binance_dark = {
         "base_mpl_style": "dark_background",
         "marketcolors": {
@@ -58,7 +60,11 @@ def get_crypto_kline(crypto_name: str) -> MessageSegment:
         },
         "base_mpf_style": "binance-dark",
     }
-    mpf.plot(df, type="candle", volume = True, style = binance_dark, title = f"{instrument_ID} 15m Kline"
-             , figratio = (16, 8), panel_ratios=(4, 1), savefig = os.getcwd() + "/src/plugins/crypto/mpfplot.png")
+    bollinger_bands = [mpf.make_addplot(df["20ma"], color = "#f52fe4", width = 1), 
+                       mpf.make_addplot(df["upper_band"], color = "#f0b30c", width = 1),
+                       mpf.make_addplot(df["lower_band"], color = "#872ff5", width = 1)]
+    mpf.plot(df, type="candle", volume = True, style = binance_dark, title = f"{instrument_ID} 15m Kline", 
+                figratio = (16, 8), panel_ratios=(4, 1), addplot = bollinger_bands,
+                savefig = os.getcwd() + "/src/plugins/crypto/mpfplot.png")
     return MessageSegment.image("file:///" + os.getcwd() + "/src/plugins/crypto/mpfplot.png")
 

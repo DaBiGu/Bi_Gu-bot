@@ -17,6 +17,8 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
+LOCAL_TIME = -7
+
 sleep = on_command("sleep", aliases = {"gn"})
 awake = on_command("awake")
 
@@ -33,7 +35,20 @@ async def sleep_handle(event: Event, args = CommandArg()):
             await sleep.send(message = f"{user_id}的本周睡眠时长统计如下:")
             await sleep.finish(message = get_daily_sleep_duration(user_id))
         elif ":" in cmd_params:
-            hour, minute = map(int, cmd_params.split(":"))
+            if " " in cmd_params:
+                time, user_timezone_str = cmd_params.split(" ")
+                if "utc+" in user_timezone_str or "utc-" in user_timezone_str:
+                    user_timezone = int(user_timezone_str[3:])
+                    if user_timezone > 12 or user_timezone < -12:
+                        await sleep.finish(message = "请输入合法的时区")
+                    else:
+                        deltatime = user_timezone - LOCAL_TIME
+                        time = time.split(":")
+                        hour, minute = (int(time[0]) - deltatime) % 24, int(time[1])
+                else:
+                    await sleep.finish(message = "格式错误,正确格式为: /sleep [hour:minute] [timezone]\n例如: /sleep 23:00 utc+8\n注意使用英文冒号")
+            else:
+                hour, minute = map(int, cmd_params.split(":"))
             current_time = record_sleep(user_id, hour, minute)
             if current_time == -1:
                 await sleep.finish(message = user_id + "已经睡着了\n再次记录睡觉时间请先用/awake起床")
@@ -58,6 +73,18 @@ async def awake_handle(event: Event, args = CommandArg()):
     user_id = event.get_user_id()
     if cmd_params := args.extract_plain_text():
         if ":" in cmd_params:
+            if " " in cmd_params:
+                time, user_timezone_str = cmd_params.split(" ")
+                if "utc+" in user_timezone_str or "utc-" in user_timezone_str:
+                    user_timezone = int(user_timezone_str[3:])
+                    if user_timezone > 12 or user_timezone < -12:
+                        await awake.finish(message = "请输入合法的时区")
+                    else:
+                        deltatime = user_timezone - LOCAL_TIME
+                        time = time.split(":")
+                        hour, minute = (int(time[0]) - deltatime) % 24, int(time[1])
+                else:
+                    await awake.finish(message = "格式错误,正确格式为: /awake [hour:minute] [timezone]\n例如: /awake 7:00 utc+8\n注意使用英文冒号")
             hour, minute = map(int, cmd_params.split(":"))
             awake_time = record_awake(user_id, hour, minute)
         else:

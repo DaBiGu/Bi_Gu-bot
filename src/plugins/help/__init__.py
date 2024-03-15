@@ -26,8 +26,10 @@ helper_message = "以下是所有的指令列表:\n \
     /setu [tags] 返回指定tags的色图; 可以传入多个tag, 以空格分隔\n \
     /sleep 开始睡觉并记录睡觉时间\n \
     /sleep [hh:mm] 手动指定睡觉时间\n \
+    /sleep [hh:mm] [utc±t] 手动指定于指定时区的睡觉时间\n \
     /awake 结束睡觉, 查看本次睡觉时长和本周睡眠状况统计\n \
     /awake [hh:mm] 手动指定起床时间\n \
+    /awake [hh:mm] [utc±t] 手动指定于指定时区的起床时间\n \
     /sleep status 查看本周睡眠状况统计\n \
     /steam [steamid] 查看用户steamid的steam游戏状态\n \
     /work start [name] 开始一项名为[name]的工作\n \

@@ -86,3 +86,9 @@ yuyu = on_command("玉玉", aliases= {"yuyu"})
 @yuyu.handle()
 async def yuyu_handle_func():
     await yuyu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/yuyu.gif")]))
+
+fufu = on_command("芙芙", aliases= {"fufu"})
+
+@fufu.handle()
+async def fufu_handle_func():
+    await fufu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/fufu.gif")]))

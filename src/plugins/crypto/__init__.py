@@ -19,9 +19,20 @@ config = get_plugin_config(Config)
 crpyto = on_command("crypto")
 @crpyto.handle()
 async def crypto_handle(args = CommandArg()):
-    if crypto_name := args.extract_plain_text():
-        message = get_crypto_kline(crypto_name)
-        await crpyto.finish(message = message)
+    if cmd_params := args.extract_plain_text():
+        if " " in cmd_params:
+            cmd_params = cmd_params.split(" ")
+            if len(cmd_params) == 2:
+                crypto_name = cmd_params[0]
+                time_interval = cmd_params[1]
+                if time_interval not in ["15m", "1h", "4h", "1D", "3D", "1W"]:
+                    await crpyto.finish(message = "时间间隔不合法, 目前支持15m/1h/4h/1D/3D/1W")
+                else:
+                    message = get_crypto_kline(crypto_name, time_interval)
+                    await crpyto.finish(message = message)
+        else:
+            message = get_crypto_kline(cmd_params)
+            await crpyto.finish(message = message)
     else:
         message = get_market_data()
         await crpyto.finish(message = message)

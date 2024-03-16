@@ -5,6 +5,7 @@
 
 * `/crypto` 返回过去2小时交易量涨幅300%及以上的币种
 * `/crypto [name]` 返回`[name]`币种过去24小时的15分钟k线图
+* `/crypto [name] [interval]` 返回`[name]`币种的`15m/1h/4h/1D/1W`k线图
 * 数据来自于[okx合约api](https://www.okx.com/docs-v5/en/#overview)
 
 ## `help`
@@ -46,6 +47,10 @@
 * `/work start [name]` 开始名为`name`的工作
 * `/work stop` 结束当前工作，返回本次工作总时长
 * `/work today` 返回当前用户本日工作统计
+
+## `miscellaneous`
+* `/yuyu` 我有玉玉症
+* `/fufu` 芙芙可爱捏
 
 ### `TODO`
 * `mahjong` 自娱自乐立直麻将

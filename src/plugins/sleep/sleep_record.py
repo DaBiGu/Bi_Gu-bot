@@ -98,7 +98,7 @@ def record_awake(user_id: str, hour: int = None, minute: int = None) -> float | 
     if awake_time:
         return awake_time - float(last_sleep_time)
     else:
-        return time.time() - last_sleep_time
+        return time.time() - float(last_sleep_time)
 
 def find_closest_time(hour: int, minute: int) -> datetime.datetime:
     target_time = datetime.time(hour, minute)

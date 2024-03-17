@@ -21,7 +21,7 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
         start_of_day = start_of_each_day[i]
         end_of_day = start_of_each_day[i+1] - 1
         sleep_durations = []
-        start_index, stop_index = -1, -1
+        start_index, stop_index = None, None
         for j in range(len(sorted_data)):
             if float(sorted_data[j][0]) >= start_of_day:
                 start_index = j
@@ -30,9 +30,14 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
             if float(sorted_data[j][0]) < end_of_day:
                 stop_index = j
                 break
-        for i in range(start_index, stop_index + 1, 2):
-            if start_index == -1: continue
-            sleep_durations.append(float(sorted_data[i+1][0]) - float(sorted_data[i][0]))
+        _data = []
+        if (start_index is not None) and (stop_index is not None):
+            if sorted_data[start_index][1] == "Awake": _data.append(start_of_day)
+            _data += [float(x[0]) for x in sorted_data[start_index:stop_index+1]]
+            if sorted_data[stop_index][1] == "Sleep": _data.append(end_of_day)
+        else: _data = [0, 0]
+        for i in range(len(_data), 2):
+            sleep_durations.append(float(_data[i+1]) - float(_data[i]))
         sleep_durations_day.append(sum(sleep_durations))
     average_sleep_duration = np.mean([x for x in sleep_durations_day if x != 0])
     plt.style.use('default')

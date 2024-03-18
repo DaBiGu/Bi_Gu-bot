@@ -25,6 +25,11 @@ def second_to_hms(seconds):
     m, s = divmod(r, 60)
     return f"{int(h)}小时{int(m)}分钟{int(s)}秒"
 
+def draw_progress_bar(progress: float) -> str:
+    filled_length = int(20 * progress)
+    bar = "=" * filled_length + "-" * (20 - filled_length)
+    return "[" + bar + "]"
+
 amiya = on_command("amiya", aliases= {"阿米娅"})
 
 @amiya.handle()
@@ -43,7 +48,6 @@ async def skd_handle_func(args = CommandArg()):
         await skd.finish("我好想做上科大的狗啊")
 
 gk_time = None
-mstbt_counter = 0
 
 _gk = on_command("工口")
 @_gk.handle()
@@ -54,7 +58,14 @@ async def gk_handle_func():
 
 _sc = on_command("手冲", aliases= {"mstbt"})
 @_sc.handle()
-async def sc_handle_func(event: Event):
+async def sc_handle_func(event: Event, args = CommandArg()):
+    if args.extract_plain_text() == "counter":
+        with open("./src/data/mstbt/mstbt_counter.txt", "r") as f:
+            mstbt_counter = float(f.read())
+        mstbt_progress = "{:.4f}".format(mstbt_counter / 50)
+        mstbt_progress_percent = "{:.2f}".format(float(mstbt_progress) * 100)
+        mstbt_progress_bar = draw_progress_bar(float(mstbt_progress))
+        await _sc.finish(f"{mstbt_progress_bar} {mstbt_progress_percent}%\n这个进度条充满会有什么神奇的事情发生呢...")
     mstbt_response = mstbt_record(event.get_user_id())
     if mstbt_response[0] is not None:
         current_time = time.time()
@@ -63,14 +74,16 @@ async def sc_handle_func(event: Event):
     else:
         message_str = f"{event.get_user_id()}成功记录第1次手冲"
     random.seed(time.time())
-    global gk_time, mstbt_counter
+    global gk_time
     if random.randint(1, 100) == 1 or (gk_time is not None and time.time() - gk_time <= 300):
         await _sc.send(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/shouchong.gif")]))
         await _sc.send("你触发了至臻手冲!")
         await _sc.send(Message(["你获得了手冲奖励：一张随机色图"]) + get_setu())
     else:
         await _sc.send(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/shouchong.png")]))
-        _mstbt = random.randint(1, 20)
+        _mstbt = random.uniform(1, 20)
+        with open("./src/data/mstbt/mstbt_counter.txt", "r") as f:
+            mstbt_counter = float(f.read())
         mstbt_counter += _mstbt
         if _mstbt == 1:
             await _sc.send("你获得了手冲奖励...吗?")
@@ -78,6 +91,8 @@ async def sc_handle_func(event: Event):
         elif mstbt_counter >= 50:
             await _sc.send(Message(["你获得了手冲奖励：一张随机色图"]) + get_setu())
             mstbt_counter = 0
+        with open("./src/data/mstbt/mstbt_counter.txt", "w") as f:
+            f.write(str(mstbt_counter))
     await _sc.finish(message_str)
     
 

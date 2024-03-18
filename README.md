@@ -44,7 +44,6 @@
 * 数据来自于[steam api](https://developer.valvesoftware.com/wiki/Steam_Web_API)
 
 ## `work`
-
 * `/work start [name]` 开始名为`name`的工作
 * `/work stop` 结束当前工作，返回本次工作总时长
 * `/work today` 返回当前用户本日工作统计

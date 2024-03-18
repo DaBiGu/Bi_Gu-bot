@@ -1,5 +1,6 @@
-from nonebot import get_plugin_config
+from nonebot import get_plugin_config, get_bot, get_adapter
 from nonebot.plugin import PluginMetadata
+from nonebot.adapters.onebot.v11.adapter import Adapter
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.adapters import Event
 
@@ -107,3 +108,11 @@ fufu = on_command("芙芙", aliases= {"fufu"})
 @fufu.handle()
 async def fufu_handle_func():
     await fufu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/fufu.gif")]))
+
+
+nc = on_command("nc")
+@nc.handle()
+async def nc_handle_func():
+    onebot_adapter = get_adapter(Adapter)
+    bot = list(onebot_adapter.bots.values())[0]
+    await bot.call_api("send_group_msg", group_id = 858019358, message = "test")

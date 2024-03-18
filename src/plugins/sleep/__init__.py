@@ -1,8 +1,10 @@
 from nonebot import get_plugin_config
-from nonebot import on_command
+from nonebot import on_command, get_adapter
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters import Event
+from nonebot.adapters.onebot.v11.event import MessageEvent
+from nonebot.adapters.onebot.v11.adapter import Adapter
 
 from .config import Config
 from .sleep_record import record_sleep, record_awake, get_daily_sleep_duration
@@ -28,8 +30,16 @@ def second_to_hms(seconds):
             return f"{int(h)}小时{int(m)}分钟{int(s)}秒"
 
 @sleep.handle()
-async def sleep_handle(event: Event, args = CommandArg()):
+async def sleep_handle(event: MessageEvent, args = CommandArg()):
     user_id = event.get_user_id()
+    if "message.group" in str(event.get_event_name()):
+        onebot_adapter = get_adapter(Adapter)
+        bot = list(onebot_adapter.bots.values())[0]
+        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+        for member in group_members_raw:
+            if str(member["user_id"]) == event.get_user_id():
+                user_id = member["nickname"]
+                break 
     if cmd_params := args.extract_plain_text():
         if cmd_params == "status":
             await sleep.send(message = f"{user_id}的本周睡眠时长统计如下:")
@@ -69,8 +79,16 @@ async def sleep_handle(event: Event, args = CommandArg()):
             await sleep.finish(message = user_id + f"已经记录你于{current_time}的睡觉时间了哦！" + "\n晚安好梦")
 
 @awake.handle()
-async def awake_handle(event: Event, args = CommandArg()):
+async def awake_handle(event: MessageEvent, args = CommandArg()):
     user_id = event.get_user_id()
+    if "message.group" in str(event.get_event_name()):
+        onebot_adapter = get_adapter(Adapter)
+        bot = list(onebot_adapter.bots.values())[0]
+        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+        for member in group_members_raw:
+            if str(member["user_id"]) == event.get_user_id():
+                user_id = member["nickname"]
+                break 
     if cmd_params := args.extract_plain_text():
         if ":" in cmd_params:
             if " " in cmd_params:

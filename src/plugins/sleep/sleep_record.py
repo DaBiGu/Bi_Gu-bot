@@ -16,11 +16,8 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
     start_of_each_day = [datetime.datetime.timestamp(start_of_week + datetime.timedelta(days = i)) for i in range(8)]
     sleep_durations_day = []
     sorted_data = sorted(data, key = lambda x: float(x[0]))
-    print(sorted_data)
     for i in range(len(start_of_each_day) - 1):
-        start_of_day = start_of_each_day[i]
-        end_of_day = start_of_each_day[i+1] - 1
-        sleep_durations = []
+        start_of_day, end_of_day = start_of_each_day[i], start_of_each_day[i+1] - 1
         start_index, stop_index = None, None
         for j in range(len(sorted_data)):
             if float(sorted_data[j][0]) >= start_of_day:
@@ -32,13 +29,11 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
                 break
         _data = []
         if (start_index is not None) and (stop_index is not None):
-            if sorted_data[start_index][1] == "Awake": _data.append(start_of_day)
-            _data += [float(x[0]) for x in sorted_data[start_index:stop_index+1]]
-            if sorted_data[stop_index][1] == "Sleep": _data.append(end_of_day)
+            if sorted_data[start_index][1] == "Awake": _data.append(float(sorted_data[start_index-1][0]))
+            _data += [float(x[0]) for x in sorted_data[start_index:stop_index]]
+            if sorted_data[stop_index][1] == "Awake": _data.append(float(sorted_data[stop_index][0]))
         else: _data = [0, 0]
-        for i in range(len(_data), 2):
-            sleep_durations.append(float(_data[i+1]) - float(_data[i]))
-        sleep_durations_day.append(sum(sleep_durations))
+        sleep_durations_day.append(sum([float(_data[i+1]) - float(_data[i]) for i in range(0, len(_data), 2)]))
     average_sleep_duration = np.mean([x for x in sleep_durations_day if x != 0])
     plt.style.use('default')
     plt.figure(figsize = (10, 5))

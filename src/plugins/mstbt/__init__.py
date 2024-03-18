@@ -1,8 +1,8 @@
-from nonebot import get_plugin_config, get_bot, get_adapter
+from nonebot import get_plugin_config, get_adapter
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Adapter
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-from nonebot.adapters import Event
+from nonebot.adapters.onebot.v11.event import MessageEvent
 
 from .config import Config
 from .mstbt import mstbt_record
@@ -59,7 +59,16 @@ async def gk_handle_func():
 
 _sc = on_command("手冲", aliases= {"mstbt"})
 @_sc.handle()
-async def sc_handle_func(event: Event, args = CommandArg()):
+async def sc_handle_func(event: MessageEvent, args = CommandArg()):
+    username = event.get_user_id()
+    if "message.group" in str(event.get_event_name()):
+        onebot_adapter = get_adapter(Adapter)
+        bot = list(onebot_adapter.bots.values())[0]
+        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+        for member in group_members_raw:
+            if str(member["user_id"]) == event.get_user_id():
+                username = member["nickname"]
+                break
     if args.extract_plain_text() == "counter":
         with open("./src/data/mstbt/mstbt_counter.txt", "r") as f:
             mstbt_counter = float(f.read())
@@ -71,7 +80,7 @@ async def sc_handle_func(event: Event, args = CommandArg()):
     if mstbt_response[0] is not None:
         current_time = time.time()
         time_diff_str = second_to_hms(current_time - float(mstbt_response[0]))
-        message_str = f"{event.get_user_id()}上次手冲时间{time_diff_str}前\n你本周已经手冲了{mstbt_response[2]}次\n你总共已经手冲了{mstbt_response[1]}次"
+        message_str = f"{username}上次手冲时间{time_diff_str}前\n你本周已经手冲了{mstbt_response[2]}次\n你总共已经手冲了{mstbt_response[1]}次"
     else:
         message_str = f"{event.get_user_id()}成功记录第1次手冲"
     random.seed(time.time())
@@ -109,10 +118,3 @@ fufu = on_command("芙芙", aliases= {"fufu"})
 async def fufu_handle_func():
     await fufu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/fufu.gif")]))
 
-
-nc = on_command("nc")
-@nc.handle()
-async def nc_handle_func():
-    onebot_adapter = get_adapter(Adapter)
-    bot = list(onebot_adapter.bots.values())[0]
-    await bot.call_api("send_group_msg", group_id = 858019358, message = "test")

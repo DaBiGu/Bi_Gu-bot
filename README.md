@@ -41,6 +41,7 @@
 
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
+* 数据来自于[steam api](https://developer.valvesoftware.com/wiki/Steam_Web_API)
 
 ## `work`
 

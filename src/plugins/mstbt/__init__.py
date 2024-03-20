@@ -34,8 +34,12 @@ def draw_progress_bar(progress: float) -> str:
 amiya = on_command("amiya", aliases= {"阿米娅"})
 
 @amiya.handle()
-async def amiya_handle_func():
-    await amiya.finish("阿米娅早安晚安上班下班啥比驴")
+async def amiya_handle_func(event: MessageEvent):
+    user_id = event.get_user_id()
+    if user_id == "2097749210":
+        await amiya.finish("唉, 天天就知道阿米娅")
+    else:
+        await amiya.finish("阿米娅早安晚安上班下班啥比驴")
 
 skd = on_command("懂哥")
 

@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11.event import MessageEvent
 from .config import Config
 from .mstbt import mstbt_record
 from ..setu import get_setu
-from nonebot import on_command
+from nonebot import on_command, on_fullmatch
 from nonebot.params import CommandArg
 
 import time, random, os
@@ -124,4 +124,10 @@ fufu = on_command("芙芙", aliases= {"fufu"})
 @fufu.handle()
 async def fufu_handle_func():
     await fufu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/mstbt/fufu.gif")]))
+
+sb = on_fullmatch("阿姨洗铁路")
+
+@sb.handle()
+async def sb_handle_func():
+    await sb.finish("傻逼")
 

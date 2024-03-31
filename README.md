@@ -11,6 +11,9 @@
 ## `help`
 * `/help` 返回当前支持的指令列表
 
+## `mahjong`
+* `/qh [username]` 查询`[username]`的近30局雀魂战绩
+
 ## `ncm`
 * `/ncm search [keyword] [num]` 网易云搜歌, 返回前`num`首搜索`keyword`的歌曲信息
 * `/ncm id [song id]` 返回`id`歌曲的分享卡片
@@ -52,5 +55,3 @@
 * `/yuyu` 我有玉玉症
 * `/fufu` 芙芙可爱捏
 
-### `TODO`
-* `mahjong` 自娱自乐立直麻将

@@ -18,6 +18,8 @@ helper_message = "以下是所有的指令列表:\n \
     /crypto 查看过去2小时交易量涨幅300%及以上的币种\n \
     /crypto [name] 查看[name]币种过去24小时的15分钟k线图\n \
     /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图\n \
+    —————— mahjong ——————\n \
+    /qh [username] 查看[username]的近30局雀魂战绩\n \
     —————— ncm ——————\n \
     /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲\n \
     /ncm id [song_id] 获取song_id对应的歌曲卡片\n \

@@ -59,7 +59,7 @@ def record_sleep(user_id: str, hour: int = None, minute: int = None) -> datetime
     to_write = None
     print(hour, minute)
     if user_last_status == "Awake" or user_last_status == None:
-        last_awake_time = data[-1][0]
+        last_awake_time = data[-1][0] if data else 0
         if (hour is not None) and (minute is not None):
             sleep_time = find_closest_time(hour, minute)
             if datetime.datetime.timestamp(sleep_time) < float(last_awake_time): sleep_time = -2

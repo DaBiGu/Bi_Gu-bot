@@ -32,16 +32,23 @@ async def steam_handle(args = CommandArg()):
 steam_status = {"76561198446560670": None, #zjh
                 "76561199115642793": None, #me
                 }
+_steam_status = {"76561198893281622": None, #wj
+                 "76561199115642793": None, #me
+                }
 
 @scheduler.scheduled_job("interval", minutes = 1)
 async def report_steam_status():
-    global steam_status
-    print(steam_status)
+    global steam_status, _steam_status
     bot = get_bot("1176129206")
     for key, value in steam_status.items():
         username, current_steam_status = get_steam_playing(key)
         if value != current_steam_status and current_steam_status is not None:
             steam_status[key] = current_steam_status
             await bot.send_group_msg(group_id = 157563170, message = f"{username} 正在玩 {current_steam_status}")
+    for key, value in _steam_status.items():
+        username, current_steam_status = get_steam_playing(key)
+        if value != current_steam_status and current_steam_status is not None:
+            _steam_status[key] = current_steam_status
+            await bot.send_group_msg(group_id = 858019358, message = f"{username} 正在玩 {current_steam_status}")
 
 

@@ -6,6 +6,7 @@ from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .get_steam_playing import get_steam_playing
+from .data import get_data
 
 __plugin_meta__ = PluginMetadata(
     name="steam",
@@ -29,26 +30,15 @@ async def steam_handle(args = CommandArg()):
         message = f"{steam_status[0]} 正在玩 {steam_status[1]}"
     await steam.finish(message = message)
 
-steam_status = {"76561198446560670": None, #zjh
-                "76561199115642793": None, #me
-                }
-_steam_status = {"76561198893281622": None, #wj
-                 "76561199115642793": None, #me
-                }
-
 @scheduler.scheduled_job("interval", minutes = 1)
 async def report_steam_status():
-    global steam_status, _steam_status
+    steam_status = get_data()
     bot = get_bot("1176129206")
-    for key, value in steam_status.items():
-        username, current_steam_status = get_steam_playing(key)
-        if value != current_steam_status and current_steam_status is not None:
-            steam_status[key] = current_steam_status
-            await bot.send_group_msg(group_id = 157563170, message = f"{username} 正在玩 {current_steam_status}")
-    for key, value in _steam_status.items():
-        username, current_steam_status = get_steam_playing(key)
-        if value != current_steam_status and current_steam_status is not None:
-            _steam_status[key] = current_steam_status
-            await bot.send_group_msg(group_id = 858019358, message = f"{username} 正在玩 {current_steam_status}")
+    for group_id, steam_ids in steam_status.items():
+        for steam_id, game_status in steam_ids.items():
+            username, current_steam_status = get_steam_playing(steam_id)
+            if game_status != current_steam_status and current_steam_status is not None:
+                steam_status[group_id][steam_id] = current_steam_status
+                await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
 
 

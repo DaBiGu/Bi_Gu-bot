@@ -30,10 +30,13 @@ async def steam_handle(args = CommandArg()):
         message = f"{steam_status[0]} 正在玩 {steam_status[1]}"
     await steam.finish(message = message)
 
+steam_data = Steam_Data()
+
 @scheduler.scheduled_job("interval", minutes = 1)
 async def report_steam_status():
     to_sends = []
-    steam_status = Steam_Data().get_data()
+    global steam_data
+    steam_status = steam_data.get_data()
     bot = get_bot("1176129206")
     for group_id, steam_ids in steam_status.items():
         for steam_id, game_status in steam_ids.items():
@@ -42,7 +45,7 @@ async def report_steam_status():
                 steam_status[group_id][steam_id] = current_steam_status
                 to_send = (group_id, username, current_steam_status)
                 if to_send not in to_sends: to_sends.append(to_send)
-    Steam_Data().set_data(steam_status)
+    steam_data.set_data(steam_status)
     for group_id, username, current_steam_status in to_sends:
         await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
 

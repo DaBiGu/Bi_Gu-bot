@@ -6,7 +6,7 @@ from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .get_steam_playing import get_steam_playing
-from .data import get_data
+from .data import Steam_Data
 
 __plugin_meta__ = PluginMetadata(
     name="steam",
@@ -33,7 +33,7 @@ async def steam_handle(args = CommandArg()):
 @scheduler.scheduled_job("interval", minutes = 1)
 async def report_steam_status():
     to_sends = []
-    steam_status = get_data()
+    steam_status = Steam_Data().get_data()
     bot = get_bot("1176129206")
     for group_id, steam_ids in steam_status.items():
         for steam_id, game_status in steam_ids.items():
@@ -42,6 +42,7 @@ async def report_steam_status():
                 steam_status[group_id][steam_id] = current_steam_status
                 to_send = (group_id, username, current_steam_status)
                 if to_send not in to_sends: to_sends.append(to_send)
+    Steam_Data().set_data(steam_status)
     for group_id, username, current_steam_status in to_sends:
         await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
 

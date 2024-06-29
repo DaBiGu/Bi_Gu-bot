@@ -29,9 +29,11 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
                 break
         _data = []
         if (start_index is not None) and (stop_index is not None):
-            if sorted_data[start_index][1] == "Awake": _data.append(float(sorted_data[start_index-1][0]))
-            _data += [float(x[0]) for x in sorted_data[start_index:stop_index]]
-            if sorted_data[stop_index][1] == "Awake": _data.append(float(sorted_data[stop_index][0]))
+            if start_index > stop_index: _data = [0, 0]
+            else:
+                if sorted_data[start_index][1] == "Awake": _data.append(float(sorted_data[start_index-1][0]))
+                _data += [float(x[0]) for x in sorted_data[start_index:stop_index]]
+                if sorted_data[stop_index][1] == "Awake": _data.append(float(sorted_data[stop_index][0]))
         else: _data = [0, 0]
         sleep_durations_day.append(sum([float(_data[i+1]) - float(_data[i]) for i in range(0, len(_data), 2)]))
     average_sleep_duration = np.mean([x for x in sleep_durations_day if x != 0])

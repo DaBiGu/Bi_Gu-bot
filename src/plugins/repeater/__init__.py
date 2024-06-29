@@ -18,14 +18,16 @@ config = get_plugin_config(Config)
 
 # copied from https://github.com/Utmost-Happiness-Planet/nonebot-plugin-repeater/blob/main/nonebot_plugin_repeater/__init__.py
 def message_preprocess(message: str):
+    has_image = False
     raw_message = message
     images = {}
     _images = re.findall(r'\[CQ:image.*?]', message)
+    if _images: has_image = True
     for i in _images:
         images.update({i: [re.findall(r'url=(.*?)[,\]]', i)[0][0], re.findall(r'file=(.*?)[,\]]', i)[0][0]]})
     for i in images:
         message = message.replace(i, f'[{images[i][1]}]')
-    return message, raw_message
+    return message, raw_message, has_image
 
 m = on_message(priority = 10, block = False)
 
@@ -37,8 +39,8 @@ shortest_times = 2
 async def repeater(event: GroupMessageEvent, bot: Bot):
     group_id = str(event.group_id)
     global last_message, message_times
-    message, raw_message = message_preprocess(str(event.message))
-    if list(message)[0] == "/": return
+    message, raw_message, has_image = message_preprocess(str(event.message))
+    if list(message)[0] == "/" or has_image: return
     if last_message.get(group_id) == message:
         message_times[group_id] = (message_times[group_id] + 1) % 3
         if message_times[group_id] == 0: message_times[group_id] = 1

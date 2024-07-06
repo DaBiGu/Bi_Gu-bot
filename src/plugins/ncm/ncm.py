@@ -9,7 +9,7 @@ from sys import path
 path.append("D:/Bi_Gu-bot/passwords")
 from passwords import get_passwords
 
-def ncm_search_song(keyword: str, limit: int = 10) -> MessageSegment:
+def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
     song_names, song_artists, song_ids = [], [], []
     for song in search_result:
@@ -19,7 +19,7 @@ def ncm_search_song(keyword: str, limit: int = 10) -> MessageSegment:
         song_artists.append(_song_artists_str)
         song_ids.append(song["id"])
     df = pd.DataFrame({"Song Name": song_names, "Artists": song_artists, "Song ID": song_ids})
-    plt.figure(figsize=(15, 5 * limit / 10))
+    plt.figure(figsize=(20, 5 * limit / 10))
     Table(df, 
           textprops={"fontsize": 15, "ha": "center","fontfamily": "DengXian"},
           column_definitions=[

@@ -1,13 +1,13 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
+from nonebot import on_message, on_notice
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
 from .config import Config
 
 import re
 
 __plugin_meta__ = PluginMetadata(
-    name="repeater",
+    name="group_msg",
     description="",
     usage="",
     config=Config,
@@ -49,4 +49,27 @@ async def repeater(event: GroupMessageEvent, bot: Bot):
     if message_times.get(group_id) == shortest_times:
         await bot.send_group_msg(group_id = event.group_id, message = raw_message, auto_escape = False)
     last_message[group_id] = message
+
+antirecall = on_notice()
+
+@antirecall.handle()
+async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
+    group_id = event.group_id
+    message_id = event.message_id
+    username = event.user_id
+    operatorname = event.operator_id
+    raw_message = await bot.get_msg(message_id = message_id)
+    group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+    for member in group_members_raw:
+        if member["user_id"] == event.user_id: username = member["nickname"]
+        if member["user_id"] == event.operator_id: operatorname = member["nickname"]
+    message = None
+    if raw_message["message"][0]["type"] == "text": message = raw_message["message"][0]["data"]["text"]
+    if message:
+        if username == operatorname:
+            await bot.send_group_msg(group_id = group_id, message = f"{username}撤回了一条消息:\n{message}")
+        else:
+            await bot.send_group_msg(group_id = group_id, message = f"{operatorname}撤回了{username}的一条消息:\n{message}")
+
+
 

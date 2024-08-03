@@ -4,6 +4,7 @@
 ## `crypto`
 
 * `/crypto` 返回过去2小时交易量涨幅300%及以上的币种
+* `/crypto index` 返回当日市场恐慌&贪婪指数
 * `/crypto [name]` 返回`[name]`币种过去24小时的15分钟k线图
 * `/crypto [name] [interval]` 返回`[name]`币种的`15m/1h/4h/1D/1W`k线图
 * 数据来自于[okx合约api](https://www.okx.com/docs-v5/en/#overview)

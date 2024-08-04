@@ -24,13 +24,11 @@ steam = on_command("steam")
 @steam.handle()
 async def steam_handle(args = CommandArg()):
     steam_id = args.extract_plain_text()
-    steam_status = get_steam_playing(steam_id)
-    if steam_status[0] is None:
-        message = f"找不到id为{steam_id}的用户"
-    elif steam_status[1] is None:
-        message = f"{steam_status[0]} 没在玩游戏"
-    else:
-        message = f"{steam_status[0]} 正在玩 {steam_status[1]}"
+    username, game_status= get_steam_playing(steam_id)
+    if username:
+        if game_status: message = f"{username} 正在玩 {game_status}"
+        else: message = f"{username} 没在玩游戏"
+    else: message = f"找不到id为{steam_id}的用户"
     await steam.finish(message = message)
 
 steam_data = Steam_Data()
@@ -59,28 +57,36 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
     if cmd_params := args.extract_plain_text():
         if " " in cmd_params:
             _, steam_id = cmd_params.split(" ")
-            if _ != "add": return
-            with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f:
-                steam_status = json.load(f)
-            if group_id not in steam_status:
-                steam_status[group_id] = []
-            if steam_id not in steam_status[group_id]:
-                steam_status[group_id].append(steam_id)
-                await sjqy.send(message = f"已添加{steam_id}到本群视奸列表")
-            else:
-                await sjqy.send(message = f"{steam_id}已在本群视奸列表中")
-            with open(os.getcwd() + "/src/data/steam/steam.json", "w") as f:
-                json.dump(steam_status, f)
+            if _ == "add":
+                with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f: steam_status = json.load(f)
+                if group_id not in steam_status: steam_status[group_id] = []
+                if steam_id not in steam_status[group_id]:
+                    username, _ = get_steam_playing(steam_id)
+                    if username:
+                        steam_status[group_id].append(steam_id)
+                        await sjqy.send(message = f"已添加{username}到本群视奸列表")
+                    else: await sjqy.send(message = f"找不到id为{steam_id}的用户")
+                else: await sjqy.send(message = f"{steam_id}已在本群视奸列表中")
+                with open(os.getcwd() + "/src/data/steam/steam.json", "w") as f: json.dump(steam_status, f)
+            elif _ == "remove":
+                with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f: steam_status = json.load(f)
+                if group_id not in steam_status: steam_status[group_id] = []
+                if steam_id in steam_status[group_id]:
+                    steam_status[group_id].remove(steam_id)
+                    username, _ = get_steam_playing(steam_id)
+                    await sjqy.send(message = f"已从本群视奸列表移除{username}")
+                else: await sjqy.send(message = f"{steam_id}不在本群视奸列表中")
+                with open(os.getcwd() + "/src/data/steam/steam.json", "w") as f: json.dump(steam_status, f)
+            else: return
     else:
-        with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f:
-            steam_status = json.load(f)
+        with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f: steam_status = json.load(f)
         group_id = str(group_id)
         if group_id in steam_status:
             message = ""
             for steam_id in steam_status[group_id]:
                 username, current_steam_status = get_steam_playing(steam_id)
-                if current_steam_status is not None:
-                    message += f"{username} 正在玩 {current_steam_status}\n"
-                else:
-                    message += f"{username} 没在玩游戏\n"
+                if username:
+                    if current_steam_status is not None: message += f"{username} 正在玩 {current_steam_status}\n"
+                    else: message += f"{username} 没在玩游戏\n"
+                else: message += f"找不到id为{steam_id}的用户\n"
         await sjqy.finish(message = message)

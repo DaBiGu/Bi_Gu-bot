@@ -9,11 +9,12 @@ from .mstbt import mstbt_record
 from ..setu import get_setu
 from nonebot import on_command, on_fullmatch
 from nonebot.params import CommandArg
+from nonebot.rule import to_me
 
 import time, random, os
 
 __plugin_meta__ = PluginMetadata(
-    name="mstbt",
+    name="miscellaneous",
     description="",
     usage="",
     config=Config,
@@ -130,4 +131,10 @@ sb = on_fullmatch("阿姨洗铁路")
 @sb.handle()
 async def sb_handle_func():
     await sb.finish("傻逼")
+
+zm = on_fullmatch("在吗", rule=to_me())
+
+@zm.handle()
+async def welcome_handle_func():
+    await zm.finish("はい、芙芙会一直陪伴在大家身边")
 

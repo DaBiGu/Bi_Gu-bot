@@ -11,6 +11,7 @@ from passwords import get_passwords
 
 def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
+    limit = len(search_result)
     song_names, song_artists, song_ids = [], [], []
     for song in search_result:
         song_names.append(song["name"])

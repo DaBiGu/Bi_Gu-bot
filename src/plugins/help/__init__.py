@@ -48,8 +48,7 @@ helper_message = "以下是所有的指令列表:\n \
     ————— miscellaneous —————\n \
     /yuyu 我有玉玉症\n \
     /fufu 芙芙可爱捏\n \
-    /help 查看指令列表\n \
-    /amiya Hello World\n"
+    /help 查看指令列表"
 
 _help = on_command("help", aliases = {"帮助"})
 

@@ -22,7 +22,7 @@ def get_setu(setu_tags: list[str] = None) -> Message:
     }
 
     img_response = requests.get(img_url, headers=img_headers)
-    with open("./src/plugins/setu/setu.png", "wb") as f:
+    with open(os.getcwd() + "/src/data/setu/setu.png", "wb") as f:
         f.write(img_response.content)
-    return Message([MessageSegment.image("file:///" + os.getcwd() + "/src/plugins/setu/setu.png"),MessageSegment.text(img_details)])
+    return Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/setu/setu.png"),MessageSegment.text(img_details)])
 

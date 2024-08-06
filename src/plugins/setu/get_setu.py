@@ -3,16 +3,16 @@ from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
 def get_setu(setu_tags: list[str] = None) -> Message:
     if setu_tags is not None:
-        print(setu_tags)
         params = {"tags": setu_tags}
         url = "https://setu.yuban10703.xyz/setu"
         response = requests.get(url, params = params)
     else:
         url = "https://setu.yuban10703.xyz/setu"
         response = requests.get(url)
+    if "data" not in response.json():
+        return MessageSegment.text(f"没有找到指定tag{setu_tags}的色图")
     img_url = response.json()["data"][0]["urls"]["original"]
     img_details = str({key: response.json()["data"][0][key] for key in ["artwork", "author", "tags"]})
-    print(img_details)
     img_headers = {
         'sec-ch-ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
         'Referer': 'https://www.pixiv.net/',

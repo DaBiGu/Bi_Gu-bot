@@ -19,6 +19,10 @@ helper_message = "以下是所有的指令列表:\n \
     /crypto index 查看当日市场恐慌&贪婪指数\n \
     /crypto [name] 查看[name]币种过去24小时的15分钟k线图\n \
     /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图\n \
+    —————— image ——————\n \
+    /喜报 [content]` 绘制内容为`content`的喜报\n \
+    /悲报 [content]` 绘制内容为`content`的悲报\n \
+    /对图片回复`/对称 左|右` 将图片进行左|右对称翻转\n \
     —————— mahjong ——————\n \
     /qh [username] 查看[username]的近30局雀魂战绩\n \
     —————— ncm ——————\n \
@@ -41,6 +45,8 @@ helper_message = "以下是所有的指令列表:\n \
     /sleep status 查看本周睡眠状况统计\n \
     —————— steam ——————\n \
     /steam [steamid] 查看用户steamid的steam游戏状态\n \
+    /视奸群友 一键视奸群友游戏状态 \n \
+    使用/视奸群友 add|remove [steamid] 管理视奸群友列表\n \
     —————— work ——————\n \
     /work start [name] 开始一项名为[name]的工作\n \
     /work stop 结束当前工作, 查看本次工作时长\n \

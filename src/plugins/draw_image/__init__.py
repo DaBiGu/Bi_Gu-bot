@@ -6,6 +6,9 @@ from nonebot.adapters.onebot.v11 import MessageEvent
 
 from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
+from .symmetric import symmetric_left, symmetric_right
+
+import requests, os
 
 __plugin_meta__ = PluginMetadata(
     name="draw_image",
@@ -32,20 +35,23 @@ async def bb_handle_func(args = CommandArg()):
     message = draw_bad_news(text)
     await bb.finish(message = message)
 
-test = on_fullmatch("/test", priority = 1)
-@test.handle()
-async def test_handle(event: MessageEvent):
-    for seg in event.reply.message:
-        await test.send(seg.type)
-    '''
+symmetric = on_command("对称", aliases={"symmetric"})
+@symmetric.handle()
+async def symmetric_handle(event: MessageEvent, args = CommandArg()):
+    cmd_params = args.extract_plain_text() 
     source_url = None
     for seg in event.reply.message:
         if seg.type == "image":
             source_url = seg.data.get("url")
             break
-    if source_url: result = search_setu(source_url)
-    result_str = "Search result(s):\n"
-    for item in result:
-        result_str += f"{item}\n"
-    await search.finish(result_str)
-    '''
+    if source_url:
+        original_img_path = os.getcwd() + "/src/data/draw_image/original_img.png"
+        with open(original_img_path, "wb") as f:
+            f.write(requests.get(source_url).content)
+        if cmd_params == "left" or cmd_params == "左":
+            message = symmetric_left(original_img_path)
+        elif cmd_params == "right" or cmd_params == "右":
+            message = symmetric_right(original_img_path)
+        else: return
+        await symmetric.finish(message = message)
+

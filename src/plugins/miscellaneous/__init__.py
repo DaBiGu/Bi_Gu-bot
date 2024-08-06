@@ -2,12 +2,12 @@ from nonebot import get_plugin_config, get_adapter
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Adapter
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import MessageEvent
+from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent
 
 from .config import Config
 from .mstbt import mstbt_record
 from ..setu import get_setu
-from nonebot import on_command, on_fullmatch
+from nonebot import on_command, on_fullmatch, on_notice
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
 
@@ -137,4 +137,11 @@ zm = on_fullmatch("在吗", rule=to_me())
 @zm.handle()
 async def welcome_handle_func():
     await zm.finish("はい、芙芙会一直陪伴在大家身边")
+
+poke = on_notice()
+
+@poke.handle()
+async def poke_handle(event: PokeNotifyEvent):
+    pass
+
 

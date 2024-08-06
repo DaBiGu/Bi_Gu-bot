@@ -12,7 +12,7 @@
 ## `group_msg`
 * 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
 * 群内消息防撤回
-** 使用`/antirecall on/off` 来开启/关闭此功能
+    * 使用`/antirecall on/off` 来开启/关闭此功能
 
 ## `help`
 * `/help` 返回当前支持的指令列表
@@ -47,6 +47,8 @@
 
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
+* `/视奸群友` 一键视奸群友游戏状态
+    * 使用`/视奸群友 add/remove [steamid]` 管理视奸群友列表
 * 数据来自于[steam api](https://developer.valvesoftware.com/wiki/Steam_Web_API)
 
 ## `work`

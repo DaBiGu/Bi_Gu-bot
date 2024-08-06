@@ -35,13 +35,12 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
     plt.savefig(os.getcwd() + "/src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
     return MessageSegment.image("file:///" + os.getcwd() + "/src/data/ncm/search_result.png")
 
-def ncm_get_song_mp3(song_id: int):
-  login = apis.login.LoginViaCellphone(get_passwords["ncm_phone_number"], get_passwords["ncm_password"])
-  song_name = apis.track.GetTrackDetail(song_id)["songs"][0]["name"]
-  song_url = apis.track.GetTrackAudio(song_id)["data"][0]["url"]
-  filename = os.getcwd() + "/src/data/ncm/" + song_name + ".mp3"
-  with open(filename, "wb") as f:
-    f.write(requests.get(song_url).content)
-  return MessageSegment.music
+def get_ncm_song_card(song_id: int):
+    track_detail = apis.track.GetTrackDetail(song_id)
+    song_name = track_detail["songs"][0]["name"]
+    artists = "/".join([track_detail["songs"][0]["ar"][x]["name"] for x in range(len(track_detail["songs"][0]["ar"]))])
+    pic_url = track_detail["songs"][0]["al"]["picUrl"]
+    song_url = f"https://music.163.com/#/song?id={song_id}"
+    return MessageSegment.music_custom(url = song_url, audio = "audio", title = song_name, content = artists, img_url = pic_url)
 
     

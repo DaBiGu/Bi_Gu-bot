@@ -78,6 +78,16 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
                 else: await sjqy.send(message = f"{steam_id}不在本群视奸列表中")
                 with open(os.getcwd() + "/src/data/steam/steam.json", "w") as f: json.dump(steam_status, f)
             else: return
+        elif cmd_params == "list":
+            with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f: steam_status = json.load(f)
+            if group_id in steam_status:
+                message = "本群视奸列表如下:\n"
+                for steam_id in steam_status[group_id]:
+                    username, _ = get_steam_playing(steam_id)
+                    message += f"{username} [{steam_id}]\n"      
+            message += "\n使用/视奸群友 add|remove [steam_id]管理列表"
+            await sjqy.finish(message = message)
+        else: return
     else:
         with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f: steam_status = json.load(f)
         group_id = str(group_id)

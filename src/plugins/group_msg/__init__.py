@@ -4,7 +4,7 @@ from nonebot import on_message, on_notice
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
 from .config import Config
 
-import re, time
+import re, time, random
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -52,10 +52,12 @@ async def repeater(event: GroupMessageEvent, bot: Bot):
             if item[1] == group_id and item[0] == message:
                 if time.time() - item[2] < 60: return
                 else: repeated_messages.remove(item)
-        await bot.send_group_msg(group_id = event.group_id, message = raw_message, auto_escape = False)
+        if random.randint(1, 100) <= 40:
+            await bot.send_group_msg(group_id = event.group_id, message = raw_message, auto_escape = False)
         repeated_messages.append([message, group_id, time.time()])
     last_message[group_id] = message
 
+"""
 antirecall = on_notice()
 
 @antirecall.handle()
@@ -78,6 +80,7 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
             await bot.send_group_msg(group_id = group_id, message = f"{username}撤回了一条消息:\n{message}")
         else:
             await bot.send_group_msg(group_id = group_id, message = f"{operatorname}撤回了{username}的一条消息:\n{message}")
+"""
 
 
 

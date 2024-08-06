@@ -9,6 +9,10 @@
 * `/crypto [name] [interval]` 返回`[name]`币种的`15m/1h/4h/1D/1W`k线图
 * 数据来自于[okx合约api](https://www.okx.com/docs-v5/en/#overview)
 
+## `group_msg`
+* 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
+* ~~群内消息防撤回~~ (temporarily disabled)
+
 ## `help`
 * `/help` 返回当前支持的指令列表
 
@@ -18,9 +22,6 @@
 ## `ncm`
 * `/ncm search [keyword] [num]` 网易云搜歌, 返回前`num`首搜索`keyword`的歌曲信息
 * `/ncm id [song id]` 返回`id`歌曲的分享卡片
-
-## ~~`repeater`~~
-* ~~自动复读群内消息，每2条重复消息复读一次~~ (temporarily disabled)
 
 ## `roll`
 * `/rd xdy` 掷`x`个`y`面骰子

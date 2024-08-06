@@ -1,10 +1,11 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_message, on_notice
+from nonebot import on_message, on_notice, on_command
+from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
 from .config import Config
 
-import re, time, random
+import re, time, random, json, os
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -57,12 +58,15 @@ async def repeater(event: GroupMessageEvent, bot: Bot):
         repeated_messages.append([message, group_id, time.time()])
     last_message[group_id] = message
 
-"""
+
 antirecall = on_notice()
 
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
     group_id = event.group_id
+    with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "r") as f:
+        group_list = json.load(f)
+    if group_id not in group_list: return
     message_id = event.message_id
     username = event.user_id
     if event.user_id == 1176129206: return
@@ -80,7 +84,29 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
             await bot.send_group_msg(group_id = group_id, message = f"{username}撤回了一条消息:\n{message}")
         else:
             await bot.send_group_msg(group_id = group_id, message = f"{operatorname}撤回了{username}的一条消息:\n{message}")
-"""
+
+
+antirecall_ctrl = on_command("antirecall")
+
+@antirecall_ctrl.handle()
+async def antirecall_ctrl_handle(event: GroupMessageEvent, args = CommandArg()):
+    group_id = event.group_id
+    with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "r") as f:
+        group_list = json.load(f)
+    cmd_params = args.extract_plain_text()
+    if cmd_params:
+        if cmd_params == "on":
+            print(group_id, group_list)
+            if group_id not in group_list:
+                group_list.append(group_id)
+                await antirecall_ctrl.send("已成功开启本群消息防撤回")
+        elif cmd_params == "off":
+            if group_id in group_list:
+                group_list.remove(group_id)
+                await antirecall_ctrl.send("已成功关闭本群消息防撤回")
+    with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "w") as f:
+        json.dump(group_list, f)
+
 
 
 

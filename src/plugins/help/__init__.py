@@ -24,7 +24,7 @@ helper_message = "芙芙目前支持的指令列表:\n \
 —————— image ——————\n \
 /喜报 [content] 绘制内容为[content]的喜报\n \
 /悲报 [content] 绘制内容为[content]的悲报\n \
-/对图片回复`/对称 左|右|上|下` 将图片进行对称翻转\n \
+对图片回复 /对称 左|右|上|下 [percent] 将图片(以[percent]%为轴)进行对称翻转\n \
 —————— mahjong ——————\n \
 /qh [username] 查看[username]的近30局雀魂战绩\n \
 —————— ncm ——————\n \

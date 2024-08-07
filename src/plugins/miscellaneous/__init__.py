@@ -2,7 +2,7 @@ from nonebot import get_plugin_config, get_adapter
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Adapter
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent
+from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent
 
 from .config import Config
 from .mstbt import mstbt_record
@@ -146,8 +146,15 @@ async def poke_handle(event: PokeNotifyEvent):
 
 
 ciallo = on_keyword(["ciallo", "Ciallo"])
+last_ciallo_time = {}
 
 @ciallo.handle()
-async def ciallo_handle_func():
-    await ciallo.finish(MessageSegment.record("file:///" + os.getcwd() + "/src/data/miscellaneous/ciallo.mp3"))
+async def ciallo_handle_func(event: GroupMessageEvent):
+    global last_ciallo_time
+    group_id = event.group_id
+    if group_id not in last_ciallo_time: last_ciallo_time[group_id] = 0.0
+    if time.time() - last_ciallo_time[group_id] <= 300.0: return
+    else:
+        last_ciallo_time[group_id] = time.time()
+        await ciallo.finish(MessageSegment.record("file:///" + os.getcwd() + "/src/data/miscellaneous/ciallo.mp3"))
 

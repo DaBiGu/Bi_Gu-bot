@@ -7,7 +7,7 @@ from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent
 from .config import Config
 from .mstbt import mstbt_record
 from ..setu import get_setu
-from nonebot import on_command, on_fullmatch, on_notice
+from nonebot import on_command, on_fullmatch, on_notice, on_keyword
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
 
@@ -144,4 +144,10 @@ poke = on_notice()
 async def poke_handle(event: PokeNotifyEvent):
     pass
 
+
+ciallo = on_keyword(["ciallo", "Ciallo"])
+
+@ciallo.handle()
+async def ciallo_handle_func():
+    await ciallo.finish(MessageSegment.record("file:///" + os.getcwd() + "/src/data/miscellaneous/ciallo.mp3"))
 

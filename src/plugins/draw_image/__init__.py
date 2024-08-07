@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import MessageEvent
 
 from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
-from .symmetric import symmetric_left, symmetric_right
+from .symmetric import symmetric_left, symmetric_right, symmetric_up, symmetric_down
 
 import requests, os
 
@@ -52,6 +52,10 @@ async def symmetric_handle(event: MessageEvent, args = CommandArg()):
             message = symmetric_left(original_img_path)
         elif cmd_params == "right" or cmd_params == "右":
             message = symmetric_right(original_img_path)
+        elif cmd_params == "up" or cmd_params == "上":
+            message = symmetric_up(original_img_path)
+        elif cmd_params == "down" or cmd_params == "下":
+            message = symmetric_down(original_img_path)
         else: return
         await symmetric.finish(message = message)
 

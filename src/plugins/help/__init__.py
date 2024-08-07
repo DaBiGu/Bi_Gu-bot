@@ -22,14 +22,14 @@ helper_message = "芙芙目前支持的指令列表:\n \
 /crypto [name] 查看[name]币种过去24小时的15分钟k线图\n \
 /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图\n \
 —————— image ——————\n \
-/喜报 [content]` 绘制内容为`content`的喜报\n \
-/悲报 [content]` 绘制内容为`content`的悲报\n \
-/对图片回复`/对称 左|右` 将图片进行左|右对称翻转\n \
+/喜报 [content] 绘制内容为[content]的喜报\n \
+/悲报 [content] 绘制内容为[content]的悲报\n \
+/对图片回复`/对称 左|右|上|下` 将图片进行对称翻转\n \
 —————— mahjong ——————\n \
 /qh [username] 查看[username]的近30局雀魂战绩\n \
 —————— ncm ——————\n \
 /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲\n \
-/ncm id [song_id] 获取song_id对应的歌曲卡片\n \
+/ncm id [song_id] 获取[song_id]对应的歌曲卡片\n \
 —————— roll ——————\n \
 /roll xdy 掷x个y面骰子\n \
 /roll xdy+z 掷x个y面骰子,加z点修正值\n \
@@ -46,7 +46,7 @@ helper_message = "芙芙目前支持的指令列表:\n \
 /awake [hh:mm] [utc±t] 手动指定于指定时区的起床时间\n \
 /sleep status 查看本周睡眠状况统计\n \
 —————— steam ——————\n \
-/steam [steamid] 查看用户steamid的steam游戏状态\n \
+/steam [steamid] 查看用户[steamid]的steam游戏状态\n \
 /视奸群友 一键视奸群友游戏状态 \n \
 使用/视奸群友 add|remove [steamid] 管理视奸群友列表\n \
 —————— work ——————\n \

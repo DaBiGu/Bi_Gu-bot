@@ -99,4 +99,5 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
                     if current_steam_status is not None: message += f"{username} 正在玩 {current_steam_status}\n"
                     else: message += f"{username} 没在玩游戏\n"
                 else: message += f"找不到id为{steam_id}的用户\n"
+            message += "EOF"
         await sjqy.finish(message = message)

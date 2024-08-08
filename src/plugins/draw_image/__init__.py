@@ -48,9 +48,13 @@ async def symmetric_handle(event: MessageEvent, args = CommandArg()):
         original_img_path = os.getcwd() + "/src/data/draw_image/original_img.png"
         with open(original_img_path, "wb") as f:
             f.write(requests.get(source_url).content)
-        directions = {"左": "left", "右": "right", "上": "up", "下": "down"}
+        directions = {"左": "left", "右": "right", "上": "up", "下": "down", 
+                      "left": "left", "right": "right", "up": "up", "down": "down"}
         direction, percent = cmd_params.split(" ") if " " in cmd_params else (cmd_params, 50)
-        direction = directions.get(direction) if direction in directions else direction
+        if direction in directions: direction = directions.get(direction) 
+        else: return
         message = _symmetric(original_img_path, direction, int(percent))
         await symmetric.finish(message = message)
+    else:
+        await symmetric.finish("找不到源图片，请重新发送图片后重试")
 

@@ -56,5 +56,5 @@ async def symmetric_handle(event: MessageEvent, args = CommandArg()):
         message = _symmetric(original_img_path, direction, int(percent))
         await symmetric.finish(message = message)
     else:
-        await symmetric.finish("找不到源图片，请重新发送图片后重试")
+        await symmetric.finish("找不到源图片\n不支持表情, 请重新发送图片或截图后重试")
 

@@ -1,8 +1,8 @@
 from nonebot import get_plugin_config, get_adapter
 from nonebot.plugin import PluginMetadata
-from nonebot.adapters.onebot.v11.adapter import Adapter
+from nonebot.adapters.onebot.v11.adapter import Adapter, Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent
+from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent
 
 from .config import Config
 from .mstbt import mstbt_record
@@ -44,17 +44,6 @@ async def amiya_handle_func(event: MessageEvent):
             await amiya.finish("唉, 天天就知道阿米娅")
     else:
         await amiya.finish("阿米娅早安晚安上班下班啥比驴")
-
-skd = on_command("懂哥")
-
-@skd.handle()
-async def skd_handle_func(args = CommandArg()):
-    if args.extract_plain_text() == "工口":
-        await skd.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/miscellaneous/gongkou.png")]))
-    elif args.extract_plain_text() == "手冲":
-        await skd.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/miscellaneous/shouchong.png")]))
-    else:
-        await skd.finish("我好想做上科大的狗啊")
 
 gk_time = None
 
@@ -158,3 +147,10 @@ async def ciallo_handle_func(event: GroupMessageEvent):
         last_ciallo_time[group_id] = time.time()
         await ciallo.finish(MessageSegment.record("file:///" + os.getcwd() + "/src/data/miscellaneous/ciallo.mp3"))
 
+leave = on_notice()
+
+@leave.handle()
+async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
+    user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
+    nickname = user_info["nickname"]
+    await leave.finish(f"{nickname} ({event.user_id}) 退群了，呜呜呜")

@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11.message import MessageSegment
 def _symmetric(original_image_path: str, direction: str, percent = 50):
     original_image = Image.open(original_image_path)
     width, height = original_image.size
-    _width, _height = int(width * percent / 100), int(height * percent / 100)
+    _width, _height = [int(x * percent / 100) for x in original_image.size]
     result = Image.new("RGB", (2*_width, height)) if direction in ["left", "right"] else Image.new("RGB", (width, 2*_height))
     if direction in ["left", "right"]:
         original_image = original_image.transpose(Image.FLIP_LEFT_RIGHT) if direction == "right" else original_image

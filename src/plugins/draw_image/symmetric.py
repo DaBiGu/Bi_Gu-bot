@@ -3,7 +3,10 @@ import os
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
 def _symmetric(original_image_path: str, direction: str, percent = 50):
-    original_image = Image.open(original_image_path)
+    try:
+        original_image = Image.open(original_image_path)
+    except Exception:
+        return "图片已过期, 请重新发送图片后重试"
     width, height = original_image.size
     _width, _height = [int(x * percent / 100) for x in original_image.size]
     result = Image.new("RGB", (2*_width, height)) if direction in ["left", "right"] else Image.new("RGB", (width, 2*_height))

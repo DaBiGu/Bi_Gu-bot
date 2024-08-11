@@ -131,7 +131,8 @@ poke = on_notice()
 
 @poke.handle()
 async def poke_handle(event: PokeNotifyEvent):
-    pass
+    if event.is_tome(): 
+        pass
 
 
 ciallo = on_keyword(["ciallo", "Ciallo"])

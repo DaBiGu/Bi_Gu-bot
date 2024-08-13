@@ -8,6 +8,7 @@ from nonebot_plugin_apscheduler import scheduler
 from .config import Config
 from .get_steam_playing import get_steam_playing
 from .data import Steam_Data
+from .search_game import draw_search_result
 
 import json, os
 
@@ -23,12 +24,18 @@ config = get_plugin_config(Config)
 steam = on_command("steam")
 @steam.handle()
 async def steam_handle(args = CommandArg()):
-    steam_id = args.extract_plain_text()
-    username, game_status= get_steam_playing(steam_id)
-    if username:
-        if game_status: message = f"{username} 正在玩 {game_status}"
-        else: message = f"{username} 没在玩游戏"
-    else: message = f"找不到id为{steam_id}的用户"
+    cmd_params = args.extract_plain_text()
+    if " " in cmd_params:
+        _, game_name = cmd_params.split(" ")
+        if _ != "search": return
+        message = draw_search_result(game_name)
+    else:
+        steam_id = args.extract_plain_text()
+        username, game_status= get_steam_playing(steam_id)
+        if username:
+            if game_status: message = f"{username} 正在玩 {game_status}"
+            else: message = f"{username} 没在玩游戏"
+        else: message = f"找不到id为{steam_id}的用户"
     await steam.finish(message = message)
 
 steam_data = Steam_Data()

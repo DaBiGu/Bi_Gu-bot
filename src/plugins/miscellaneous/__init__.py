@@ -152,6 +152,7 @@ leave = on_notice()
 
 @leave.handle()
 async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
+    if event.group_id == 514299983: return
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")

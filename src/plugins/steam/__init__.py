@@ -2,7 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command, get_bot
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment
 from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
@@ -26,9 +26,11 @@ steam = on_command("steam")
 async def steam_handle(args = CommandArg()):
     cmd_params = args.extract_plain_text()
     if " " in cmd_params:
-        _, game_name = cmd_params.split(" ")
-        if _ != "search": return
-        message = draw_search_result(game_name)
+        search_keywords = cmd_params.split(" ")
+        if search_keywords[0] != "search": return
+        game_name = " ".join(search_keywords[1:])
+        message = MessageSegment.text(f"Search Result for {game_name}:")
+        message += draw_search_result(game_name)
     else:
         steam_id = args.extract_plain_text()
         username, game_status= get_steam_playing(steam_id)

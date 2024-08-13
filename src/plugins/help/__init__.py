@@ -49,6 +49,7 @@ helper_message = "芙芙目前支持的指令列表(按首字母顺序排列):\n
 /sleep status 查看本周睡眠状况统计\n \
 ———————— steam ————————\n \
 /steam [steamid] 查看用户[steamid]的steam游戏状态\n \
+/steam search [name] 搜索名为[name]的steam游戏\n \
 /视奸群友 一键视奸群友游戏状态 \n \
 使用/视奸群友 add|remove [steamid] 管理视奸群友列表\n \
 ———————— work ————————\n \

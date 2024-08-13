@@ -52,6 +52,7 @@
 
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
+* `/steam search [name]` 返回名为`[name]`的steam游戏列表
 * `/视奸群友` 一键视奸群友游戏状态
     * 使用`/视奸群友 add/remove [steamid]` 管理视奸群友列表
 * 数据来自于[steam api](https://developer.valvesoftware.com/wiki/Steam_Web_API)

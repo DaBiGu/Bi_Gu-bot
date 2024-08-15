@@ -59,7 +59,7 @@ def draw_game_card(steamid: int) -> MessageSegment:
     banner = Image.open(game_info["banner_path"]).resize((1200, 688))
     avatar = Image.open(game_info["avatar"]).resize((368, 368))
     
-    card_width = 1400
+    card_width = 1600
     card_height = 2000
     background_color = (224, 243, 250)
     card = Image.new("RGB", (card_width, card_height), background_color)

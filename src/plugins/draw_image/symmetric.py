@@ -20,5 +20,6 @@ def _symmetric(original_image_path: str, direction: str, percent = 50):
         up = original_image.crop((0, 0, width, _height))
         result.paste(up, (0, 0))
         result.paste(up.transpose(Image.FLIP_TOP_BOTTOM), (0, _height))
-    result.save(os.path.join(os.getcwd(), f"src/data/draw_image/output/symmetric_{direction}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"))
-    return MessageSegment.image("file:///" + os.path.join(os.getcwd(), f"src/data/draw_image/output/symmetric_{direction}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"))
+    output_path = os.path.join(os.getcwd(), f"src/data/draw_image/output/symmetric_{direction}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    result.save(output_path)
+    return MessageSegment.image("file:///" + output_path)

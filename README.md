@@ -24,6 +24,7 @@
 
 ## `mahjong`
 * `/qh [username]` 查询`[username]`的近30局雀魂战绩
+* 数据来自于[雀魂牌谱屋](https://amae-koromo.sapk.ch/)
 
 ## `ncm`
 * `/ncm search [keyword] [num]` 网易云搜歌, 返回前`num`首搜索`keyword`的歌曲信息

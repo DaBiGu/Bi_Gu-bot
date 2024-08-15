@@ -37,8 +37,7 @@ def get_setu(setu_tags: list[str] = None) -> Message:
     }
 
     img_response = requests.get(img_url, headers=img_headers)
-    with open(os.getcwd() + f"/src/data/setu/setu_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png", "wb") as f:
-        f.write(img_response.content)
-    return Message([MessageSegment.image("file:///" + os.getcwd() + f"/src/data/setu/setu_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"), 
-                    MessageSegment.text(img_details)])
+    output_path = os.getcwd() + f"/src/data/setu/setu_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    with open(output_path, "wb") as f: f.write(img_response.content)
+    return Message([MessageSegment.image("file:///" + os.getcwd() + output_path), MessageSegment.text(img_details)])
 

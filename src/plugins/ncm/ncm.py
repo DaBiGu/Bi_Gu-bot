@@ -32,8 +32,9 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
           col_label_cell_kw={"facecolor":"#a5d8ff"},
           cell_kw={"facecolor":"#e7f5ff"},
           )
-    plt.savefig(os.getcwd() + f"/src/data/ncm/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png", bbox_inches='tight', dpi=512)
-    return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/ncm/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    output_path = os.getcwd() + f"/src/data/ncm/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    plt.savefig(output_path, bbox_inches='tight', dpi=512)
+    return MessageSegment.image("file:///" + output_path)
 
 def get_ncm_song_card(song_id: int):
     track_detail = apis.track.GetTrackDetail(song_id)

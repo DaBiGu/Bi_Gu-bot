@@ -9,6 +9,7 @@ from .config import Config
 from .get_steam_playing import get_steam_playing
 from .data import Steam_Data
 from .search_game import draw_search_result
+from .recommend_random_game import draw_game_card
 
 import json, os
 
@@ -27,10 +28,13 @@ async def steam_handle(args = CommandArg()):
     cmd_params = args.extract_plain_text()
     if " " in cmd_params:
         search_keywords = cmd_params.split(" ")
-        if search_keywords[0] != "search": return
-        game_name = " ".join(search_keywords[1:])
-        message = MessageSegment.text(f"Search Result for {game_name}:")
-        message += draw_search_result(game_name)
+        if search_keywords[0] == "search":
+            game_name = " ".join(search_keywords[1:])
+            message = MessageSegment.text(f"Search Result for {game_name}:")
+            message += draw_search_result(game_name)
+        elif search_keywords[0] == "random":
+            steam_id = search_keywords[1]
+            message = draw_game_card(steam_id)
     else:
         steam_id = args.extract_plain_text()
         username, game_status= get_steam_playing(steam_id)

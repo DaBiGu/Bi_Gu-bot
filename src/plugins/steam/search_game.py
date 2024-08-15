@@ -41,23 +41,22 @@ def draw_search_result(game_name: str) -> MessageSegment:
     background_color = (50, 50, 50)  
     text_color = (255, 255, 255)     
     banner_size = (400, 187)         
-    padding = 20                     
+    padding = 25                    
     discount_bg_color = (88, 127, 53)  
     discount_text_color = (195, 255, 101)  
 
     games = search_game(game_name)
 
-    font_path = os.getcwd() + "/src/data/steam/fonts/NotoSans-Regular.ttf"
-    bold_font_path = os.getcwd() + "/src/data/steam/fonts/NotoSans-Bold.ttf"
-    semibold_font_path = os.getcwd() + "/src/data/steam/fonts/NotoSans-SemiBold.ttf"
-    font_size = 30
-    discount_font_size = 50
-    font = ImageFont.truetype(font_path, font_size)
-    title_font = ImageFont.truetype(semibold_font_path, font_size)
-    discount_font = ImageFont.truetype(bold_font_path, discount_font_size)
+    font_path = os.getcwd() + "/src/data/steam/fonts/NotoSansCJK-Regular.ttc"
+    bold_font_path = os.getcwd() + "/src/data/steam/fonts/NotoSansCJK-Bold.ttc"
+    semibold_font_path = os.getcwd() + "/src/data/steam/fonts/NotoSansCJK-Medium.ttc"
+    font_size, discount_font_size = 30, 50
+    font = ImageFont.truetype(font_path, 30)
+    title_font = ImageFont.truetype(semibold_font_path, 40)
+    discount_font = ImageFont.truetype(bold_font_path, 50)
 
     total_height = len(games) * (banner_size[1] + padding) + 80
-    image_width = banner_size[0] + 1000 
+    image_width = banner_size[0] + 1500 
 
     image = Image.new("RGB", (image_width, total_height), background_color)
     draw = ImageDraw.Draw(image)
@@ -70,13 +69,13 @@ def draw_search_result(game_name: str) -> MessageSegment:
         text_x = banner_size[0] + 2 * padding
         text_y = y_offset
         
-        draw.text((text_x, text_y), game["name"], font=title_font, fill=text_color)
-        text_y += font_size + padding / 2
+        draw.text((text_x, text_y - 10), game["name"], font=title_font, fill=text_color)
+        text_y += font_size + padding / 2 + 10
         
         discount_box_width = 150  
         discount_box_height = discount_font_size + padding / 2
         discount_box_x = text_x 
-        discount_box_y = text_y + 10
+        discount_box_y = text_y + 20
 
         draw.rectangle([discount_box_x, discount_box_y, discount_box_x + discount_box_width, discount_box_y + discount_box_height],
                     fill=discount_bg_color)
@@ -86,19 +85,22 @@ def draw_search_result(game_name: str) -> MessageSegment:
         discount_text_height = discount_bbox[3] - discount_bbox[1]
         
         discount_text_x = discount_box_x + (discount_box_width - discount_text_width) / 2
-        discount_text_y = discount_box_y + (discount_box_height - discount_text_height) / 2 - 15
+        discount_text_y = discount_box_y + (discount_box_height - discount_text_height) / 2 - 18
 
         draw.text((discount_text_x, discount_text_y), game["discount"], font=discount_font, fill=discount_text_color, align="center")
         
         price_text_x = discount_box_x + discount_box_width + padding
-        draw.text((price_text_x, text_y), f"Current Price: {game['current_price']}", font=font, fill=text_color)
+        if game["current_price"] == game["history_low"] != "Free to Play":
+            draw.text((price_text_x, text_y+5), f"Current Price: {game['current_price']} (History Low)", font=font, fill=discount_text_color)
+        else:
+            draw.text((price_text_x, text_y+5), f"Current Price: {game['current_price']}", font=font, fill=text_color)
         text_y += font_size + padding / 2
         
         original_price_x = price_text_x
-        draw.text((original_price_x, text_y), f"Regular Price: {game['regular_price']}", font=font, fill=text_color)
+        draw.text((original_price_x, text_y+5), f"Regular Price: {game['regular_price']}", font=font, fill=text_color)
         
         text_y += font_size + padding / 2
-        draw.text((text_x, text_y), f"History Low Price: {game['history_low']}", font=font, fill=text_color)
+        draw.text((text_x, text_y+10), f"History Low Price: {game['history_low']}", font=font, fill=text_color)
         
         y_offset += banner_size[1] + padding
 

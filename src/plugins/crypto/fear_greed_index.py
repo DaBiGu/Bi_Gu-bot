@@ -50,5 +50,5 @@ def get_market_fear_greed_index():
     ax.set_ylim(0, 1)
     ax.axis('off')
 
-    fig.savefig(os.getcwd() + "/src/data/crypto/index.png")
-    return MessageSegment.image("file:///" + os.getcwd() + "/src/data/crypto/index.png")
+    fig.savefig(os.getcwd() + f"/src/data/crypto/output/index_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/crypto/output/index_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")

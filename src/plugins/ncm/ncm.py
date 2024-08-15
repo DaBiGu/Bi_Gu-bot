@@ -1,7 +1,7 @@
 from pyncm import apis
 import matplotlib.pyplot as plt
 import pandas as pd
-import requests, os
+import requests, os, datetime
 from plottable import Table, ColDef
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
@@ -32,8 +32,8 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
           col_label_cell_kw={"facecolor":"#a5d8ff"},
           cell_kw={"facecolor":"#e7f5ff"},
           )
-    plt.savefig(os.getcwd() + "/src/data/ncm/search_result.png", bbox_inches='tight', dpi=512)
-    return MessageSegment.image("file:///" + os.getcwd() + "/src/data/ncm/search_result.png")
+    plt.savefig(os.getcwd() + f"/src/data/ncm/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png", bbox_inches='tight', dpi=512)
+    return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/ncm/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
 
 def get_ncm_song_card(song_id: int):
     track_detail = apis.track.GetTrackDetail(song_id)

@@ -45,7 +45,7 @@ async def symmetric_handle(event: MessageEvent, args = CommandArg()):
             source_url = seg.data.get("url")
             break
     if source_url:
-        original_img_path = os.getcwd() + "/src/data/draw_image/original_img.png"
+        original_img_path = os.getcwd() + "/src/data/draw_image/source/original_img.png"
         with open(original_img_path, "wb") as f:
             f.write(requests.get(source_url).content)
         directions = {"左": "left", "右": "right", "上": "up", "下": "down", 

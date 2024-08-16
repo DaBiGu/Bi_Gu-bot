@@ -1,7 +1,7 @@
 from saucenao_api import SauceNao
 from typing import List, Dict
 
-import re
+import re, os
 
 from sys import path
 path.append(os.getcwd() + "/passwords")

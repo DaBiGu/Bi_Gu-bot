@@ -20,6 +20,7 @@ config = get_plugin_config(Config)
 
 update = on_command("update", permission=SUPERUSER)
 
+@update.handle()
 async def update_handle(bot: Bot):
     update_status = os.popen("git pull").read()
     if "Already up to date" in update_status:

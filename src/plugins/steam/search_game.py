@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from sys import path
-path.append("D:/Bi_Gu-bot/passwords")
+path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
 def search_game(game_name: str) -> List[Dict[str, str]]:

@@ -4,7 +4,7 @@ from typing import List, Dict
 import re
 
 from sys import path
-path.append("D:/Bi_Gu-bot/passwords")
+path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
 def search_setu(setu_url: str, search_num: int = 1) -> List[Dict[str, str]]:

@@ -6,7 +6,7 @@ from plottable import Table, ColDef
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
 from sys import path
-path.append("D:/Bi_Gu-bot/passwords")
+path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
 def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:

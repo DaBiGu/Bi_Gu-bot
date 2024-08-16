@@ -6,7 +6,7 @@ import pandas as pd
 import mplfinance as mpf
 
 from sys import path
-path.append("D:/Bi_Gu-bot/passwords")
+path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
 def get_crypto_kline(crypto_name: str, time_interval: str = "15m") -> MessageSegment:

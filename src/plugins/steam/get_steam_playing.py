@@ -1,7 +1,7 @@
-import requests
+import requests, os
 
 from sys import path
-path.append("D:/Bi_Gu-bot/passwords")
+path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
 def get_steam_playing(steam_id: str) -> tuple[str | None, str | None]:

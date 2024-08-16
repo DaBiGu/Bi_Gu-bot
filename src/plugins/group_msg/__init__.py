@@ -69,7 +69,7 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
     if group_id not in group_list: return
     message_id = event.message_id
     username = event.user_id
-    if event.user_id == 1176129206: return
+    if event.user_id == int(bot.self_id): return
     operatorname = event.operator_id
     raw_message = await bot.get_msg(message_id = message_id)
     group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)

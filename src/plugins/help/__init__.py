@@ -50,7 +50,7 @@ helper_message = "芙芙目前支持的指令列表(按首字母顺序排列):\n
 ———————— steam ————————\n \
 /steam [steamid] 查看用户[steamid]的steam游戏状态\n \
 /steam random [steamid] 随机从用户[steamid]的库存推荐游戏\n \
-/steam random [steamid] [appid] 从用户[steamid]的库存指定推荐id为[appid]的游戏\n \
+/steam random [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏\n \
 /steam search [name] 搜索名为[name]的steam游戏\n \
 /视奸群友 一键视奸群友游戏状态 \n \
 使用/视奸群友 add|remove [steamid] 管理视奸群友列表\n \

@@ -33,8 +33,12 @@ async def steam_handle(args = CommandArg()):
             message = MessageSegment.text(f"Search Result for {game_name}:")
             message += draw_search_result(game_name)
         elif search_keywords[0] == "random":
-            steam_id = search_keywords[1]
-            message = draw_game_card(steam_id)
+            if len(search_keywords) == 2:
+                steam_id = search_keywords[1]
+                message = draw_game_card(steam_id)
+            elif len(search_keywords) == 3:
+                steam_id, appid = search_keywords[1:]
+                message = draw_game_card(steam_id, int(appid))
     else:
         steam_id = args.extract_plain_text()
         username, game_status= get_steam_playing(steam_id)

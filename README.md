@@ -54,6 +54,7 @@
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
 * `/steam random [steamid]` 随机从用户`[steamid]`的库存推荐游戏
+* `/steam random [steamid] [appid]` 从用户`[steamid]`的库存指定推荐id为`[appid]`的游戏
 * `/steam search [name]` 返回名为`[name]`的steam游戏列表
 * `/视奸群友` 一键视奸群友游戏状态
     * 使用`/视奸群友 add/remove [steamid]` 管理视奸群友列表

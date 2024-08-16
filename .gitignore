@@ -141,7 +141,15 @@ dmypy.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
-src/data/
+src/data/crypto/output
+src/data/draw_image/output
+src/data/draw_image/temp
+src/data/help/output
+src/data/ncm/output
+src/data/setu
+src/data/sleep
+src/data/steam/output
+src/data/steam/temp
 passwords/
 .vs/
 .vscode/

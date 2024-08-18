@@ -1,7 +1,7 @@
 from pyncm import apis
 import matplotlib.pyplot as plt
 import pandas as pd
-import requests, os, datetime
+import requests, os, datetime, re
 from plottable import Table, ColDef
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
@@ -43,5 +43,17 @@ def get_ncm_song_card(song_id: int):
     pic_url = track_detail["songs"][0]["al"]["picUrl"]
     song_url = f"https://music.163.com/#/song?id={song_id}"
     return MessageSegment.music_custom(url = song_url, audio = "audio", title = song_name, content = artists, img_url = pic_url)
+
+def get_lyrics(song_id: int) -> MessageSegment:
+    raw_lyrics = apis.track.GetTrackLyricsNew(song_id)["lrc"]["lyric"].split('\n')
+    lyrics = []
+    for line in raw_lyrics:
+        match = re.match(r'\[.*\](.*)', line)
+        if match:
+            lyrics_text = match.group(1).strip()
+            if lyrics_text: lyrics.append(lyrics_text)
+    return MessageSegment.text('\n'.join(lyrics))
+
+
 
     

@@ -29,6 +29,7 @@
 ## `ncm`
 * `/ncm search [keyword] [num]` 网易云搜歌, 返回前`num`首搜索`keyword`的歌曲信息
 * `/ncm id [song id]` 返回`id`歌曲的分享卡片
+* `/ncm lyrics [song id]` 返回`id`歌曲的歌词
 
 ## `roll`
 * `/rd xdy` 掷`x`个`y`面骰子

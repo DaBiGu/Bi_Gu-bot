@@ -15,7 +15,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-helper_message = "芙芙目前支持的指令列表(按首字母顺序排列):\n \
+helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):\n \
 ———————— crypto ————————\n \
 /crypto 查看过去2小时交易量涨幅300%及以上的币种\n \
 /crypto index 查看当日市场恐慌&贪婪指数\n \
@@ -32,6 +32,7 @@ helper_message = "芙芙目前支持的指令列表(按首字母顺序排列):\n
 ———————— ncm ————————\n \
 /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲\n \
 /ncm id [song_id] 获取[song_id]对应的歌曲卡片\n \
+/ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词(施工中)\n \
 ———————— roll ————————\n \
 /roll xdy 掷x个y面骰子\n \
 /roll xdy+z 掷x个y面骰子,加z点修正值\n \
@@ -46,8 +47,9 @@ helper_message = "芙芙目前支持的指令列表(按首字母顺序排列):\n
 /awake 结束睡觉, 查看本次睡觉时长和本周睡眠状况统计\n \
 /awake [hh:mm] 手动指定起床时间\n \
 /awake [hh:mm] [utc±t] 手动指定于指定时区的起床时间\n \
-/sleep status 查看本周睡眠状况统计\n \
-———————— steam ————————\n \
+/sleep status 查看本周睡眠状况统计",
+
+"———————— steam ————————\n \
 /steam [steamid] 查看用户[steamid]的steam游戏状态\n \
 /steam random [steamid] 随机从用户[steamid]的库存推荐游戏\n \
 /steam random [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏\n \
@@ -61,10 +63,11 @@ helper_message = "芙芙目前支持的指令列表(按首字母顺序排列):\n
 ———————— miscellaneous ————————\n \
 /yuyu 我有玉玉症\n \
 /fufu 芙芙可爱捏\n \
-/help 查看指令列表"
+/help 查看指令列表"]
 
 _help = on_command("help", aliases = {"帮助"})
 
 @_help.handle()
 async def help_handle():
-    await _help.finish(message = draw_help(helper_message))
+    for i in range(len(helper_messages)):
+        await _help.send(draw_help(helper_messages[i], i+1, len(helper_messages)))

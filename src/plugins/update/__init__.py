@@ -27,5 +27,5 @@ async def update_handle(bot: Bot):
         await update.finish(message = "Already up to date")
     else:
         await update.send(message = draw_update_message(update_status))
-        subprocess.Popen([os.path.join(os.getcwd(), "/run.bat"), str(os.getpid())])
+        subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])
     

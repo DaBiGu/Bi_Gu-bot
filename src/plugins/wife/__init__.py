@@ -38,7 +38,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent):
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id
     with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
-    with open(os.getcwd() + f"/src/data/wife/temp/{user_id}.png", "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
+    with open(os.getcwd() + f"/src/data/wife/temp/{_wife}.png", "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
     message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), MessageSegment.at(_wife),
                        MessageSegment.image("file:///" + os.getcwd() + f"/src/data/wife/temp/{_wife}.png")])
     await wife.finish(message = message)

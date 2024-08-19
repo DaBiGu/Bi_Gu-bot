@@ -34,8 +34,8 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 /ncm id [song_id] 获取[song_id]对应的歌曲卡片\n \
 /ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词(施工中)\n \
 ———————— roll ————————\n \
-/roll xdy 掷x个y面骰子\n \
-/roll xdy+z 掷x个y面骰子,加z点修正值\n \
+/rd xdy 掷x个y面骰子\n \
+/rd xdy+z 掷x个y面骰子,加z点修正值\n \
 ———————— setu ————————\n \
 /setu 返回随机色图\n \
 /setu search 对消息记录中的图片回复该指令进行以图搜图\n \

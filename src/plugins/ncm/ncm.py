@@ -36,7 +36,7 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
     plt.savefig(output_path, bbox_inches='tight', dpi=512)
     return MessageSegment.image("file:///" + output_path)
 
-def get_ncm_song_card(song_id: int):
+def get_ncm_song_card(song_id: int) -> MessageSegment:
     track_detail = apis.track.GetTrackDetail(song_id)
     song_name = track_detail["songs"][0]["name"]
     artists = "/".join([track_detail["songs"][0]["ar"][x]["name"] for x in range(len(track_detail["songs"][0]["ar"]))])

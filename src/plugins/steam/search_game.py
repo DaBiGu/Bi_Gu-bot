@@ -21,10 +21,11 @@ def search_game(game_name: str) -> List[Dict[str, str]]:
             game_info = requests.get(url = info_url, params = {"key": api_key, "id": item["id"]}).json()
             if "appid" not in game_info: continue
             price_info = requests.post(url = price_url, params = {"key": api_key, "country": "CN", "nondeals": True, "shops": 61}, data = json.dumps([item["id"]])).json()
-            if not price_info: continue
+            if not price_info or not game_info["assets"]: continue
             image_url = game_info["assets"]["banner400"]
             name = game_info["title"]
-            with open(os.getcwd() + f"/src/data/steam/temp/{name}.png", "wb") as f:
+            temp_file_path = os.getcwd() + f"/src/data/steam/temp/{name}.png"
+            with open(temp_file_path, "wb") as f:
                 f.write(requests.get(image_url).content)
             current_price, regular_price = [price_info[0]["deals"][0][x]["amount"] for x in ["price", "regular"]]
             if current_price == regular_price == 0: current_price = regular_price = history_low = "Free to Play"
@@ -32,8 +33,8 @@ def search_game(game_name: str) -> List[Dict[str, str]]:
                 history_low = price_info[0]["deals"][0]["storeLow"]["amount"]
                 current_price, regular_price, history_low = [f"{x:.2f} CNY" for x in [current_price, regular_price, history_low]]
             discount = price_info[0]["deals"][0]["cut"]
-            game = {"name": name, "banner_path": os.getcwd() + f"/src/data/steam/temp/{name}.png", 
-                    "current_price": current_price, "regular_price": regular_price, "history_low": history_low, "discount": f"-{discount}%"}
+            game = {"name": name, "banner_path": temp_file_path, "current_price": current_price, 
+                    "regular_price": regular_price, "history_low": history_low, "discount": f"-{discount}%"}
             games.append(game)
     return games
 

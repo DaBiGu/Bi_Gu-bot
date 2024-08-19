@@ -33,7 +33,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent):
         if member["user_id"] != user_id and member["user_id"] not in record[today][group_id]: single_members.append(member["user_id"])
     _wife = random.choice(single_members)
     record[today][group_id][user_id] = _wife
-    record[today][group_id][wife] = user_id
+    record[today][group_id][_wife] = user_id
     with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
     with open(os.getcwd() + f"/src/data/wife/temp/{user_id}.png", "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={user_id}&s=640").content)
     message = Message([MessageSegment.at(user_id), MessageSegment.text("你今天的群老婆是"), MessageSegment.at(_wife),

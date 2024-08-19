@@ -24,7 +24,7 @@ def search_game(game_name: str) -> List[Dict[str, str]]:
             if not price_info or not game_info["assets"]: continue
             image_url = game_info["assets"]["banner400"]
             name = game_info["title"]
-            temp_file_path = os.getcwd() + f"/src/data/steam/temp/{name}.png"
+            temp_file_path = os.getcwd() + f"/src/data/steam/temp/{name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             with open(temp_file_path, "wb") as f:
                 f.write(requests.get(image_url).content)
             current_price, regular_price = [price_info[0]["deals"][0][x]["amount"] for x in ["price", "regular"]]

@@ -81,7 +81,7 @@ def record_awake(user_id: str, hour: int = None, minute: int = None) -> float | 
     with open(csv_path, mode = "r", encoding = "utf-8") as file:
         data = list(csv.reader(file))
     user_last_status = get_last_status(data)
-    if not user_last_status: return -1
+    if not user_last_status: return -2
     to_write, awake_time = None, None
     if user_last_status == "Sleep":
         last_sleep_time = data[-1][0]
@@ -92,7 +92,7 @@ def record_awake(user_id: str, hour: int = None, minute: int = None) -> float | 
                 to_write = [awake_time, "Awake"]
         else:
             to_write = [time.time(), "Awake"]  
-    else: return -2
+    else: return -1
     if to_write:
         with open(csv_path, mode = "a", newline = '') as file:
             writer = csv.writer(file)

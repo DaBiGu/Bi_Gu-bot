@@ -56,6 +56,8 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 /steam search [name] 搜索名为[name]的steam游戏\n \
 /视奸群友 一键视奸群友游戏状态 \n \
 使用/视奸群友 add|remove [steamid] 管理视奸群友列表\n \
+———————— wife ————————\n \
+/wife 今日随机群老婆 \n \
 ———————— work ————————\n \
 /work start [name] 开始一项名为[name]的工作\n \
 /work stop 结束当前工作, 查看本次工作时长\n \

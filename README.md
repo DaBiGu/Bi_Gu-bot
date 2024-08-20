@@ -61,6 +61,9 @@
     * 使用`/视奸群友 add/remove [steamid]` 管理视奸群友列表
 * 数据来自于[steam api](https://developer.valvesoftware.com/wiki/Steam_Web_API), [isThereAnyDeal](https://docs.isthereanydeal.com/)
 
+## `wife`
+* `/wife` 返回今日随机群老婆
+
 ## `work`
 * `/work start [name]` 开始名为`name`的工作
 * `/work stop` 结束当前工作，返回本次工作总时长

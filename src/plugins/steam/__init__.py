@@ -97,11 +97,12 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
             else: return
         elif cmd_params == "list":
             with open(os.getcwd() + "/src/data/steam/steam.json", "r") as f: steam_status = json.load(f)
+            message = "本群视奸列表如下:\n"
             if group_id in steam_status:
-                message = "本群视奸列表如下:\n"
                 for steam_id in steam_status[group_id]:
                     username, _ = get_steam_playing(steam_id)
-                    message += f"{username} [{steam_id}]\n"      
+                    message += f"{username} [{steam_id}]\n"
+            else: message += "[empty]"
             message += "\n使用/视奸群友 add|remove [steam_id]管理列表"
             await sjqy.finish(message = message)
         else: return

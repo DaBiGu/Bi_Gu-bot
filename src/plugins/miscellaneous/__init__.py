@@ -2,7 +2,7 @@ from nonebot import get_plugin_config, get_adapter
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Adapter, Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent
+from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
 
 from .config import Config
 from .mstbt import mstbt_record
@@ -156,3 +156,11 @@ async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")
+
+welcome = on_notice()
+
+@welcome.handle()
+async def welcome_handle(event: GroupIncreaseNoticeEvent):
+    message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
+                      MessageSegment.image("file:///" + os.getcwd() + "/src/data/miscellaneous/fufu.gif")])
+    await welcome.finish(message)

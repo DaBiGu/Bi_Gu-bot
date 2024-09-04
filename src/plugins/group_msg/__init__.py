@@ -4,6 +4,7 @@ from nonebot import on_message, on_notice, on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
 from .config import Config
+from .chatcount import get_chatcount
 
 import re, time, random, json, os, datetime
 
@@ -62,17 +63,18 @@ async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
     with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "r") as f:
         chatcount = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
-    if today not in chatcount: chatcount[today] = {}
-    if group_id not in chatcount[today]: chatcount[today][group_id] = {}
-    if user_id not in chatcount[today][group_id]: chatcount[today][group_id][user_id] = 1
-    else: chatcount[today][group_id][user_id] += 1
+    if group_id not in chatcount: chatcount[group_id] = {}
+    if today not in chatcount[group_id]: chatcount[group_id][today] = {}
+    if user_id not in chatcount[group_id][today]: chatcount[group_id][today][user_id] = 1
+    else: chatcount[group_id][today][user_id] += 1
     with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "w") as f:
         json.dump(chatcount, f)
 
 chatcount = on_command("chatcount", aliases={"cc"})
 @chatcount.handle()
 async def chatcount_handle(event: GroupMessageEvent, args = CommandArg()):
-    pass
+    message = get_chatcount(str(event.group_id), 7)
+    await chatcount.finish(message = message)
 
 antirecall = on_notice()
 

@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
 from .config import Config
 
-import re, time, random, json, os
+import re, time, random, json, os, datetime
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -38,8 +38,9 @@ repeated_messages = []
 shortest_times = 2
 
 @m.handle()
-async def repeater(event: GroupMessageEvent, bot: Bot):
+async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
     group_id = str(event.group_id)
+    user_id = str(event.user_id)
     global last_message, message_times
     message, raw_message, has_image = message_preprocess(str(event.message))
     if list(message)[0] == "/" or has_image: return
@@ -58,6 +59,20 @@ async def repeater(event: GroupMessageEvent, bot: Bot):
         repeated_messages.append([message, group_id, time.time()])
     last_message[group_id] = message
 
+    with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "r") as f:
+        chatcount = json.load(f)
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    if today not in chatcount: chatcount[today] = {}
+    if group_id not in chatcount[today]: chatcount[today][group_id] = {}
+    if user_id not in chatcount[today][group_id]: chatcount[today][group_id][user_id] = 1
+    else: chatcount[today][group_id][user_id] += 1
+    with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "w") as f:
+        json.dump(chatcount, f)
+
+chatcount = on_command("chatcount", aliases={"cc"})
+@chatcount.handle()
+async def chatcount_handle(event: GroupMessageEvent, args = CommandArg()):
+    pass
 
 antirecall = on_notice()
 

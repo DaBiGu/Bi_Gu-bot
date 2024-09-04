@@ -5,7 +5,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, 
 
 from .config import Config
 
-import datetime, os, json, random, requests
+import datetime, os, json, random, requests, time
 
 __plugin_meta__ = PluginMetadata(
     name="wife",
@@ -33,10 +33,13 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent):
         raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
         single_members = []
         for member in raw_group_members:
-            if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id]: single_members.append(str(member["user_id"]))
+            if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id] and time.time() - member["last_sent_time"] <= 604800:
+                single_members.append(str(member["user_id"]))
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id
+    for day in record: 
+        if day != today: del record[day]
     with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
     with open(os.getcwd() + f"/src/data/wife/temp/{_wife}.png", "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
     message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), MessageSegment.at(_wife),

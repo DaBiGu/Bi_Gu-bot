@@ -73,7 +73,13 @@ async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
 chatcount = on_command("chatcount", aliases={"cc"})
 @chatcount.handle()
 async def chatcount_handle(event: GroupMessageEvent, args = CommandArg()):
-    message = get_chatcount(str(event.group_id), 7)
+    cmd_params = args.extract_plain_text()
+    if cmd_params:
+        if cmd_params == "today": message = get_chatcount(str(event.group_id), 1)
+        elif cmd_params == "week": message = get_chatcount(str(event.group_id), 7)
+        elif cmd_params == "month": message = get_chatcount(str(event.group_id), 30)
+        else: return
+    else: message = get_chatcount(str(event.group_id), 7)
     await chatcount.finish(message = message)
 
 antirecall = on_notice()

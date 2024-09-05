@@ -1,6 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
+from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, Message
 
 from .config import Config
@@ -20,7 +21,7 @@ config = get_plugin_config(Config)
 wife = on_command("wife", aliases={"群老婆"})
 
 @wife.handle()
-async def wife_handle(bot: Bot, event: GroupMessageEvent):
+async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -42,6 +43,11 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent):
     for day in to_delete: del record[day]
     with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
     with open(os.getcwd() + f"/src/data/wife/temp/{_wife}.png", "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
-    message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), MessageSegment.at(_wife),
+    target = MessageSegment.at(_wife)
+    if option := args.extract_plain_text():
+        if option == "-s": 
+            for member in raw_group_members:
+                if str(member["user_id"]) == _wife: target = MessageSegment.text(" @" + member["nickname"])
+    message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), target,
                        MessageSegment.image("file:///" + os.getcwd() + f"/src/data/wife/temp/{_wife}.png")])
     await wife.finish(message = message)

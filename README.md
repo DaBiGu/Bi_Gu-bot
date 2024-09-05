@@ -63,6 +63,7 @@
 
 ## `wife`
 * `/wife` 返回今日随机群老婆
+* `/wife -s` 返回今日随机群老婆, 不@对方
 
 ## `work`
 * `/work start [name]` 开始名为`name`的工作

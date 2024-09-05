@@ -25,13 +25,13 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
+    raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
     with open(os.getcwd() + "/src/data/wife/record.json", "r") as f: record = json.load(f)
     if today not in record: record[today] = {}
     if group_id not in record[today]: record[today][group_id] = {}
     if user_id in record[today][group_id]:
         _wife = record[today][group_id][user_id]
     else:
-        raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
         single_members = []
         for member in raw_group_members:
             if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id] and time.time() - member["last_sent_time"] <= 604800:

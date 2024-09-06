@@ -80,13 +80,13 @@ async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg
         nicknames[member["user_id"]] = member["nickname"]
     if cmd_params:
         if cmd_params == "today": 
-            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 1), "今日", nicknames)
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 1), 1, nicknames)
         elif cmd_params == "week":
-            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), "本周", nicknames)
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), 7, nicknames)
         elif cmd_params == "month": 
-            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 30), "本月", nicknames)
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 30), 30, nicknames)
         else: return
-    else: message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), "本周", nicknames)
+    else: message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), 7, nicknames)
     await chatcount.finish(message = message)
 
 antirecall = on_notice()

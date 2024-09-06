@@ -20,8 +20,9 @@ def get_dir_path(path: str) -> str:
 
 @scheduler.scheduled_job("cron", hour = 0, minute = 0)
 async def delete_unnecessary_files():
-    dir_list = ["/src/data/steam/temp", "/src/data/steam/output", "/src/data/draw_image/output", "/src/data/draw_image/temp",
-                "/src/data/ncm/output", "/src/data/help/output", "/src/data/setu", "/src/data/crypto/output", "/src/data/wife/temp"]
+    dir_list = ["/src/data/steam/temp", "/src/data/steam/output", "/src/data/draw_image/temp", "/src/data/draw_image/output",
+                "/src/data/ncm/output", "/src/data/help/output", "/src/data/setu", "/src/data/crypto/output", "/src/data/wife/temp",
+                "/src/data/group_msg/temp", "/src/data/group_msg/output"]
     for _dir in dir_list:
         folderpath = get_dir_path(_dir)
         for filename in os.listdir(folderpath):

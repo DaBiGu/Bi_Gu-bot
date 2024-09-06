@@ -72,8 +72,12 @@ async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
 
 chatcount = on_command("chatcount", aliases={"cc"})
 @chatcount.handle()
-async def chatcount_handle(event: GroupMessageEvent, args = CommandArg()):
+async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     cmd_params = args.extract_plain_text()
+    nicknames = {}
+    group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+    for member in group_members_raw:
+        nicknames[member["user_id"]] = member["nickname"]
     if cmd_params:
         if cmd_params == "today": 
             message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 1), "今日")

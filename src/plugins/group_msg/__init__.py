@@ -4,7 +4,7 @@ from nonebot import on_message, on_notice, on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
 from .config import Config
-from .chatcount import get_chatcount
+from .chatcount import get_chatcount, draw_chatcount_bargraph
 
 import re, time, random, json, os, datetime
 
@@ -75,11 +75,13 @@ chatcount = on_command("chatcount", aliases={"cc"})
 async def chatcount_handle(event: GroupMessageEvent, args = CommandArg()):
     cmd_params = args.extract_plain_text()
     if cmd_params:
-        if cmd_params == "today": message = get_chatcount(str(event.group_id), 1)
-        elif cmd_params == "week": message = get_chatcount(str(event.group_id), 7)
-        elif cmd_params == "month": message = get_chatcount(str(event.group_id), 30)
+        if cmd_params == "today": data = get_chatcount(str(event.group_id), 1)
+        elif cmd_params == "week": data = get_chatcount(str(event.group_id), 7)
+        elif cmd_params == "month": data = get_chatcount(str(event.group_id), 30)
         else: return
-    else: message = get_chatcount(str(event.group_id), 7)
+    else: data = get_chatcount(str(event.group_id), 7)
+    if not data: message = "本群暂无聊天记录"
+    else: message = draw_chatcount_bargraph(data)
     await chatcount.finish(message = message)
 
 antirecall = on_notice()

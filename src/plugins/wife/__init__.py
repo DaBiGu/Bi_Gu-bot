@@ -29,6 +29,8 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     with open(os.getcwd() + "/src/data/wife/record.json", "r") as f: record = json.load(f)
     if today not in record: record[today] = {}
     if group_id not in record[today]: record[today][group_id] = {}
+    record[today]["514299983"]["987099115"] = "2464190200"
+    record[today]["514299983"]["2464190200"] = "987099115"
     if user_id in record[today][group_id]:
         _wife = record[today][group_id][user_id]
     else:

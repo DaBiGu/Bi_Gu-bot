@@ -36,7 +36,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     else:
         single_members = []
         for member in raw_group_members:
-            if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id] and time.time() - member["last_sent_time"] <= 604800:
+            if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id] and time.time() - member["last_sent_time"] <=129600:
                 single_members.append(str(member["user_id"]))
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
@@ -53,16 +53,3 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), target,
                        MessageSegment.image("file:///" + os.getcwd() + f"/src/data/wife/temp/{_wife}.png")])
     await wife.finish(message = message)
-
-test = on_command("test")
-
-@test.handle()
-async def test_handle(bot: Bot, event: GroupMessageEvent):
-    raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
-    active_2_days, active_3_days = 0, 0
-    for member in raw_group_members:
-        if time.time() - member["last_sent_time"] <= 24 * 3600 * 3:
-            active_3_days += 1
-            if time.time() - member["last_sent_time"] <= 24 * 3600 * 2:
-                active_2_days += 1
-    await test.finish(message = f"群内2天内发言人数为{active_2_days}\n 3天内发言人数为{active_3_days}")

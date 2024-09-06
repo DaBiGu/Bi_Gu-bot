@@ -58,7 +58,7 @@ test = on_command("test")
 
 @test.handle()
 async def test_handle(bot: Bot, event: GroupMessageEvent):
-    raw_group_members = bot.get_group_member_list(group_id = event.group_id)
+    raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
     active_2_days, active_3_days = 0, 0
     for member in raw_group_members:
         if time.time() - member["last_sent_time"] <= 24 * 3600 * 3:

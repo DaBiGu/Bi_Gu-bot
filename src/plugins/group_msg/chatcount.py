@@ -25,7 +25,7 @@ def get_chatcount(group_id: str, count: int) -> Dict[str, int] | None:
 def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknames: Dict[int, str]) -> MessageSegment:
     _data = {}
     for key, value in data.items():
-        _data[nicknames[key]] = value
+        _data[nicknames[int(key)]] = value
     user_ids = list(data.keys())
     _nicknames = list(_data.keys())
     counts = list(_data.values())

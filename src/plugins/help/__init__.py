@@ -23,6 +23,7 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图\n \
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
+/chatcount today|week|month 查看今日/本周/本月群内b话量top10\n \
 ———————— image ————————\n \
 /喜报 [content] 绘制内容为[content]的喜报\n \
 /悲报 [content] 绘制内容为[content]的悲报\n \

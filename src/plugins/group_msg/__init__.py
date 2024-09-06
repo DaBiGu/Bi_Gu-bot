@@ -75,13 +75,14 @@ chatcount = on_command("chatcount", aliases={"cc"})
 async def chatcount_handle(event: GroupMessageEvent, args = CommandArg()):
     cmd_params = args.extract_plain_text()
     if cmd_params:
-        if cmd_params == "today": data = get_chatcount(str(event.group_id), 1)
-        elif cmd_params == "week": data = get_chatcount(str(event.group_id), 7)
-        elif cmd_params == "month": data = get_chatcount(str(event.group_id), 30)
+        if cmd_params == "today": 
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 1), "今日")
+        elif cmd_params == "week":
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), "本周")
+        elif cmd_params == "month": 
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 30), "本月")
         else: return
-    else: data = get_chatcount(str(event.group_id), 7)
-    if not data: message = "本群暂无聊天记录"
-    else: message = draw_chatcount_bargraph(data)
+    else: message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), "本周")
     await chatcount.finish(message = message)
 
 antirecall = on_notice()

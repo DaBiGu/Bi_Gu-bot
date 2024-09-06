@@ -3,7 +3,7 @@ from typing import List, Dict
 import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
-from nonebot import MessageSegment
+from nonebot.adapters.onebot.v11.message import MessageSegment
 
 def get_datelist(count: int) -> List[str]:
     return [(datetime.datetime.now() - datetime.timedelta(days = i)).strftime("%Y-%m-%d") for i in range(count)]

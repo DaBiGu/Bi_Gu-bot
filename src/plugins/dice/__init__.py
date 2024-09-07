@@ -5,7 +5,8 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment
 
 from .config import Config
-import random
+import random, json, os, datetime
+import numpy as np
 
 __plugin_meta__ = PluginMetadata(
     name="dice",
@@ -37,16 +38,33 @@ async def rd_handle_func(args=CommandArg()):
             else:
                 await rd.finish(roll_dice(int(dice_num), int(dice_face)))
 
+def get_luckiness() -> int:
+    weights = np.array([1]*10 + [8]*10)
+    weights = weights / weights.sum()
+    rolls = np.random.choice(range(1, 21), size = (1, 5), p = weights)
+    return int(rolls.sum())
+
 ys = on_command("ys", aliases={"今日运势"})
 
 @ys.handle()
 async def ys_handle_func(event: MessageEvent):
-    user_id = event.user_id
-    fortune = [random.randint(0, 20) for _ in range(5)]
-    love = [random.randint(0, 20) for _ in range(5)]
-    career = [random.randint(0, 20) for _ in range(5)]
-    message = Message([MessageSegment.at(user_id), MessageSegment.text(f" 今日运势为:\n \
-            财运: 5d20 {str(fortune)} = {sum(fortune)}\n \
-            桃花运: 5d20 {str(love)} = {sum(love)}\n \
-            事业运: 5d20 {str(career)} = {sum(career)}")])
+    user_id = str(event.user_id)
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    with open(os.getcwd() + "/src/data/dice/luckiness.json", "r") as f:
+        record = json.load(f)
+    if today not in record: record[today] = {}
+    if user_id not in record[today]: 
+        fortune = get_luckiness()
+        love = get_luckiness()
+        career = get_luckiness()
+        record[today][user_id] = {"fortune": fortune, "love": love, "career": career}
+    else:
+        fortune = record[today][user_id]["fortune"]
+        love = record[today][user_id]["love"]
+        career = record[today][user_id]["career"]
+    message = Message([MessageSegment.at(user_id), MessageSegment.text(f" 芙芙祈祷中...\n今日运势为:\n财运: {fortune}\n桃花运: {love}\n事业运: {career}")])
+    to_delete = [day for day in record if day != today] 
+    for day in to_delete: del record[day]
+    with open(os.getcwd() + "/src/data/dice/luckiness.json", "w") as f:
+        json.dump(record, f)
     await ys.finish(message)

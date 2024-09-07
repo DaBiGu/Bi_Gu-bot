@@ -9,6 +9,11 @@
 * `/crypto [name] [interval]` 返回`[name]`币种的`15m/1h/4h/1D/1W`k线图
 * 数据来自于[okx合约api](https://www.okx.com/docs-v5/en/#overview)
 
+## `dice`
+* `/rd xdy` 掷`x`个`y`面骰子
+* `/rd xdy+z` 掷`x`个`y`面骰子，加`z`点修正值
+* `/ys` 返回今日运势
+
 ## `group_msg`
 * 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
 * 群内消息防撤回
@@ -32,10 +37,6 @@
 * `/ncm search [keyword] [num]` 网易云搜歌, 返回前`num`首搜索`keyword`的歌曲信息
 * `/ncm id [song id]` 返回`id`歌曲的分享卡片
 * `/ncm lyrics [song id]` 返回`id`歌曲的歌词
-
-## `roll`
-* `/rd xdy` 掷`x`个`y`面骰子
-* `/rd xdy+z` 掷`x`个`y`面骰子，加`z`点修正值
 
 ## `setu`
 

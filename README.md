@@ -22,6 +22,7 @@
 * `/喜报 [content]` 绘制内容为`content`的喜报
 * `/悲报 [content]` 绘制内容为`content`的悲报
 * 对图片回复`/对称 左|右|上|下 [percent]` 将图片(以`[percent]`%为轴)进行对称翻转
+* `/ba [left] [right]` 生成自定义ba风格标题
 
 ## `mahjong`
 * `/qh [username]` 查询`[username]`的近30局雀魂战绩

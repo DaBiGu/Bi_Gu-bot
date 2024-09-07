@@ -7,6 +7,7 @@ from nonebot.adapters.onebot.v11 import MessageEvent
 from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
 from .symmetric import _symmetric
+from .gen_ba import gen_ba
 
 import requests, os, datetime
 
@@ -58,3 +59,11 @@ async def symmetric_handle(event: MessageEvent, args = CommandArg()):
     else:
         await symmetric.finish("找不到源图片\ntips: 不支持表情, 可以截图后进行操作; bot无法获取自己发送的图片")
 
+ba = on_command("ba", aliases={"bagen"})
+
+@ba.handle()
+async def ba_handle(args = CommandArg()):
+    if cmd_params := args.extract_plain_text():
+        left, right = cmd_params.split(" ") if " " in cmd_params else (cmd_params, "")
+        message = await gen_ba(left, right)
+        await ba.finish(message = message)

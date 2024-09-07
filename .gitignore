@@ -145,3 +145,4 @@ src/data/
 passwords/
 .vs/
 .vscode/
+chromedriver.exe

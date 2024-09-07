@@ -26,7 +26,6 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 ———————— dice ————————\n \
 /rd xdy 掷x个y面骰子\n \
 /rd xdy+z 掷x个y面骰子,加z点修正值\n \
-/ys 查看今日运势\n \
 \n \
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
@@ -80,7 +79,9 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 ———————— miscellaneous ————————\n \
 /yuyu 我有玉玉症\n \
 /fufu 芙芙可爱捏\n \
-/help 查看指令列表"]
+/help 查看指令列表\n \
+/ys 查看今日运势\n \
+/早安 对芙芙说早安吧"]
 
 _help = on_command("help", aliases = {"帮助"})
 

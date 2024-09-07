@@ -1,8 +1,9 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_message, on_notice, on_command
+from nonebot.rule import to_me
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
 
@@ -137,6 +138,34 @@ async def antirecall_ctrl_handle(event: GroupMessageEvent, args = CommandArg()):
     with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "w") as f:
         json.dump(group_list, f)
 
+morning = on_command("早安", aliases = {"早", "早上好"}, rule=to_me())
+
+@morning.handle()
+async def morning_handle(event: GroupMessageEvent):
+    group_id = str(event.group_id)
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    now = datetime.datetime.now()
+    with open(os.getcwd() + "/src/data/group_msg/morning.json", "r") as f:
+        record = json.load(f)
+    if today not in record: record[today] = {}
+    if group_id not in record[today]: record[today][group_id] = 0
+    if now < datetime.datetime.combine(now.date(), datetime.time(6, 0)):
+        message_str = " 还没六点，早安你个头，赶紧给我回去睡觉"
+    else:
+        record[today][group_id] += 1
+        group_rank = record[today][group_id]
+        total_rank = sum([record[today][x] for x in record[today]])
+        message_str = " 早上好呀~" if now < datetime.datetime.combine(now.date(), datetime.time(9, 0)) \
+            else " 起床了, 太阳都晒屁股啦" if now < datetime.datetime.combine(now.date(), datetime.time(12, 0)) \
+            else " 这么晚才起, 该调作息啦" if now < datetime.datetime.combine(now.date(), datetime.time(18, 0)) \
+            else " 天都黑啦, 你确定你不是吸血鬼?"
+        message_str += f"\n你是本群第{group_rank}个, 今日第{total_rank}个对芙芙说早安的哦\n芙芙祝你度过愉快的一天~"
+    to_delete = [day for day in record if day != today] 
+    for day in to_delete: del record[day]
+    with open(os.getcwd() + "/src/data/group_msg/morning.json", "w") as f:
+        json.dump(record, f)
+    message = Message([MessageSegment.at(event.user_id), MessageSegment.text(message_str)])
+    await morning.finish(message = message)
 
 
 

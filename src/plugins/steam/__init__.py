@@ -9,9 +9,9 @@ from .config import Config
 from .get_steam_playing import get_steam_playing
 from .data import Steam_Data
 from .search_game import draw_search_result
-from .recommend_random_game import draw_game_card
+from .recommend_random_game import draw_game_card, check_legal_game
 
-import json, os
+import json, os, random
 
 __plugin_meta__ = PluginMetadata(
     name="steam",
@@ -24,7 +24,9 @@ config = get_plugin_config(Config)
 
 steam = on_command("steam")
 @steam.handle()
-async def steam_handle(args = CommandArg()):
+async def steam_handle(event: GroupMessageEvent, args = CommandArg()):
+    group_id = str(event.group_id)
+    with open(os.getcwd() + "/src/data/steam/random.json", "r") as f: recommend_list = json.load(f)
     cmd_params = args.extract_plain_text()
     if " " in cmd_params:
         search_keywords = cmd_params.split(" ")
@@ -32,20 +34,44 @@ async def steam_handle(args = CommandArg()):
             game_name = " ".join(search_keywords[1:])
             message = MessageSegment.text(f"Search Result for {game_name}:")
             message += draw_search_result(game_name)
-        elif search_keywords[0] == "random":
+        elif search_keywords[0] == "recommend":
             if len(search_keywords) == 2:
                 steam_id = search_keywords[1]
-                message = draw_game_card(steam_id)
+                message = draw_game_card(steam_id = steam_id, recommended = True)
             elif len(search_keywords) == 3:
                 steam_id, appid = search_keywords[1:]
-                message = draw_game_card(steam_id, int(appid))
+                message = draw_game_card(steam_id = steam_id, appid = int(appid), recommended = True)
+        elif search_keywords[0] == "random":
+            if search_keywords[1] == "add":
+                if group_id not in recommend_list: recommend_list[group_id] = []
+                if search_keywords[2] not in recommend_list[group_id]:
+                    game_name = check_legal_game(int(search_keywords[2]))
+                    if game_name:
+                        recommend_list[group_id].append(search_keywords[2])
+                        message = f"已添加游戏{game_name}到本群推荐列表"
+                    else: message = f"找不到appid为{search_keywords[2]}的游戏"
+                else: message = f"游戏{search_keywords[2]}已在本群推荐列表中"
+            elif search_keywords[1] == "remove":
+                if group_id in recommend_list and search_keywords[2] in recommend_list[group_id]:
+                    recommend_list[group_id].remove(search_keywords[2])
+                    message = f"已从本群推荐列表移除游戏{search_keywords[2]}"
+                else: message = f"游戏{search_keywords[2]}不在本群推荐列表中"
+            else: return
     else:
-        steam_id = args.extract_plain_text()
-        username, game_status= get_steam_playing(steam_id)
-        if username:
-            if game_status: message = f"{username} 正在玩 {game_status}"
-            else: message = f"{username} 没在玩游戏"
-        else: message = f"找不到id为{steam_id}的用户"
+        if cmd_params == "random":
+            if group_id not in recommend_list: message = "本群群友还没有推荐过游戏哦"
+            else:
+                random_game = random.choice(recommend_list[group_id])
+                message = "芙芙今天推荐你玩这个游戏:"
+                message += draw_game_card(appid = random_game, recommended = False)
+        else:
+            steam_id = args.extract_plain_text()
+            username, game_status= get_steam_playing(steam_id)
+            if username:
+                if game_status: message = f"{username} 正在玩 {game_status}"
+                else: message = f"{username} 没在玩游戏"
+            else: message = f"找不到id为{steam_id}的用户"
+    with open(os.getcwd() + "/src/data/steam/random.json", "w") as f: json.dump(recommend_list, f)
     await steam.finish(message = message)
 
 steam_data = Steam_Data()

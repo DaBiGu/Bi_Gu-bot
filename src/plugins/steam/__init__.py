@@ -37,10 +37,10 @@ async def steam_handle(event: GroupMessageEvent, args = CommandArg()):
         elif search_keywords[0] == "recommend":
             if len(search_keywords) == 2:
                 steam_id = search_keywords[1]
-                message = draw_game_card(steam_id = steam_id, recommended = True)
+                message = draw_game_card(steamid = steam_id, recommended = True)
             elif len(search_keywords) == 3:
                 steam_id, appid = search_keywords[1:]
-                message = draw_game_card(steam_id = steam_id, appid = int(appid), recommended = True)
+                message = draw_game_card(steamid = steam_id, appid = int(appid), recommended = True)
         elif search_keywords[0] == "random":
             if search_keywords[1] == "add":
                 if group_id not in recommend_list: recommend_list[group_id] = []

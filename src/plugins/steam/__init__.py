@@ -67,7 +67,16 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                     else: message = f"找不到appid为{search_keywords[2]}的游戏"
                 else: message = f"游戏{search_keywords[2]}已在本群推荐列表中"
             elif search_keywords[1] == "-a" or search_keywords[1] == "-all":
-                pass
+                random_game_list = []
+                for group in recommend_list.keys():
+                    for user_recommend in recommend_list[group].keys():
+                        for appid in recommend_list[group][user_recommend]:
+                            random_game_list.append([group, user_recommend, appid])
+                random_game_info = random.choice(random_game_list)
+                group_name, nickname, appid = random_game_info
+                message = "芙芙今天推荐你玩这个游戏:"
+                message += draw_game_card(appid = appid, recommended = False)
+                message += f"推荐来自{group_name}的{nickname}"
             else: return
     else:
         if cmd_params == "random":
@@ -76,12 +85,12 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                 random_game_list = []
                 for user_recommend in recommend_list[group_name].keys():
                     for appid in recommend_list[group_name][user_recommend]:
-                        random_game_list.append({user_recommend: appid})
+                        random_game_list.append([user_recommend, appid])
                 random_game_info = random.choice(random_game_list)
-                nickname = list(random_game_info.keys())[0]
-                appid = list(random_game_info.values())[0]
-                message = f"芙芙今天推荐你玩这个游戏:\n来自{nickname}的推荐"
+                nickname, appid = random_game_info
+                message = "芙芙今天推荐你玩这个游戏"
                 message += draw_game_card(appid = appid, recommended = False)
+                message += f"推荐来自{nickname}"
         else:
             steam_id = args.extract_plain_text()
             username, game_status= get_steam_playing(steam_id)

@@ -31,7 +31,7 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     group_member_list = await bot.get_group_member_list(group_id = event.group_id)
     group_name = group_info["group_name"]
     for member in group_member_list:
-        if member["user_id"] == user_id:
+        if member["user_id"] == event.user_id:
             user_id = member["nickname"]
             break
     with open(os.getcwd() + "/src/data/steam/random.json", "r") as f: recommend_list = json.load(f)
@@ -87,11 +87,16 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
             else: return
     else:
         if cmd_params == "random":
-            if group_id not in recommend_list: message = "本群群友还没有推荐过游戏哦"
+            if group_name not in recommend_list: message = "本群群友还没有推荐过游戏哦"
             else:
-                random_game = random.choice(recommend_list[group_id])
-                message = "芙芙今天推荐你玩这个游戏:"
-                message += draw_game_card(appid = random_game, recommended = False)
+                random_game_list = []
+                for user_recommend in recommend_list[group_name].keys():
+                    for appid in recommend_list[group_name][user_recommend]:
+                        random_game_list.append({user_recommend: appid})
+                random_game_info = random.choice(random_game_list)
+                nickname, appid = random_game_info.items()
+                message = f"芙芙今天推荐你玩这个游戏:\n来自{nickname}的推荐"
+                message += draw_game_card(appid = appid, recommended = False)
         else:
             steam_id = args.extract_plain_text()
             username, game_status= get_steam_playing(steam_id)

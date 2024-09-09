@@ -94,7 +94,8 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                     for appid in recommend_list[group_name][user_recommend]:
                         random_game_list.append({user_recommend: appid})
                 random_game_info = random.choice(random_game_list)
-                nickname, appid = random_game_info.items()
+                nickname = list(random_game_info.keys())[0]
+                appid = list(random_game_info.values())[0]
                 message = f"芙芙今天推荐你玩这个游戏:\n来自{nickname}的推荐"
                 message += draw_game_card(appid = appid, recommended = False)
         else:

@@ -2,7 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command, get_bot
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, Bot
 from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
@@ -24,8 +24,16 @@ config = get_plugin_config(Config)
 
 steam = on_command("steam")
 @steam.handle()
-async def steam_handle(event: GroupMessageEvent, args = CommandArg()):
+async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     group_id = str(event.group_id)
+    user_id = str(event.user_id)
+    group_info = await bot.get_group_info(group_id = event.group_id)
+    group_member_list = await bot.get_group_member_list(group_id = event.group_id)
+    group_name = group_info["group_name"]
+    for member in group_member_list:
+        if member["user_id"] == user_id:
+            user_id = member["nickname"]
+            break
     with open(os.getcwd() + "/src/data/steam/random.json", "r") as f: recommend_list = json.load(f)
     cmd_params = args.extract_plain_text()
     if " " in cmd_params:
@@ -43,19 +51,39 @@ async def steam_handle(event: GroupMessageEvent, args = CommandArg()):
                 message = draw_game_card(steamid = int(steam_id), appid = int(appid), recommended = True)
         elif search_keywords[0] == "random":
             if search_keywords[1] == "add":
-                if group_id not in recommend_list: recommend_list[group_id] = []
-                if search_keywords[2] not in recommend_list[group_id]:
+                if group_name not in recommend_list: recommend_list[group_name] = {}
+                if user_id not in recommend_list[group_name]: recommend_list[group_name][user_id] = []
+                has_recommended = False
+                for user_recommend in recommend_list[group_name].keys():
+                    if search_keywords[2] in recommend_list[group_name][user_recommend]:
+                        message = f"游戏{check_legal_game(int(search_keywords[2]))}已被本群的{user_recommend}推荐过了哦"
+                        has_recommended = True
+                        break
+                if not has_recommended:
                     game_name = check_legal_game(int(search_keywords[2]))
                     if game_name:
-                        recommend_list[group_id].append(search_keywords[2])
+                        recommend_list[group_name][user_id].append(search_keywords[2])
                         message = f"已添加游戏{game_name}到本群推荐列表"
                     else: message = f"找不到appid为{search_keywords[2]}的游戏"
                 else: message = f"游戏{search_keywords[2]}已在本群推荐列表中"
             elif search_keywords[1] == "remove":
-                if group_id in recommend_list and search_keywords[2] in recommend_list[group_id]:
-                    recommend_list[group_id].remove(search_keywords[2])
+                if group_name in recommend_list:
+                    for user_recommend in recommend_list[group_name].keys():
+                        if search_keywords[2] in recommend_list[group_name][user_recommend]:
+                            recommend_list[group_name][user_recommend].remove(search_keywords[2])
                     message = f"已从本群推荐列表移除游戏{search_keywords[2]}"
                 else: message = f"游戏{search_keywords[2]}不在本群推荐列表中"
+            elif search_keywords[1] == "list":
+                message = "本群游戏推荐列表如下:\n"
+                if group_name in recommend_list:
+                    for user_recommend in recommend_list[group_name].keys():
+                        for appid in recommend_list[group_name][user_recommend]:
+                            game_name = check_legal_game(int(appid))
+                            if game_name: message += f"来自{user_recommend}的推荐:{game_name} [{appid}]\n"
+                else: message += "[empty]"
+                message += "\n使用/steam random add|remove [appid]管理列表"
+            elif search_keywords[1] == "-a" or search_keywords[1] == "-all":
+                pass
             else: return
     else:
         if cmd_params == "random":
@@ -145,3 +173,9 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
                 else: message += f"找不到id为{steam_id}的用户\n"
             message += "EOF"
         await sjqy.finish(message = message)
+
+test = on_command("test")
+@test.handle()
+async def test_handle(event: GroupMessageEvent, bot: Bot):
+    group_info = await bot.get_group_info(group_id = event.group_id)
+    await test.finish(message = str(group_info))

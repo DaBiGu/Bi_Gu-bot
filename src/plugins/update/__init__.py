@@ -18,7 +18,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-update = on_command("update", permission=SUPERUSER)
+update = on_command("update", permission = SUPERUSER, priority = 2)
 
 @update.handle()
 async def update_handle(bot: Bot):

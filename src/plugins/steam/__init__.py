@@ -66,22 +66,6 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                         message = f"已添加游戏{game_name}到本群推荐列表"
                     else: message = f"找不到appid为{search_keywords[2]}的游戏"
                 else: message = f"游戏{search_keywords[2]}已在本群推荐列表中"
-            elif search_keywords[1] == "remove":
-                if group_name in recommend_list:
-                    for user_recommend in recommend_list[group_name].keys():
-                        if search_keywords[2] in recommend_list[group_name][user_recommend]:
-                            recommend_list[group_name][user_recommend].remove(search_keywords[2])
-                    message = f"已从本群推荐列表移除游戏{search_keywords[2]}"
-                else: message = f"游戏{search_keywords[2]}不在本群推荐列表中"
-            elif search_keywords[1] == "list":
-                message = "本群游戏推荐列表如下:\n"
-                if group_name in recommend_list:
-                    for user_recommend in recommend_list[group_name].keys():
-                        for appid in recommend_list[group_name][user_recommend]:
-                            game_name = check_legal_game(int(appid))
-                            if game_name: message += f"来自{user_recommend}的推荐:{game_name} [{appid}]\n"
-                else: message += "[empty]"
-                message += "\n使用/steam random add|remove [appid]管理列表"
             elif search_keywords[1] == "-a" or search_keywords[1] == "-all":
                 pass
             else: return

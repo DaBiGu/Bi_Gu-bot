@@ -62,8 +62,8 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 "———————— steam ————————\n \
 /steam [steamid] 查看用户[steamid]的steam游戏状态\n \
 /steam random 从群友推荐列表中随机推荐一款游戏\n \
+/steam random -a|all 随机推荐一款游戏, 可以来自其他群 \n \
 /steam random add [appid] 将游戏[appid]添加到本群推荐列表\n \
-/steam random remove [appid] 将游戏[appid]移出本群推荐列表\n \
 /steam recommend [steamid] 随机从用户[steamid]的库存推荐游戏\n \
 /steam recommend [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏\n \
 /steam search [name] 搜索名为[name]的steam游戏\n \
@@ -83,7 +83,7 @@ helper_messages = ["芙芙目前支持的指令列表(按首字母顺序排列):
 /yuyu 我有玉玉症\n \
 /fufu 芙芙可爱捏\n \
 /help 查看指令列表\n \
-/ys 查看今日运势\n \
+/ys|今日运势 查看今日运势\n \
 /早安 对芙芙说早安吧 (此条命令需要@芙芙)"]
 
 _help = on_command("help", aliases = {"帮助"})

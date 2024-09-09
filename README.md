@@ -57,8 +57,8 @@
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
 * `/steam random` 从群友推荐列表中随机推荐一款游戏
+* `/steam random -a|all` 随机推荐一款游戏, 可以来自其他群
 * `/steam random add [appid]` 将游戏`[appid]`添加到本群推荐列表
-* `/steam random remove [appid]` 将游戏`[appid]`移出本群推荐列表
 * `/steam recommend [steamid]` 随机从用户`[steamid]`的库存推荐游戏
 * `/steam recommend [steamid] [appid]` 从用户`[steamid]`的库存推荐id为`[appid]`的游戏
 * `/steam search [name]` 返回名为`[name]`的steam游戏列表
@@ -78,6 +78,6 @@
 ## `miscellaneous`
 * `/yuyu` 我有玉玉症
 * `/fufu` 芙芙可爱捏
-* `/ys` 查看今日运势
+* `/ys|今日运势` 查看今日运势
 * `/早安` 对芙芙说早安吧
 

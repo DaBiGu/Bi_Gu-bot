@@ -76,7 +76,7 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                 group_name, nickname, appid = random_game_info
                 message = "芙芙今天推荐你玩这个游戏:"
                 message += draw_game_card(appid = appid, recommended = False)
-                message += f"推荐来自{group_name}的{nickname}"
+                message += f"推荐来自\"{group_name}\"的\"{nickname}\""
             else: return
     else:
         if cmd_params == "random":
@@ -90,7 +90,7 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                 nickname, appid = random_game_info
                 message = "芙芙今天推荐你玩这个游戏"
                 message += draw_game_card(appid = appid, recommended = False)
-                message += f"推荐来自{nickname}"
+                message += f"推荐来自本群的\"{nickname}\""
         else:
             steam_id = args.extract_plain_text()
             username, game_status= get_steam_playing(steam_id)

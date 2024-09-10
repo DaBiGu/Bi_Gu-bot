@@ -172,9 +172,3 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
                 else: message += f"找不到id为{steam_id}的用户\n"
             message += "EOF"
         await sjqy.finish(message = message)
-
-test = on_command("test")
-@test.handle()
-async def test_handle(event: GroupMessageEvent, bot: Bot):
-    group_info = await bot.get_group_info(group_id = event.group_id)
-    await test.finish(message = str(group_info))

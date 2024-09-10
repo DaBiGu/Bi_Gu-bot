@@ -71,7 +71,7 @@ def draw_game_card(steamid: int = None, appid: int = None, recommended: bool = T
     
     card_width = 1600
     card_height = 2000 if recommended else 1500
-    background_color = (224, 243, 250)
+    background_color = (224, 243, 250) if "Positive" in game_info["review_score"] else (163, 76, 37) if "Negative" in game_info["review_score"] else (185, 160, 116)
     card = Image.new("RGB", (card_width, card_height), background_color)
     
     draw = ImageDraw.Draw(card)

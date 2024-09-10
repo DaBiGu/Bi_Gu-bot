@@ -12,7 +12,7 @@ from passwords import get_passwords
 def get_crypto_kline(crypto_name: str, time_interval: str = "15m") -> MessageSegment:
     api_info = {"flag": "0", "api_key": get_passwords("okx_api_key"),
             "api_secret_key": get_passwords("okx_api_secret_key"), "passphrase": get_passwords("okx_passphrase")}
-    time_interval_repl = {"15m": "15m", "1h": "1H", "4h": "4H", "1D": "1Dutc", "3D": "3Dutc", "1W": "1Wutc"}
+    time_interval_repl = {"15m": "15m", "1h": "1H", "4h": "4H", "1D": "1Dutc", "3D": "3Dutc", "1W": "1Wutc", "1d": "1Dutc", "3d": "3Dutc", "1w": "1Wutc"}
     _time_interval = time_interval_repl[time_interval]
     time_interval_dict = {"15m": 900, "1H": 3600, "4H": 14400, "1Dutc": 86400, "3Dutc": 259200, "1Wutc": 604800}
     marketDataAPI = MarketData.MarketAPI(**api_info, debug = False)

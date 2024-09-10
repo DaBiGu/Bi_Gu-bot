@@ -71,7 +71,7 @@ def draw_game_card(steamid: int = None, appid: int = None, recommended: bool = T
     
     card_width = 1600
     card_height = 2000 if recommended else 1500
-    background_color = (224, 243, 250) if "Positive" in game_info["review_score"] else (163, 76, 37) if "Negative" in game_info["review_score"] else (185, 160, 116)
+    background_color = (224, 243, 250)
     card = Image.new("RGB", (card_width, card_height), background_color)
     
     draw = ImageDraw.Draw(card)
@@ -86,7 +86,7 @@ def draw_game_card(steamid: int = None, appid: int = None, recommended: bool = T
     draw.text((50, 150), release_date, font=ImageFont.truetype(font_path, 60), fill=(0, 0, 0))
     
     card.paste(banner, (100, 250))    
-    review_text_color = (91, 139, 199)
+    review_text_color = (91, 139, 199) if "Positive" in game_info["review_score"] else (163, 76, 37) if "Negative" in game_info["review_score"] else (185, 160, 116)
     reviews_text = f"Overall user reviews:\n{game_info['review_score']}"
     draw.text((120, 960), reviews_text, font=ImageFont.truetype(bold_font_path, 48), fill=review_text_color)
     

@@ -24,9 +24,9 @@ async def crypto_handle(args = CommandArg()):
         if " " in cmd_params:
             cmd_params = cmd_params.split(" ")
             if len(cmd_params) == 2:
-                crypto_name = cmd_params[0]
+                crypto_name = str(cmd_params[0]).upper()
                 time_interval = cmd_params[1]
-                if time_interval not in ["15m", "1h", "4h", "1D", "3D", "1W"]:
+                if time_interval not in ["15m", "1h", "4h", "1D", "3D", "1W", "1d", "3d", "1w"]:
                     await crypto.finish(message = "时间间隔不合法, 目前支持15m/1h/4h/1D/3D/1W")
                 else:
                     message = get_crypto_kline(crypto_name, time_interval)

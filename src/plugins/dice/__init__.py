@@ -58,12 +58,12 @@ async def ys_handle_func(event: MessageEvent):
         love = get_luckiness()
         career = get_luckiness()
         record[today][user_id] = {"fortune": fortune, "love": love, "career": career}
-        message_str = "芙芙祈祷中...\n"
+        message_str = " 芙芙祈祷中...\n"
     else:
         fortune = record[today][user_id]["fortune"]
         love = record[today][user_id]["love"]
         career = record[today][user_id]["career"]
-        message_str = "你今天已经测过运势了哦\n"
+        message_str = " 你今天已经测过运势了哦\n"
     message = Message([MessageSegment.at(user_id), MessageSegment.text(message_str + f"今日运势为:\n财运: {fortune}\n桃花运: {love}\n事业运: {career}")])
     to_delete = [day for day in record if day != today] 
     for day in to_delete: del record[day]

@@ -27,7 +27,7 @@ class Helper_Messages:
 ———————— ncm ————————\n \
 /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲\n \
 /ncm id [song_id] 获取[song_id]对应的歌曲卡片\n \
-/ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词(施工中)\n \
+/ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词卡片\n \
 \n \
 ———————— setu ————————\n \
 /setu 返回随机色图\n \
@@ -108,7 +108,8 @@ Sep 4 2024: 随机群老婆只在活跃群友中选取\n \
 Sep 6 2024: 支持统计群友b话量\n \
 Sep 7 2024: 支持生成ba风格标题图片; 支持获取随机今日运势 \n \
 Sep 8 2024: 支持对芙芙说早安; 支持记录群友的游戏推荐列表并从中随机推荐游戏 \n \
-Sep 9 2024: 推荐列表记录群名和推荐人"]
+Sep 9 2024: 推荐列表记录群名和推荐人\n \
+Sep 12 2024: 更好的网易云歌曲歌词卡片绘制方式"]
     
     def get_helper_messages(self):
         return self.helper_messages

@@ -46,7 +46,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     for day in to_delete: del record[day]
     with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
     avatar_path = get_output_path(f"wife_{_wife}", temp = True)
-    with open(avatar_path) as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
+    with open(avatar_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
     target = MessageSegment.at(_wife)
     if option := args.extract_plain_text():
         if option == "-s": 

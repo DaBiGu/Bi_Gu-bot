@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, Message
+from utils.utils import get_output_path
 
 from .config import Config
 
@@ -44,12 +45,13 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     to_delete = [day for day in record if day != today] 
     for day in to_delete: del record[day]
     with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
-    with open(os.getcwd() + f"/src/data/wife/temp/{_wife}.png", "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
+    avatar_path = get_output_path(f"wife_{_wife}", temp = True)
+    with open(avatar_path) as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
     target = MessageSegment.at(_wife)
     if option := args.extract_plain_text():
         if option == "-s": 
             for member in raw_group_members:
                 if str(member["user_id"]) == _wife: target = MessageSegment.text(" @" + member["nickname"])
     message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), target,
-                       MessageSegment.image("file:///" + os.getcwd() + f"/src/data/wife/temp/{_wife}.png")])
+                       MessageSegment.image("file:///" + avatar_path)])
     await wife.finish(message = message)

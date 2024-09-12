@@ -28,9 +28,10 @@ def get_player_info(steamid: int) -> Dict[str, str]:
     url = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002"
     params = {'key': get_passwords("steam_api_key"),'steamids': steamid}
     player_info = requests.get(url, params=params).json()["response"]["players"][0]
-    with open(os.getcwd() + f"/src/data/steam/temp/avatar_{steamid}.png", "wb") as f:
+    avatar_path = get_output_path(f"steam_avatar_{steamid}", temp = True)
+    with open(avatar_path, "wb") as f:
         f.write(requests.get(player_info["avatarfull"]).content)
-    _player_info = {"nickname": player_info["personaname"], "avatar": os.getcwd() + f"/src/data/steam/temp/avatar_{steamid}.png"}
+    _player_info = {"nickname": player_info["personaname"], "avatar": avatar_path}
     return _player_info
 
 def get_random_game_info(steamid: int = None, appid: int = None, recommended: bool = True) -> Dict[str, Any]:
@@ -46,10 +47,11 @@ def get_random_game_info(steamid: int = None, appid: int = None, recommended: bo
             else "Mostly Positive" if 70 <= _ <= 79 else "Mixed" if 40 <= _ <= 69 else "Mostly Negative" if 20 <= _ <= 39 \
             else "Overwhelmingly Negative" if 0 <= _ <= 19 and review_count >= 500 else "Very Negative" if 0 <= _ <= 19 and review_count >= 50 else "Negative"
             review_score += f" ({review_count} reviews)"
-    with open(os.getcwd() + f"/src/data/steam/temp/{game_info['title']}.png", "wb") as f:
+    game_banner_path = get_output_path(f"steam_banner_{game_info['title']}", temp = True)
+    with open(game_banner_path, "wb") as f:
         f.write(requests.get(game_info["assets"]["banner600"]).content)
     _game_info = {"name": game_info["title"], 
-                  "banner_path": os.getcwd() + f"/src/data/steam/temp/{game_info['title']}.png",
+                  "banner_path": game_banner_path,
                   "release_date": game_info["releaseDate"],
                   "review_score": review_score,
                   "user_tags": game_info["tags"]

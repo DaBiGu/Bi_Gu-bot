@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_command, on_fullmatch
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageEvent
+from utils.utils import get_output_path
 
 from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
@@ -46,7 +47,7 @@ async def symmetric_handle(event: MessageEvent, args = CommandArg()):
             source_url = seg.data.get("url")
             break
     if source_url:
-        original_img_path = os.getcwd() + f"/src/data/draw_image/temp/original_img_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+        original_img_path = get_output_path("symmetric_original", temp = True)
         with open(original_img_path, "wb") as f:
             f.write(requests.get(source_url).content)
         directions = {"左": "left", "右": "right", "上": "up", "下": "down", 

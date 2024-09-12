@@ -33,7 +33,7 @@ def draw_chatcount_bargraph(data: Dict[str, int], time_range: int, nicknames: Di
     counts = list(_data.values())
     avatars = []
     for user in user_ids:
-        temp_path = os.getcwd() + f"/src/data/group_msg/temp/{user}.png"
+        temp_path = get_output_path(f"user_avatar_{user}", temp = True)
         with open(temp_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={user}&s=100").content)
         avatars.append(temp_path)
     plt.style.use('default')

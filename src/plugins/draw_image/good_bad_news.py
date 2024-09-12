@@ -5,9 +5,6 @@ from typing import List
 from utils.fonts import get_font
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
-def get_file_path(file_name: str) -> str:
-    return os.getcwd() + "/src/assets/images" + file_name
-
 def auto_warp(text_list: List[str], font: ImageFont, image: Image, force: bool = False) -> str | None:
     def judge_shape(_text: str) -> tuple[bool, bool]:
         bbox = draw.textbbox((0, 0), _text, font = font, align = "center")
@@ -86,15 +83,15 @@ def put_text(img: np.ndarray, text: str, is_gray: bool) -> np.ndarray:
     return img
 
 def draw_good_news(text: str) -> Message:
-    good_news_image = cv2.imread(get_file_path("/xi_bao.webp"))
+    good_news_image = cv2.imread(os.getcwd() + "/src/assets/images/xi_bao.webp")
     good_news_image = put_text(good_news_image, text, is_gray = False)
-    output_path = get_file_path(f"output/good_news_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    output_path = os.getcwd() + f"/src/data/draw_image/output/good_news_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
     cv2.imwrite(output_path, good_news_image)
     return Message([MessageSegment.image("file:///" + output_path)])
 
 def draw_bad_news(text: str) -> Message:
-    bad_news_image = cv2.imread(get_file_path("/bei_bao.webp"))
+    bad_news_image = cv2.imread(os.getcwd() + "/src/assets/images/bei_bao.webp")
     bad_news_image = put_text(bad_news_image, text, is_gray = True)
-    output_path = get_file_path(f"output/bad_news_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    output_path = os.getcwd() + f"/src/data/draw_image/output/bad_news_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
     cv2.imwrite(output_path, bad_news_image)
     return Message([MessageSegment.image("file:///" + output_path)])

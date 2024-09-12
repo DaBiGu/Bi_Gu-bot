@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 
 from sys import path
 path.append(os.getcwd() + "/passwords")
-path.append(os.getcwd() + "/utils")
+path.append(os.getcwd() + "/src")
 from passwords import get_passwords
 
 from PIL import Image, ImageDraw, ImageFont

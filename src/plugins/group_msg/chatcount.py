@@ -4,13 +4,13 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from utils.utils import get_copyright_str, get_output_path
+from utils.utils import get_copyright_str, get_output_path, get_IO_path
 
 def get_datelist(count: int) -> List[str]:
     return [(datetime.datetime.now() - datetime.timedelta(days = i)).strftime("%Y-%m-%d") for i in range(count)]
 
 def get_chatcount(group_id: str, count: int) -> Dict[str, int] | None:
-    with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "r") as f:
+    with open(get_IO_path("chatcount", "json"), "r") as f:
         raw_chatcount = json.load(f)
     datelist = get_datelist(count)
     chatcount = {}

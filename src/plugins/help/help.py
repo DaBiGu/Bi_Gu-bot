@@ -1,9 +1,10 @@
 from PIL import Image, ImageDraw, ImageFont
 import datetime, os
 from nonebot.adapters.onebot.v11 import MessageSegment
+from utils.fonts import get_font
 
 def draw_help(helper_message: str, current_page: int, total_pages: int) -> MessageSegment:
-    image_path = os.getcwd() + '/src/data/help/source/background.png'
+    image_path = os.getcwd() + '/src/assets/images/help_background.png'
     original_image = Image.open(image_path).convert("RGBA")
 
     opacity = 160
@@ -20,9 +21,7 @@ def draw_help(helper_message: str, current_page: int, total_pages: int) -> Messa
     combined_image = Image.alpha_composite(original_image, white_layer)
 
     draw = ImageDraw.Draw(combined_image)
-    font_size = 18
-
-    font = ImageFont.truetype(os.getcwd() + '/src/data/help/source/font.ttf', font_size)
+    font = get_font("yahei-consolas", size = 18)
  
     width, height = original_image.size
     draw.text((40, 20), helper_message, fill=(0, 0, 0, 255), font=font)

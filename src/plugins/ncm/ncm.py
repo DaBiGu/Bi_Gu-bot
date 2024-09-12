@@ -11,6 +11,8 @@ from sys import path
 path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
+from utils.fonts import get_font
+
 def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
     limit = len(search_result)
@@ -93,12 +95,10 @@ def draw_lyrics_card(song_id: int) -> MessageSegment:
     background_color = '#14163E' 
     font_color_primary = '#FFFFFF'
     font_color_secondary = '#B3B6C4'
-    font_path_bold = os.getcwd() + "/src/data/ncm/source/NotoSansCJK-Bold.ttc"  
-    font_path_regular = os.getcwd() + "/src/data/ncm/source/NotoSansCJK-Regular.ttc"  
-    title_font = ImageFont.truetype(font_path_bold, 50)
-    lyrics_font_primary = ImageFont.truetype(font_path_bold, 38) if song_type >= 2 else ImageFont.truetype(font_path_regular, 38)
-    lyrics_font_secondary = ImageFont.truetype(font_path_regular, 28)
-    copyright_font = ImageFont.truetype(font_path_regular, 18)
+    title_font = get_font("noto-sans", size = 50, weight = 700)
+    lyrics_font_primary = get_font("noto-sans", size = 38, weight = 700) if song_type >= 2 else get_font("noto-sans", size = 38, weight = 400)
+    lyrics_font_secondary = get_font("noto-sans", size = 28, weight = 400)
+    copyright_font = get_font("noto-sans", size = 18, weight = 400)
     padding_top = 40
     padding_between_blocks = 20
     padding_between_lines = 10

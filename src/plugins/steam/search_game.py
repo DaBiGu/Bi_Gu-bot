@@ -4,6 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from sys import path
+from utils.fonts import get_font
 path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
@@ -48,13 +49,10 @@ def draw_search_result(game_name: str) -> MessageSegment:
 
     games = search_game(game_name)
 
-    font_path = os.getcwd() + "/src/data/steam/fonts/NotoSansCJK-Regular.ttc"
-    bold_font_path = os.getcwd() + "/src/data/steam/fonts/NotoSansCJK-Bold.ttc"
-    semibold_font_path = os.getcwd() + "/src/data/steam/fonts/NotoSansCJK-Medium.ttc"
     font_size, discount_font_size = 30, 50
-    font = ImageFont.truetype(font_path, 30)
-    title_font = ImageFont.truetype(semibold_font_path, 40)
-    discount_font = ImageFont.truetype(bold_font_path, 50)
+    font = get_font("noto-sans", size = 40, weight = 400)
+    title_font = get_font("noto-sans", size = 40, weight = 500)
+    discount_font = get_font("noto-sans", size = 50, weight = 700)
 
     total_height = len(games) * (banner_size[1] + padding) + 80
     image_width = banner_size[0] + 1500 

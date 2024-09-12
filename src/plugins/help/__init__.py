@@ -24,12 +24,16 @@ _help = on_command("help", aliases = {"帮助"})
 
 @_help.handle()
 async def help_handle():
-    message = Message([draw_help(helper_messages[i], i+1, len(helper_messages)) for i in range(len(helper_messages))])
+    message = Message()
+    for i in range(len(helper_messages)):
+        message += Message([draw_help(helper_messages[i], i+1, len(helper_messages))])
     await _help.finish(message = message)
 
 _update_log = on_fullmatch("/update log", priority = 1)
 
 @_update_log.handle()
 async def update_log_handle():
-    message = Message([draw_help(update_logs[i], i+1, len(update_logs)) for i in range(len(update_logs))])
+    message = Message()
+    for i in range(len(update_logs)):
+        message += Message([draw_help(update_logs[i], i+1, len(update_logs))])
     await _update_log.finish(message = message)

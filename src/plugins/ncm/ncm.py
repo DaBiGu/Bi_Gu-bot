@@ -9,6 +9,7 @@ import requests, os, datetime, re
 
 from sys import path
 path.append(os.getcwd() + "/passwords")
+path.append(os.getcwd() + "/utils")
 from passwords import get_passwords
 
 from utils.fonts import get_font

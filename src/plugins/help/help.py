@@ -1,6 +1,8 @@
 from PIL import Image, ImageDraw, ImageFont
 import datetime, os
 from nonebot.adapters.onebot.v11 import MessageSegment
+from sys import path
+path.append(os.getcwd() + "/utils")
 from utils.fonts import get_font
 
 def draw_help(helper_message: str, current_page: int, total_pages: int) -> MessageSegment:

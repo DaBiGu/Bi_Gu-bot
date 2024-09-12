@@ -4,9 +4,10 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from sys import path
-from utils.fonts import get_font
 path.append(os.getcwd() + "/passwords")
+path.append(os.getcwd() + "/utils")
 from passwords import get_passwords
+from utils.fonts import get_font
 
 def search_game(game_name: str) -> List[Dict[str, str]]:
     api_key = get_passwords("isthereanydeal_api_key")

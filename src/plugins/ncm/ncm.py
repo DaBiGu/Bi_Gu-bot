@@ -60,7 +60,9 @@ def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], int]:
     lyrics_raw = apis.track.GetTrackLyrics(song_id)
     song_type = 0
     for x in ["lrc", "tlyric", "romalrc"]:
-        lyrics[x] = lyrics_raw[x]["lyric"] if lyrics_raw[x]["lyric"] else ""
+        lyrics[x] = ""
+        if x in lyrics_raw:
+            lyrics[x] = lyrics_raw[x]["lyric"] if lyrics_raw[x]["lyric"] else ""
         if lyrics[x]: song_type += 1
     song_info = apis.track.GetTrackDetail(song_id)["songs"][0]
     lyrics["song_name"] = song_info["name"]
@@ -96,7 +98,7 @@ def draw_lyrics_card(song_id: int) -> MessageSegment:
     title_font = ImageFont.truetype(font_path_bold, 50)
     lyrics_font_primary = ImageFont.truetype(font_path_bold, 38) if song_type >= 2 else ImageFont.truetype(font_path_regular, 38)
     lyrics_font_secondary = ImageFont.truetype(font_path_regular, 28)
-    copyright_font = ImageFont.truetype(font_path_regular, 24)
+    copyright_font = ImageFont.truetype(font_path_regular, 18)
     padding_top = 40
     padding_between_blocks = 20
     padding_between_lines = 10

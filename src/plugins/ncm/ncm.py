@@ -8,7 +8,7 @@ import pandas as pd
 import requests, os, datetime, re
 from passwords import get_passwords
 from utils.fonts import get_font
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
@@ -33,7 +33,7 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
           col_label_cell_kw={"facecolor":"#a5d8ff"},
           cell_kw={"facecolor":"#e7f5ff"},
           )
-    output_path = os.getcwd() + f"/src/data/ncm/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("ncm_search_song")
     plt.savefig(output_path, bbox_inches='tight', dpi=512)
     return MessageSegment.image("file:///" + output_path)
 
@@ -137,7 +137,7 @@ def draw_lyrics_card(song_id: int) -> MessageSegment:
             y += get_text_height(lyrics_font_secondary, block['tlyric']) + padding_between_blocks
     draw.text((image_width // 2, total_height - padding_top), copyright_str, font=copyright_font, fill=(255, 255, 255), anchor='mm')
 
-    output_path = "D:/Bi_Gu-bot/Bi_Gu-bot_test/Bi_Gu-bot" + f"/src/data/ncm/output/lyrics_card_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"  
+    output_path = get_output_path("ncm_lyrics_card")
     image.save(output_path)
     return MessageSegment.image("file:///" + output_path) 
 

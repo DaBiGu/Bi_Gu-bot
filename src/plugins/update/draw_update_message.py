@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 import datetime, os
 from nonebot.adapters.onebot.v11 import MessageSegment
 from utils.fonts import get_font
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 def draw_update_message(message: str) -> MessageSegment:
     background_color = (255, 255, 255) 
@@ -17,6 +17,6 @@ def draw_update_message(message: str) -> MessageSegment:
     draw.text((200, 100), message, font=font, fill=(0, 0, 0))  
     draw.text((40, canvas_height-50), get_copyright_str(), fill=(0, 0, 0, 0), font=_font)
 
-    output_path = os.getcwd() + f"/src/data/update/output/update_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("update_message")
     canvas.save(output_path)
     return MessageSegment.image("file:///" + output_path)

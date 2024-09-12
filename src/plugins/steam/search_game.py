@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 from nonebot.adapters.onebot.v11 import MessageSegment
 from passwords import get_passwords
 from utils.fonts import get_font
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 def search_game(game_name: str) -> List[Dict[str, str]]:
     api_key = get_passwords("isthereanydeal_api_key")
@@ -102,6 +102,6 @@ def draw_search_result(game_name: str) -> MessageSegment:
         y_offset += banner_size[1] + padding
 
     draw.text((40, total_height-50), get_copyright_str(), fill=(255, 255, 255, 255), font=font)
-    output_path = os.getcwd() + f"/src/data/steam/output/search_result_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("steam_search_result")
     image.save(output_path)
     return MessageSegment.image("file:///" + output_path) 

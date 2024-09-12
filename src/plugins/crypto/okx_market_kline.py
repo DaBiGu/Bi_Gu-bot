@@ -5,7 +5,7 @@ import datetime, time, os
 import pandas as pd
 import mplfinance as mpf
 from passwords import get_passwords
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 def get_crypto_kline(crypto_name: str, time_interval: str = "15m") -> MessageSegment:
     api_info = {"flag": "0", "api_key": get_passwords("okx_api_key"),
@@ -67,7 +67,7 @@ def get_crypto_kline(crypto_name: str, time_interval: str = "15m") -> MessageSeg
     fig, axlist = mpf.plot(df, type="candle", volume = True, style = binance_dark, title = f"{instrument_ID} {time_interval} Kline", 
                     figratio = (16, 8), panel_ratios=(4, 1), addplot = bollinger_bands, returnfig = True, block = False)
     fig.text(0.8, 0.92, get_copyright_str(), ha='center', fontsize = 10, color = "white")
-    output_path = os.getcwd() + f"/src/data/crypto/kline_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("crypto_kline")
     fig.savefig(output_path)
     return MessageSegment.image("file:///" + output_path)
 

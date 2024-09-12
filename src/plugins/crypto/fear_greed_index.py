@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Wedge
 from matplotlib.colors import LinearSegmentedColormap
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 import requests, datetime, os
 
 def get_market_fear_greed_index():
@@ -51,6 +51,6 @@ def get_market_fear_greed_index():
     ax.set_ylim(0, 1)
     ax.axis('off')
 
-    output_path = os.getcwd() + f"/src/data/crypto/output/index_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("fear_greed_index")
     fig.savefig(output_path)
     return MessageSegment.image("file:///" + output_path)

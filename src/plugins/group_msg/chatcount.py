@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 import numpy as np
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 def get_datelist(count: int) -> List[str]:
     return [(datetime.datetime.now() - datetime.timedelta(days = i)).strftime("%Y-%m-%d") for i in range(count)]
@@ -67,6 +67,6 @@ def draw_chatcount_bargraph(data: Dict[str, int], time_range: int, nicknames: Di
     plt.title(f'你群{time_range_dict[time_range]}top10 b话王', fontsize = 16, loc='center', x=0.5, y=1.05)
     fig.text(0.75, 0.9, f"数据范围: {get_datelist(time_range)[-1]} 00:00 至{get_datelist(time_range)[0]} 23:59", ha='center', fontsize = 12)
     plt.xticks(rotation=45)
-    output_path = os.getcwd() + f"/src/data/group_msg/output/chatcount_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("chatcount")
     plt.savefig(output_path, dpi = 300, bbox_inches = "tight")
     return MessageSegment.image("file:///" + output_path)

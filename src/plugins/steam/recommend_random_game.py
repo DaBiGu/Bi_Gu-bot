@@ -4,7 +4,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment
 from passwords import get_passwords
 from PIL import Image, ImageDraw, ImageFont
 from utils.fonts import get_font
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 lookup_url = "https://api.isthereanydeal.com/games/lookup/v1"
 info_url = "https://api.isthereanydeal.com/games/info/v2"
@@ -110,6 +110,6 @@ def draw_game_card(steamid: int = None, appid: int = None, recommended: bool = T
         draw.text((avatar_x + 425, avatar_y + 250), playtime_forever, font=get_font("noto-sans", size = 50, weight = 400), fill=(0, 0, 0))
     
     draw.text((40, card_height-80), get_copyright_str(), fill=(0, 0, 0, 255), font=get_font("noto-sans", size = 40, weight = 400))
-    output_path = os.getcwd() + f"/src/data/steam/output/random_game_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("steam_recommend")
     card.save(output_path)
     return MessageSegment.image("file:///" + output_path) 

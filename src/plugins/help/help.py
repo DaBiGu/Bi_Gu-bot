@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 import datetime, os
 from nonebot.adapters.onebot.v11 import MessageSegment
 from utils.fonts import get_font
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 
 def draw_help(helper_message: str, current_page: int, total_pages: int) -> MessageSegment:
     image_path = os.getcwd() + '/src/assets/images/help_background.png'
@@ -28,6 +28,6 @@ def draw_help(helper_message: str, current_page: int, total_pages: int) -> Messa
     draw.text((40, 20), helper_message, fill=(0, 0, 0, 255), font=font)
     draw.text((40, height-50), get_copyright_str() + f"  |  Page {current_page} of {total_pages}", fill=(0, 0, 0, 255), font=font)
 
-    output_path = os.getcwd() + f"/src/data/help/output/help_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("help")
     combined_image.save(output_path)
     return MessageSegment.image('file:///' + output_path)

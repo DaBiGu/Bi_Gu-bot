@@ -1,6 +1,7 @@
 from PIL import Image
 import os, datetime
 from nonebot.adapters.onebot.v11.message import MessageSegment
+from utils.utils import get_output_path
 
 def _symmetric(original_image_path: str, direction: str, percent = 50):
     try:
@@ -20,6 +21,6 @@ def _symmetric(original_image_path: str, direction: str, percent = 50):
         up = original_image.crop((0, 0, width, _height))
         result.paste(up, (0, 0))
         result.paste(up.transpose(Image.FLIP_TOP_BOTTOM), (0, _height))
-    output_path = os.path.join(os.getcwd(), f"src/data/draw_image/output/symmetric_{direction}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png")
+    output_path = get_output_path("symmetric")
     result.save(output_path)
     return MessageSegment.image("file:///" + output_path)

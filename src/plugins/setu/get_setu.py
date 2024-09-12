@@ -1,5 +1,6 @@
 import requests, os, datetime
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
+from utils.utils import get_output_path
 
 def get_setu(setu_tags: list[str] = None) -> Message:
     headers = {
@@ -37,7 +38,7 @@ def get_setu(setu_tags: list[str] = None) -> Message:
     }
 
     img_response = requests.get(img_url, headers=img_headers)
-    output_path = os.getcwd() + f"/src/data/setu/setu_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+    output_path = get_output_path("setu")
     with open(output_path, "wb") as f: f.write(img_response.content)
     return Message([MessageSegment.image("file:///" + output_path), MessageSegment.text(img_details)])
 

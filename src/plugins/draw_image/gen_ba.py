@@ -9,7 +9,7 @@ async def gen_ba(left: str, right: str) -> MessageSegment:
     options = Options()
     options.add_argument("--headless")
     chrome = webdriver.Chrome(options = options)
-    chrome.get("file:///" + os.getcwd() + "/src/data/draw_image/source/ba/ba.html")
+    chrome.get("file:///" + os.getcwd() + "/src/assets/ba/ba.html")
     input_left = chrome.find_element(By.ID, "textL")
     input_right = chrome.find_element(By.ID, "textR")
     for _ in range(4): input_left.send_keys(Keys.BACKSPACE)

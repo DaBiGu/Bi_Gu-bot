@@ -3,7 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, Message
-from utils.utils import get_output_path
+from utils.utils import get_output_path, get_IO_path
 
 from .config import Config
 
@@ -18,6 +18,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
+wife_json_path = get_IO_path("wife_record", "json")
 
 wife = on_command("wife", aliases={"群老婆"})
 
@@ -27,7 +28,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
-    with open(os.getcwd() + "/src/data/wife/record.json", "r") as f: record = json.load(f)
+    with open(wife_json_path, "r") as f: record = json.load(f)
     if today not in record: record[today] = {}
     if group_id not in record[today]: record[today][group_id] = {}
     record[today]["514299983"]["987099115"] = "2464190200"
@@ -44,7 +45,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
         record[today][group_id][_wife] = user_id
     to_delete = [day for day in record if day != today] 
     for day in to_delete: del record[day]
-    with open(os.getcwd() + "/src/data/wife/record.json", "w") as f: json.dump(record, f)
+    with open(wife_json_path, "w") as f: json.dump(record, f)
     avatar_path = get_output_path(f"wife_{_wife}", temp = True)
     with open(avatar_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
     target = MessageSegment.at(_wife)

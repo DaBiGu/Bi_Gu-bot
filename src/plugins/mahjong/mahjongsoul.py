@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from matplotlib.patches import Patch
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from typing import List, Dict
-from utils.utils import get_copyright_str
+from utils.utils import get_copyright_str, get_output_path
 import numpy as np
 import time
 
@@ -64,8 +64,9 @@ def get_user_data(username: str) -> MessageSegment:
     _vs = [np.array([v[0] * 0.65, v[1] * 3000]) for v in vs]
     for i in range(len(scores)):
         ax.text(index[i] + _vs[i][0], scores[i] + _vs[i][1], scores[i], fontsize = 12, ha = 'center', va = 'center')
-    plt.savefig(os.getcwd() + f"/src/data/mahjong/{username}.png", dpi = 300, bbox_inches = "tight")
-    return MessageSegment.image("file:///" + os.getcwd() + f"/src/data/mahjong/{username}.png")
+    output_path = get_output_path(f"mahjongsoul_{username}")
+    plt.savefig(output_path, dpi = 300, bbox_inches = "tight")
+    return MessageSegment.image("file:///" + output_path)
 
 def get_raw_user_data(username: str) -> tuple[List[Dict], List[List[int]], List[int]]:
     url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"

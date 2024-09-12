@@ -6,6 +6,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
+from utils.utils import get_IO_path
 
 import re, time, random, json, os, datetime
 
@@ -18,6 +19,9 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
+antirecall_json_path = get_IO_path("antirecall", "json")
+morning_json_path = get_IO_path("morning", "json")
+chatcount_json_path = get_IO_path("chatcount", "json")
 
 # copied from https://github.com/Utmost-Happiness-Planet/nonebot-plugin-repeater/blob/main/nonebot_plugin_repeater/__init__.py
 def message_preprocess(message: str):
@@ -61,15 +65,13 @@ async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
         repeated_messages.append([message, group_id, time.time()])
     last_message[group_id] = message
 
-    with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "r") as f:
-        chatcount = json.load(f)
+    with open(chatcount_json_path, "r") as f: chatcount = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     if group_id not in chatcount: chatcount[group_id] = {}
     if today not in chatcount[group_id]: chatcount[group_id][today] = {}
     if user_id not in chatcount[group_id][today]: chatcount[group_id][today][user_id] = 1
     else: chatcount[group_id][today][user_id] += 1
-    with open(os.getcwd() + "/src/data/group_msg/chatcount.json", "w") as f:
-        json.dump(chatcount, f)
+    with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)
 
 chatcount = on_command("chatcount", aliases={"cc"})
 @chatcount.handle()
@@ -95,8 +97,7 @@ antirecall = on_notice()
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
     group_id = event.group_id
-    with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "r") as f:
-        group_list = json.load(f)
+    with open(antirecall_json_path, "r") as f: group_list = json.load(f)
     if group_id not in group_list: return
     message_id = event.message_id
     username = event.user_id
@@ -122,8 +123,7 @@ antirecall_ctrl = on_command("antirecall")
 @antirecall_ctrl.handle()
 async def antirecall_ctrl_handle(event: GroupMessageEvent, args = CommandArg()):
     group_id = event.group_id
-    with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "r") as f:
-        group_list = json.load(f)
+    with open(antirecall_json_path, "r") as f: group_list = json.load(f)
     cmd_params = args.extract_plain_text()
     if cmd_params:
         if cmd_params == "on":
@@ -135,8 +135,7 @@ async def antirecall_ctrl_handle(event: GroupMessageEvent, args = CommandArg()):
             if group_id in group_list:
                 group_list.remove(group_id)
                 await antirecall_ctrl.send("已成功关闭本群消息防撤回")
-    with open(os.getcwd() + "/src/data/group_msg/antirecall.json", "w") as f:
-        json.dump(group_list, f)
+    with open(antirecall_json_path, "w") as f: json.dump(group_list, f)
 
 morning = on_command("早安", aliases = {"早", "早上好"}, rule=to_me())
 
@@ -145,8 +144,7 @@ async def morning_handle(event: GroupMessageEvent):
     group_id = str(event.group_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     now = datetime.datetime.now()
-    with open(os.getcwd() + "/src/data/group_msg/morning.json", "r") as f:
-        record = json.load(f)
+    with open(morning_json_path, "r") as f: record = json.load(f)
     if today not in record: record[today] = {}
     if group_id not in record[today]: record[today][group_id] = 0
     if now < datetime.datetime.combine(now.date(), datetime.time(6, 0)):
@@ -162,8 +160,7 @@ async def morning_handle(event: GroupMessageEvent):
         message_str += f"\n你是本群第{group_rank}个, 今日第{total_rank}个对芙芙说早安的哦\n芙芙祝你度过愉快的一天~"
     to_delete = [day for day in record if day != today] 
     for day in to_delete: del record[day]
-    with open(os.getcwd() + "/src/data/group_msg/morning.json", "w") as f:
-        json.dump(record, f)
+    with open(morning_json_path, "w") as f: json.dump(record, f)
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(message_str)])
     await morning.finish(message = message)
 

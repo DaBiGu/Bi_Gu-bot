@@ -3,7 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment
-
+from utils.utils import get_IO_path
 from .config import Config
 import random, json, os, datetime
 import numpy as np
@@ -48,10 +48,10 @@ ys = on_command("ys", aliases={"今日运势"})
 
 @ys.handle()
 async def ys_handle_func(event: MessageEvent):
+    json_path = get_IO_path("luckiness", "json")
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
-    with open(os.getcwd() + "/src/data/dice/luckiness.json", "r") as f:
-        record = json.load(f)
+    with open(json_path, "r") as f: record = json.load(f)
     if today not in record: record[today] = {}
     if user_id not in record[today]: 
         fortune = get_luckiness()
@@ -67,6 +67,5 @@ async def ys_handle_func(event: MessageEvent):
     message = Message([MessageSegment.at(user_id), MessageSegment.text(message_str + f"今日运势为:\n财运: {fortune}\n桃花运: {love}\n事业运: {career}")])
     to_delete = [day for day in record if day != today] 
     for day in to_delete: del record[day]
-    with open(os.getcwd() + "/src/data/dice/luckiness.json", "w") as f:
-        json.dump(record, f)
+    with open(json_path, "w") as f: json.dump(record, f)
     await ys.finish(message)

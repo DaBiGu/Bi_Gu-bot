@@ -3,4 +3,4 @@ if "%~1" neq "" (
 )
 
 conda activate bot
-nb run
+python bot.py

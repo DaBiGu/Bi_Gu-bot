@@ -1,12 +1,7 @@
 import requests, random, datetime, os
 from typing import Dict, Any
 from nonebot.adapters.onebot.v11 import MessageSegment
-
-from sys import path
-path.append(os.getcwd() + "/passwords")
-path.append(os.getcwd() + "/src")
 from passwords import get_passwords
-
 from PIL import Image, ImageDraw, ImageFont
 from utils.fonts import get_font
 

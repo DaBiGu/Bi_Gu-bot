@@ -2,8 +2,6 @@ import okx.MarketData as MarketData
 import okx.PublicData as PublicData
 import time, datetime, os
 
-from sys import path
-path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
 
 def get_market_data() -> str:

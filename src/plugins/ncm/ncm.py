@@ -6,12 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import pandas as pd
 import requests, os, datetime, re
-
-from sys import path
-path.append(os.getcwd() + "/passwords")
-path.append(os.getcwd() + "/src")
 from passwords import get_passwords
-
 from utils.fonts import get_font
 
 def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:

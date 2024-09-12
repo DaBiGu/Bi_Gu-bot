@@ -1,11 +1,7 @@
 from saucenao_api import SauceNao
 from typing import List, Dict
-
-import re, os
-
-from sys import path
-path.append(os.getcwd() + "/passwords")
 from passwords import get_passwords
+import re, os
 
 def search_setu(setu_url: str, search_num: int = 1) -> List[Dict[str, str]]:
     saucenao = SauceNao(get_passwords("saucenao_api"))

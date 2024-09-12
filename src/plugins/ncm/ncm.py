@@ -50,7 +50,7 @@ def parse_lyrics(raw_lyrics: str) -> Dict[str, str]:
     lines = raw_lyrics.strip().split('\n')
     lyrics_dict = {}
     for line in lines:
-        if match:=re.match(r'(\[\d{2}:\d{2}\.\d{2}\])\s*(.*)', line):
+        if match := re.match(r'(\[\d{2}:\d{2}\.\d{2,3}\])\s*(.*)', line):
             time, text = match.groups()
             lyrics_dict[time] = text
     return lyrics_dict 

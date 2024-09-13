@@ -21,11 +21,17 @@ config = get_plugin_config(Config)
 update = on_command("update", permission = SUPERUSER, priority = 2)
 
 @update.handle()
-async def update_handle(bot: Bot):
+async def update_handle():
     update_status = os.popen("git pull").read()
     if "Already up to date" in update_status:
         await update.finish(message = "Already up to date")
     else:
         await update.send(message = draw_update_message(update_status))
         subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])
-    
+
+reboot = on_command("reboot", permission = SUPERUSER)
+
+@reboot.handle()
+async def reboot_handle():
+    await reboot.send(message = "Furina Rebooting...")
+    subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  

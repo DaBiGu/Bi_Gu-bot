@@ -2,10 +2,10 @@ from PIL import Image, ImageDraw, ImageFont
 import datetime, os
 from nonebot.adapters.onebot.v11 import MessageSegment
 from utils.fonts import get_font
-from utils.utils import get_copyright_str, get_output_path
+from utils.utils import get_copyright_str, get_output_path, get_asset_path
 
 def draw_help(helper_message: str, current_page: int, total_pages: int) -> MessageSegment:
-    image_path = os.getcwd() + '/src/assets/images/help_background.png'
+    image_path = get_asset_path("images/help_background.png")
     original_image = Image.open(image_path).convert("RGBA")
 
     opacity = 160

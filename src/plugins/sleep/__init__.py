@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11.adapter import Adapter
 
 from .config import Config
 from .sleep_record import record_sleep, record_awake, get_daily_sleep_duration
+from utils.utils import second_to_hms
 import time
 
 __plugin_meta__ = PluginMetadata(
@@ -19,15 +20,10 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-LOCAL_TIME = -7
+LOCAL_TIME = 8
 
 sleep = on_command("sleep", aliases = {"gn"})
 awake = on_command("awake")
-
-def second_to_hms(seconds):
-            h, r = divmod(seconds, 3600)
-            m, s = divmod(r, 60)
-            return f"{int(h)}小时{int(m)}分钟{int(s)}秒"
 
 @sleep.handle()
 async def sleep_handle(event: MessageEvent, args = CommandArg()):

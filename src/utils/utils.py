@@ -9,3 +9,11 @@ def get_output_path(name: str, temp: bool = False) -> str:
 
 def get_IO_path(filename: str, file_type: str) -> str:
     return os.getcwd() + f"/src/data/{file_type}s/{filename}.{file_type}"
+
+def get_asset_path(subpath: str) -> str:
+    return os.getcwd() + f"/src/assets/{subpath}"
+
+def second_to_hms(seconds):
+    h, r = divmod(seconds, 3600)
+    m, s = divmod(r, 60)
+    return f"{int(h)}小时{int(m)}分钟{int(s)}秒" 

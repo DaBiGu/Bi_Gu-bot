@@ -10,6 +10,7 @@ from ..setu import get_setu
 from nonebot import on_command, on_fullmatch, on_notice, on_keyword
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
+from utils.utils import get_asset_path, second_to_hms
 
 import time, random, os
 
@@ -21,11 +22,6 @@ __plugin_meta__ = PluginMetadata(
 )
 
 config = get_plugin_config(Config)
-
-def second_to_hms(seconds):
-    h, r = divmod(seconds, 3600)
-    m, s = divmod(r, 60)
-    return f"{int(h)}小时{int(m)}分钟{int(s)}秒"
 
 def draw_progress_bar(progress: float) -> str:
     filled_length = int(20 * progress)
@@ -107,13 +103,13 @@ yuyu = on_command("玉玉", aliases= {"yuyu"})
 
 @yuyu.handle()
 async def yuyu_handle_func():
-    await yuyu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/miscellaneous/yuyu.gif")]))
+    await yuyu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/yuyu.gif"))]))
 
 fufu = on_command("芙芙", aliases= {"fufu"})
 
 @fufu.handle()
 async def fufu_handle_func():
-    await fufu.finish(Message([MessageSegment.image("file:///" + os.getcwd() + "/src/data/miscellaneous/fufu.gif")]))
+    await fufu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))
 
 sb = on_fullmatch("阿姨洗铁路")
 
@@ -130,10 +126,10 @@ async def welcome_handle_func():
 poke = on_notice()
 
 @poke.handle()
-async def poke_handle(event: PokeNotifyEvent):
-    if event.is_tome(): 
-        pass
-
+async def poke_handle(event: PokeNotifyEvent, bot: Bot):
+    if event.is_tome():
+        if event.group_id: await bot.call_api("group_poke", group_id = event.group_id, user_id = event.user_id)
+        else: await bot.call_api("friend_poke", user_id = event.user_id)
 
 ciallo = on_keyword(["ciallo", "Ciallo"])
 last_ciallo_time = {}
@@ -146,7 +142,7 @@ async def ciallo_handle_func(event: GroupMessageEvent):
     if time.time() - last_ciallo_time[group_id] <= 300.0: return
     else:
         last_ciallo_time[group_id] = time.time()
-        await ciallo.finish(MessageSegment.record("file:///" + os.getcwd() + "/src/data/miscellaneous/ciallo.mp3"))
+        await ciallo.finish(MessageSegment.record("file:///" + get_asset_path("ciallo.mp3")))
 
 leave = on_notice()
 

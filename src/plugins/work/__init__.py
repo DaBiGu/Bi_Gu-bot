@@ -10,6 +10,7 @@ import time
 from .config import Config
 from .work_recorder import start_work, stop_work
 from .today_work_analysis import today_work_analysis
+from utils.utils import second_to_hms
 
 __plugin_meta__ = PluginMetadata(
     name="work",
@@ -20,12 +21,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-work = on_command("work")
-
-def second_to_hms(seconds):
-    h, r = divmod(seconds, 3600)
-    m, s = divmod(r, 60)
-    return f"{int(h)}小时{int(m)}分钟{int(s)}秒"  
+work = on_command("work") 
 
 @work.handle()
 async def work_handle(event: MessageEvent, args = CommandArg()):

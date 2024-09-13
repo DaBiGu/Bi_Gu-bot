@@ -111,6 +111,12 @@ fufu = on_command("芙芙", aliases= {"fufu"})
 async def fufu_handle_func():
     await fufu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))
 
+die = on_command("kill")
+
+@die.handle()
+async def die_handle_func():
+    await die.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/die.png"))]))
+
 sb = on_fullmatch("阿姨洗铁路")
 
 @sb.handle()

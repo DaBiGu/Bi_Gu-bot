@@ -19,6 +19,7 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 wife_json_path = get_IO_path("wife_record", "json")
+last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
 wife = on_command("wife", aliases={"群老婆"})
 
@@ -29,6 +30,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
     with open(wife_json_path, "r") as f: record = json.load(f)
+    with open(last_sent_time_json_path, "r") as f: last_sent_time = json.load(f)
     if today not in record: record[today] = {}
     if group_id not in record[today]: record[today][group_id] = {}
     record[today]["514299983"]["987099115"] = "2464190200"
@@ -38,8 +40,12 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     else:
         single_members = []
         for member in raw_group_members:
-            if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id] and time.time() - member["last_sent_time"] <=129600:
-                single_members.append(str(member["user_id"]))
+            if group_id in last_sent_time:
+                if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id]:
+                    if str(member["user_id"]) in last_sent_time[group_id]:
+                        if time.time() - last_sent_time[group_id][str(member["user_id"])] <= 129600:
+                            single_members.append(str(member["user_id"]))
+        if not single_members: message = "本群没有符合条件的群友"
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id

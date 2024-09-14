@@ -22,6 +22,7 @@ config = get_plugin_config(Config)
 antirecall_json_path = get_IO_path("antirecall", "json")
 morning_json_path = get_IO_path("morning", "json")
 chatcount_json_path = get_IO_path("chatcount", "json")
+last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
 # copied from https://github.com/Utmost-Happiness-Planet/nonebot-plugin-repeater/blob/main/nonebot_plugin_repeater/__init__.py
 def message_preprocess(message: str):
@@ -44,7 +45,7 @@ repeated_messages = []
 shortest_times = 2
 
 @m.handle()
-async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
+async def group_message_handle(event: GroupMessageEvent, bot: Bot):
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     global last_message, message_times
@@ -72,6 +73,11 @@ async def repeater_and_chatcount(event: GroupMessageEvent, bot: Bot):
     if user_id not in chatcount[group_id][today]: chatcount[group_id][today][user_id] = 1
     else: chatcount[group_id][today][user_id] += 1
     with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)
+
+    with open(last_sent_time_json_path, "r") as f: record = json.load(f)
+    if group_id not in record: record[group_id] = {}
+    record[group_id][user_id] = int(time.time())
+    with open(last_sent_time_json_path, "w") as f: json.dump(record, f)
 
 chatcount = on_command("chatcount", aliases={"cc"})
 @chatcount.handle()

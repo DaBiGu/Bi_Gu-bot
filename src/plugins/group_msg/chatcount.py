@@ -74,7 +74,7 @@ def draw_chatcount_bargraph(data: Dict[str, int], time_range: int, nicknames: Di
     ax.set_ylim(*ylim)
     ax.set_xticklabels(_nicknames, font = font_path, fontsize = 12)
     fig.text(0.75, -0.1, get_copyright_str(), ha='center', font = font_path, fontsize = 12)
-    plt.ylabel('b话量')
+    plt.ylabel('b话量', font = font_path)
     plt.title(f'你群{time_range_dict[time_range]}top10 b话王', font = font_path, fontsize = 16, loc='center', x=0.5, y=1.05)
     fig.text(0.75, 0.9, f"数据范围: {get_datelist(time_range)[-1]} 00:00 至{get_datelist(time_range)[0]} 23:59", ha='center', font = font_path, fontsize = 12)
     plt.xticks(rotation=45)

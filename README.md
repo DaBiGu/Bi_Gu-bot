@@ -18,6 +18,7 @@
 * 群内消息防撤回
     * 使用`/antirecall on/off` 来开启/关闭此功能
 * `/chatcount today|week|month` 返回今日/本周/本月群内发言量top10
+    * 可选参数 `-k` 以手绘风格绘制
 
 ## `help`
 * `/help` 返回当前支持的指令列表
@@ -57,7 +58,7 @@
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
 * `/steam random` 从群友推荐列表中随机推荐一款游戏
-* `/steam random -a|all` 随机推荐一款游戏, 可以来自其他群
+    * 可选参数 `-a|all` 推荐的游戏可以来自其他群
 * `/steam random add [appid]` 将游戏`[appid]`添加到本群推荐列表
 * `/steam recommend [steamid]` 随机从用户`[steamid]`的库存推荐游戏
 * `/steam recommend [steamid] [appid]` 从用户`[steamid]`的库存推荐id为`[appid]`的游戏
@@ -68,7 +69,7 @@
 
 ## `wife`
 * `/wife` 返回今日随机群老婆
-* `/wife -s` 返回今日随机群老婆, 不@对方
+    * 可选参数 `-s` 不@对方
 
 ## `work`
 * `/work start [name]` 开始名为`name`的工作

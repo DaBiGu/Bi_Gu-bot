@@ -14,6 +14,7 @@ class Helper_Messages:
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
 /chatcount today|week|month 查看今日/本周/本月群内b话量top10\n \
+    可选参数 -k 以手绘风格绘制\n \
 \n \
 ———————— image ————————\n \
 /喜报 [content] 绘制内容为[content]的喜报\n \
@@ -46,7 +47,7 @@ class Helper_Messages:
 "———————— steam ————————\n \
 /steam [steamid] 查看用户[steamid]的steam游戏状态\n \
 /steam random 从群友推荐列表中随机推荐一款游戏\n \
-/steam random -a|all 随机推荐一款游戏, 可以来自其他群 \n \
+    可选参数 -a|all 使推荐的游戏可以来自其他群 \n \
 /steam random add [appid] 将游戏[appid]添加到本群推荐列表\n \
 /steam recommend [steamid] 随机从用户[steamid]的库存推荐游戏\n \
 /steam recommend [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏\n \
@@ -56,7 +57,7 @@ class Helper_Messages:
 \n \
 ———————— wife ————————\n \
 /wife 今日随机群老婆 \n \
-/wife -s 今日随机群老婆, 不@对方\n \
+    可选参数 -s 不@对方\n \
 \n \
 ———————— work ————————\n \
 /work start [name] 开始一项名为[name]的工作\n \
@@ -111,7 +112,8 @@ Sep 8 2024: 支持对芙芙说早安; 支持记录群友的游戏推荐列表并
 Sep 9 2024: 推荐列表记录群名和推荐人\n \
 Sep 12 2024: 更好的网易云歌曲歌词卡片绘制方式\n \
 Sep 13 2024: 全面整理数据储存方式\n \
-Sep 15 2024: 群友最后发言时间改为本地记录"]
+Sep 15 2024: 群友最后发言时间改为本地记录\n \
+Sep 17 2024: 增加手绘风格绘制群友b话量统计"]
     
     def get_helper_messages(self):
         return self.helper_messages

@@ -8,6 +8,7 @@ from utils.utils import get_copyright_str, get_output_path, get_IO_path
 from utils.fonts import get_font_path
 from matplotlib import cm
 from matplotlib.colors import Normalize
+from pathlib import Path
 
 def mix_color(color, white=(1, 1, 1), ratio=0.5):
     return [(1 - ratio) * c + ratio * w for c, w in zip(color, white)]
@@ -30,7 +31,7 @@ def get_chatcount(group_id: str, count: int) -> Dict[str, int] | None:
     return dict(list(sorted_chatcount.items())[:10]) if len(sorted_chatcount) > 10 else sorted_chatcount
 
 def draw_chatcount_bargraph(data: Dict[str, int], time_range: int, nicknames: Dict[int, str], kawaii: bool = False) -> MessageSegment:
-    font_path = get_font_path("yahei-consolas") if not kawaii else get_font_path("xiaolai")
+    font_path = Path(get_font_path("yahei-consolas")) if not kawaii else Path(get_font_path("xiaolai"))
     _data = {}
     time_range_dict = {1: "今日", 7: "本周", 30: "本月"}
     for key, value in data.items():

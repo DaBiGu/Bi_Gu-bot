@@ -2,6 +2,7 @@ import os
 from PIL import ImageFont
 
 FONTS = {"noto-sans": os.getcwd() + "/src/assets/fonts/NotoSansCJKsc-VF.otf",
+         "noto-sans-regular": os.getcwd() + "/src/assets/fonts/NotoSansSC-Regular.ttf",
          "yahei-consolas": os.getcwd() + "/src/assets/fonts/YaHei-consolas-hybrid.ttf",
          "xi_bei-bao": os.getcwd() + "/src/assets/fonts/xi_bei_bao.ttf",
          "roboto-mono": os.getcwd() + "/src/assets/fonts/RobotoMono-Regular.ttf",

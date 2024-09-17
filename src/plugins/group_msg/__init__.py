@@ -7,6 +7,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNotic
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
 from utils.utils import get_IO_path
+from typing import Dict, Any, Optional
 
 import re, time, random, json, os, datetime
 
@@ -177,5 +178,14 @@ async def morning_handle(event: GroupMessageEvent):
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(message_str)])
     await morning.finish(message = message)
 
-
-
+@Bot.on_called_api
+async def count_bot_messages(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):
+    if api == "send_msg" or "send_group_msg":
+        group_id = str(data["group_id"])
+        with open(chatcount_json_path, "r") as f: chatcount = json.load(f)
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        if group_id not in chatcount: chatcount[group_id] = {}
+        if today not in chatcount[group_id]: chatcount[group_id][today] = {}
+        if str(bot.self_id) not in chatcount[group_id][today]: chatcount[group_id][today][str(bot.self_id)] = 1
+        else: chatcount[group_id][today][str(bot.self_id)] += 1
+        with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)

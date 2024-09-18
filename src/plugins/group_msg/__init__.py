@@ -92,16 +92,16 @@ async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg
         if " " in cmd_params:
             _ = cmd_params.split(" ")
             time_range = _[0]
-            kawaii = True if _[1] == "-k" else False
-        else: time_range, kawaii = cmd_params, False
+            kawaii = False if _[1] == "-o" else True
+        else: time_range, kawaii = cmd_params, True
         if time_range == "today": 
             message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 1), 1, nicknames, kawaii)
         elif time_range == "week":
             message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), 7, nicknames, kawaii)
         elif time_range == "month": 
             message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 30), 30, nicknames, kawaii)
-        elif time_range == "-k":
-            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), 7, nicknames, kawaii = True)
+        elif time_range == "-o":
+            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), 7, nicknames, kawaii = False)
         else: return
     else: message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), 7), 7, nicknames)
     await chatcount.finish(message = message)

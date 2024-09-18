@@ -14,7 +14,7 @@ class Helper_Messages:
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
 /chatcount today|week|month 查看今日/本周/本月群内b话量top10\n \
-    可选参数 -k 以手绘风格绘制\n \
+    可选参数 -o 以默认风格绘制\n \
 \n \
 ———————— image ————————\n \
 /喜报 [content] 绘制内容为[content]的喜报\n \

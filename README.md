@@ -18,7 +18,7 @@
 * 群内消息防撤回
     * 使用`/antirecall on/off` 来开启/关闭此功能
 * `/chatcount today|week|month` 返回今日/本周/本月群内发言量top10
-    * 可选参数 `-k` 以手绘风格绘制
+    * 可选参数 `-o` 以默认风格绘制
 
 ## `help`
 * `/help` 返回当前支持的指令列表

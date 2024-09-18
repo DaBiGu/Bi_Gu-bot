@@ -22,11 +22,12 @@ def draw_help(helper_message: str, current_page: int, total_pages: int) -> Messa
     combined_image = Image.alpha_composite(original_image, white_layer)
 
     draw = ImageDraw.Draw(combined_image)
-    font = get_font("yahei-consolas", size = 18)
+    main_font = get_font("HYWenHei-65W", size = 18)
+    copyright_font = get_font("yahei-consolas", size = 18)
  
     width, height = original_image.size
-    draw.text((40, 20), helper_message, fill=(0, 0, 0, 255), font=font)
-    draw.text((40, height-50), get_copyright_str() + f"  |  Page {current_page} of {total_pages}", fill=(0, 0, 0, 255), font=font)
+    draw.text((40, 20), helper_message, fill=(0, 0, 0, 255), font=main_font)
+    draw.text((40, height-50), get_copyright_str() + f"  |  Page {current_page} of {total_pages}", fill=(0, 0, 0, 255), font=copyright_font)
 
     output_path = get_output_path("help")
     combined_image.save(output_path)

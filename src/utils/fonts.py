@@ -6,7 +6,9 @@ FONTS = {"noto-sans": os.getcwd() + "/src/assets/fonts/NotoSansCJKsc-VF.otf",
          "yahei-consolas": os.getcwd() + "/src/assets/fonts/YaHei-consolas-hybrid.ttf",
          "xi_bei-bao": os.getcwd() + "/src/assets/fonts/xi_bei_bao.ttf",
          "roboto-mono": os.getcwd() + "/src/assets/fonts/RobotoMono-Regular.ttf",
-         "xiaolai": os.getcwd() + "/src/assets/fonts/XiaolaiSC-Regular.ttf"}
+         "xiaolai": os.getcwd() + "/src/assets/fonts/XiaolaiSC-Regular.ttf",
+         "HYWenHei-65W": os.getcwd() + "/src/assets/fonts/HYWenHei-65W.ttf",
+         "HYWenHei-85W": os.getcwd() + "/src/assets/fonts/HYWenHei-85W.otf",}
 
 def get_font_path(font_name: str) -> str:
     return FONTS[font_name]

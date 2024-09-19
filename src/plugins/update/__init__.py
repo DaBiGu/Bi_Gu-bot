@@ -3,11 +3,13 @@ from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Bot
+from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .draw_update_message import draw_update_message
+from utils.utils import get_data_path
 
-import subprocess, os
+import subprocess, os, requests, zipfile, shutil
 
 __plugin_meta__ = PluginMetadata(
     name="update",
@@ -35,3 +37,13 @@ reboot = on_command("reboot", permission = SUPERUSER)
 async def reboot_handle():
     await reboot.send(message = "Furina Rebooting...")
     subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  
+
+@scheduler.scheduled_job("cron", hour = 0, minute = 0)
+async def update_chromedriver():
+    request_url, download_url = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json", None
+    for data in requests.get(request_url).json()["channels"]["Stable"]["downloads"]["chromedriver"]:
+        if data["platform"] == "win64": download_url = data["url"]
+    with open(get_data_path("chromedriver.zip", temp = True), "wb") as file: file.write(requests.get(download_url).content)
+    with zipfile.ZipFile(get_data_path("chromedriver.zip", temp = True), "r") as file: file.extractall(get_data_path(temp = True))
+    os.remove(os.getcwd() + "/chromedriver.exe")
+    shutil.move(get_data_path("chromedriver-win64/chromedriver.exe"), os.getcwd())

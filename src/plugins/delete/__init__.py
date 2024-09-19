@@ -18,7 +18,7 @@ config = get_plugin_config(Config)
 def get_dir_path(path: str) -> str:
     return os.getcwd() + path
 
-@scheduler.scheduled_job("cron", hour = 0, minute = 0)
+@scheduler.scheduled_job("cron", hour = 0, minute = 5)
 async def delete_unnecessary_files():
     dir_list = ["/src/data/output", "/src/data/temp"]
     for _dir in dir_list:

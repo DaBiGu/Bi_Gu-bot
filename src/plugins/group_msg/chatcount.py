@@ -13,13 +13,20 @@ from pathlib import Path
 def mix_color(color, white=(1, 1, 1), ratio=0.5):
     return [(1 - ratio) * c + ratio * w for c, w in zip(color, white)]
 
-def get_datelist(count: int) -> List[str]:
-    return [(datetime.datetime.now() - datetime.timedelta(days = i)).strftime("%Y-%m-%d") for i in range(count)]
+def get_datelist(time_range: str) -> List[str]:
+    today = datetime.datetime.now()
+    first_day = today - datetime.timedelta(days = today.weekday()) if time_range == "week" else today.replace(day = 1) if time_range == "month" else \
+                today.replace(month = 1, day = 1) if time_range == "year" else today
+    datelist, current_day = [], first_day
+    while current_day <= today:
+        datelist.append(current_day.strftime("%Y-%m-%d"))
+        current_day += datetime.timedelta(days = 1)
+    return datelist
 
-def get_chatcount(group_id: str, count: int) -> Dict[str, int] | None:
+def get_chatcount(group_id: str, time_range: str) -> Dict[str, int] | None:
     with open(get_IO_path("chatcount", "json"), "r") as f:
         raw_chatcount = json.load(f)
-    datelist = get_datelist(count)
+    datelist = get_datelist(time_range)
     chatcount = {}
     for date in datelist:
         if group_id not in raw_chatcount: return None
@@ -30,10 +37,10 @@ def get_chatcount(group_id: str, count: int) -> Dict[str, int] | None:
     sorted_chatcount = dict(sorted(chatcount.items(), key = lambda item: item[1], reverse = True))
     return dict(list(sorted_chatcount.items())[:10]) if len(sorted_chatcount) > 10 else sorted_chatcount
 
-def draw_chatcount_bargraph(data: Dict[str, int], time_range: int, nicknames: Dict[int, str], kawaii: bool = True) -> MessageSegment:
+def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknames: Dict[int, str], kawaii: bool = True) -> MessageSegment:
     font_path = Path(get_font_path("noto-sans-regular")) if not kawaii else Path(get_font_path("xiaolai"))
     _data = {}
-    time_range_dict = {1: "今日", 7: "本周", 30: "本月"}
+    time_range_dict = {"today": "今日", "week": "本周", "month": "本月", "year": "本年"}
     for key, value in data.items():
         _data[nicknames[int(key)]] = value
     user_ids = list(data.keys())

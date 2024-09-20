@@ -49,8 +49,6 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id
-    to_delete = [day for day in record if day != today] 
-    for day in to_delete: del record[day]
     with open(wife_json_path, "w") as f: json.dump(record, f)
     avatar_path = get_output_path(f"wife_{_wife}", temp = True)
     with open(avatar_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
@@ -62,3 +60,17 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), target,
                        MessageSegment.image("file:///" + avatar_path)])
     await wife.finish(message = message)
+
+wife_count = on_command(aliases={"群魅魔"})
+@wife_count.handle()
+async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
+    group_id = str(event.group_id)
+    user_id = str(event.user_id)
+    count = 0
+    with open(wife_json_path, "r") as f: record = json.load(f)
+    for date in record:
+        if group_id in record[date]:
+            if user_id in record[date][group_id]:
+                count += 1
+    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{count}次群友的老婆了, 可喜可贺")
+    await wife_count.finish(message = message)

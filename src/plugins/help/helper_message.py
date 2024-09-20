@@ -13,8 +13,9 @@ class Helper_Messages:
 \n \
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
-/chatcount today|week|month 查看今日/本周/本月群内b话量top10\n \
+/chatcount|cc today|week|month 查看今日/本周/本月群内b话量top10\n \
     可选参数 -o 以默认风格绘制\n \
+    数据统计开始于2024-09-06 \n\
 \n \
 ———————— image ————————\n \
 /喜报 [content] 绘制内容为[content]的喜报\n \
@@ -58,6 +59,8 @@ class Helper_Messages:
 ———————— wife ————————\n \
 /wife 今日随机群老婆 \n \
     可选参数 -s 不@对方\n \
+/rbq 查看成为群老婆次数\n \
+    数据统计开始于2024-09-21 \n\
 \n \
 ———————— work ————————\n \
 /work start [name] 开始一项名为[name]的工作\n \
@@ -114,7 +117,8 @@ Sep 12 2024: 更好的网易云歌曲歌词卡片绘制方式\n \
 Sep 13 2024: 全面整理数据储存方式\n \
 Sep 15 2024: 群友最后发言时间改为本地记录\n \
 Sep 17 2024: 增加手绘风格绘制群友b话量统计; 芙芙自己也会加入统计\n \
-Sep 19 2024: 自动更新chromedriver"]
+Sep 19 2024: 自动更新chromedriver\n \
+Sep 21 2024: 支持统计群老婆次数"]
     
     def get_helper_messages(self):
         return self.helper_messages

@@ -61,7 +61,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                        MessageSegment.image("file:///" + avatar_path)])
     await wife.finish(message = message)
 
-wife_count = on_command(aliases={"群魅魔"})
+wife_count = on_command("rbq", aliases={"群魅魔"})
 @wife_count.handle()
 async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
     group_id = str(event.group_id)

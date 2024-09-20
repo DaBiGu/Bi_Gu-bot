@@ -64,7 +64,7 @@ def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknames: Di
     fig_width, fig_height = fig.get_size_inches()
 
     for bar in bars:
-        avatar = Image.open(avatars[bars.index(bar)])
+        avatar = Image.open(avatars[bars.index(bar)]).convert("RGB")
         avatar_width = (xlim[1]-xlim[0]) * fig_height
         avatar_height = (ylim[1]-ylim[0]) * fig_width
 

@@ -164,5 +164,5 @@ welcome = on_notice()
 @welcome.handle()
 async def welcome_handle(event: GroupIncreaseNoticeEvent):
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
-                      MessageSegment.image("file:///" + os.getcwd() + "/src/data/miscellaneous/fufu.gif")])
+                      MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)

@@ -54,7 +54,7 @@ def parse_lyrics(raw_lyrics: str) -> Dict[str, str]:
             lyrics_dict[time] = text
     return lyrics_dict 
 
-def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], int]:
+def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], str]:
     lyrics = {}
     lyrics_raw = apis.track.GetTrackLyrics(song_id)
     song_type = 0
@@ -62,7 +62,9 @@ def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], int]:
         lyrics[x] = ""
         if x in lyrics_raw:
             lyrics[x] = lyrics_raw[x]["lyric"] if lyrics_raw[x]["lyric"] else ""
-        if lyrics[x]: song_type += 1
+    song_type = "jpn" if lyrics["lrc"] and lyrics["tlyric"] and lyrics["romalrc"] else \
+                "eng" if lyrics["lrc"] and lyrics["tlyric"] else \
+                "can" if lyrics["lrc"] and lyrics["romalrc"] else "chn"
     song_info = apis.track.GetTrackDetail(song_id)["songs"][0]
     lyrics["song_name"] = song_info["name"]
     lyrics["song_artists"] = " / ".join(song_info["ar"][x]["name"] for x in range(len(song_info["ar"])))
@@ -72,12 +74,14 @@ def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], int]:
     for timestamp in timestamps:
         temp = {}
         lrc_text = lrc_dict.get(timestamp, '')
-        if song_type >= 2: tlyric_text = tlyric_dict.get(timestamp, '')
-        if song_type >= 3: romalrc_text = romalrc_dict.get(timestamp, '')
-        if song_type == 3:
+        if song_type in ["jpn", "eng"]: tlyric_text = tlyric_dict.get(timestamp, '')
+        if song_type in ["jpn", "can"]: romalrc_text = romalrc_dict.get(timestamp, '')
+        if song_type == "jpn":
             if lrc_text and tlyric_text and romalrc_text: temp = {'lrc': lrc_text, 'tlyric': tlyric_text, 'romalrc': romalrc_text}
-        elif song_type == 2:
+        elif song_type == "eng":
             if lrc_text and tlyric_text: temp = {'lrc': lrc_text, 'tlyric': tlyric_text}
+        elif song_type == "can":
+            if lrc_text and romalrc_text: temp = {'lrc': lrc_text, 'romalrc': romalrc_text}
         else: 
             if lrc_text: temp = {'lrc': lrc_text}  
         if temp: combined_lyrics.append(temp)
@@ -93,7 +97,7 @@ def draw_lyrics_card(song_id: int) -> MessageSegment:
     font_color_primary = '#FFFFFF'
     font_color_secondary = '#B3B6C4'
     title_font = get_font("noto-sans", size = 50, weight = 700)
-    lyrics_font_primary = get_font("noto-sans", size = 38, weight = 700) if song_type >= 2 else get_font("noto-sans", size = 38, weight = 400)
+    lyrics_font_primary = get_font("noto-sans", size = 38, weight = 400) if song_type == "chn" else get_font("noto-sans", size = 38, weight = 700)
     lyrics_font_secondary = get_font("noto-sans", size = 28, weight = 400)
     copyright_font = get_font("noto-sans", size = 18, weight = 400)
     padding_top = 40

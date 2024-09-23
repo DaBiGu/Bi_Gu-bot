@@ -16,6 +16,7 @@ def get_market_fear_greed_index():
     _types = [data['data'][i]['value_classification'] for i in [0, 1, 7]]
     index = indexs[0]
     fig, ax = plt.subplots(figsize=(8, 8), subplot_kw={'aspect': 'equal'})
+    plt.style.use('default')
     fig.patch.set_facecolor('#222222')
     ax.set_facecolor('#222222')
     num_colors = 100 

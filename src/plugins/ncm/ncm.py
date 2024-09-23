@@ -5,8 +5,7 @@ from typing import Dict, List, Any, Tuple
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import pandas as pd
-import requests, os, datetime, re
-from passwords import get_passwords
+import re
 from utils.fonts import get_font
 from utils.utils import get_copyright_str, get_output_path
 
@@ -22,8 +21,9 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
         song_ids.append(song["id"])
     df = pd.DataFrame({"Song Name": song_names, "Artists": song_artists, "Song ID": song_ids})
     plt.figure(figsize=(20, 5 * limit / 10))
+    plt.style.use('default')
     Table(df, 
-          textprops={"fontsize": 15, "ha": "center","fontfamily": "DengXian"},
+          textprops={"fontsize": 15, "ha": "center", "fontfamily": "DengXian"},
           column_definitions=[
             ColDef(name = "index", width = 5),
             ColDef(name = "Song Name", width = 30),
@@ -34,7 +34,7 @@ def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
           cell_kw={"facecolor":"#e7f5ff"},
           )
     output_path = get_output_path("ncm_search_song")
-    plt.savefig(output_path, bbox_inches='tight', dpi=512)
+    plt.savefig(output_path, bbox_inches='tight', dpi = 512)
     return MessageSegment.image("file:///" + output_path)
 
 def get_ncm_song_card(song_id: int) -> MessageSegment:

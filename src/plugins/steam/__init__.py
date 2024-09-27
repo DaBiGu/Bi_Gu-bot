@@ -113,7 +113,7 @@ async def report_steam_status():
     to_sends = []
     global steam_data
     steam_status = steam_data.get_data()
-    bot = get_bot("1176129206")
+    bot = get_bot()
     for group_id, steam_ids in steam_status.items():
         for steam_id, game_status in steam_ids.items():
             username, current_steam_status = get_steam_playing(steam_id)

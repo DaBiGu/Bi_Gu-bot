@@ -177,11 +177,12 @@ async def morning_handle(event: GroupMessageEvent):
 @Bot.on_called_api
 async def count_bot_messages(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):
     if api == "send_msg" or "send_group_msg":
-        group_id = str(data["group_id"])
-        with open(chatcount_json_path, "r") as f: chatcount = json.load(f)
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        if group_id not in chatcount: chatcount[group_id] = {}
-        if today not in chatcount[group_id]: chatcount[group_id][today] = {}
-        if str(bot.self_id) not in chatcount[group_id][today]: chatcount[group_id][today][str(bot.self_id)] = 1
-        else: chatcount[group_id][today][str(bot.self_id)] += 1
-        with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)
+        if "group_id" in data:
+            group_id = str(data["group_id"])
+            with open(chatcount_json_path, "r") as f: chatcount = json.load(f)
+            today = datetime.datetime.now().strftime("%Y-%m-%d")
+            if group_id not in chatcount: chatcount[group_id] = {}
+            if today not in chatcount[group_id]: chatcount[group_id][today] = {}
+            if str(bot.self_id) not in chatcount[group_id][today]: chatcount[group_id][today][str(bot.self_id)] = 1
+            else: chatcount[group_id][today][str(bot.self_id)] += 1
+            with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)

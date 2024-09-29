@@ -7,7 +7,7 @@ from utils.utils import get_output_path, get_IO_path
 
 from .config import Config
 
-import datetime, os, json, random, requests, time
+import datetime, json, random, requests, time
 
 __plugin_meta__ = PluginMetadata(
     name="wife",
@@ -49,16 +49,32 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id
-    with open(wife_json_path, "w") as f: json.dump(record, f)
-    avatar_path = get_output_path(f"wife_{_wife}", temp = True)
-    with open(avatar_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
     target = MessageSegment.at(_wife)
+    force_wife_message = ""
     if option := args.extract_plain_text():
-        if option == "-s": 
+        if "-f" in option:
+            for seg in event.message:
+                if seg.type == "at": 
+                    force_target = str(seg.data.get("qq"))
+                    break
+            if random.randint(1, 100) <= 25:
+                force_wife_message = " 强娶成功!"
+                record[today][group_id][user_id] = force_target
+                if force_target in record[today][group_id]: 
+                    original_wife = record[today][group_id][force_target]
+                    for _ in [force_target, original_wife]: del record[today][group_id][_]
+                record[today][group_id][force_target] = user_id
+                _wife = force_target
+                target = MessageSegment.at(force_target)
+            else: force_wife_message = " 强娶失败!"
+        if "-s" in option: 
             for member in raw_group_members:
                 if str(member["user_id"]) == _wife: target = MessageSegment.text(" @" + member["nickname"])
-    message = Message([MessageSegment.at(user_id), MessageSegment.text(" 你今天的群老婆是 "), target,
+    avatar_path = get_output_path(f"wife_{_wife}", temp = True)
+    with open(avatar_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
+    message = Message([MessageSegment.at(user_id), force_wife_message, MessageSegment.text(" 你今天的群老婆是 "), target,
                        MessageSegment.image("file:///" + avatar_path)])
+    with open(wife_json_path, "w") as f: json.dump(record, f)
     await wife.finish(message = message)
 
 wife_count = on_command("rbq", aliases={"群魅魔"})

@@ -51,6 +51,7 @@ async def group_message_handle(event: GroupMessageEvent, bot: Bot):
     user_id = str(event.user_id)
     global last_message, message_times
     message, raw_message, has_image = message_preprocess(str(event.message))
+    if not message: return
     if list(message)[0] == "/" or has_image: return
     if last_message.get(group_id) == message:
         message_times[group_id] = (message_times[group_id] + 1) % 3

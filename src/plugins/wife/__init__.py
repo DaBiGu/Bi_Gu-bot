@@ -57,15 +57,19 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if seg.type == "at": 
                     force_target = str(seg.data.get("qq"))
                     break
-            if random.randint(1, 100) <= 25:
-                force_wife_message = " 强娶成功!"
-                record[today][group_id][user_id] = force_target
-                if force_target in record[today][group_id]: 
-                    original_wife = record[today][group_id][force_target]
-                    for _ in [force_target, original_wife]: del record[today][group_id][_]
-                record[today][group_id][force_target] = user_id
-                _wife = force_target
-                target = MessageSegment.at(force_target)
+            force_wife_random = random.randint(1, 100)
+            await bot.send_group_msg(group_id = group_id, message = str(force_wife_random))
+            if force_wife_random <= 25:
+                if force_target: 
+                    force_wife_message = " 强娶成功!"
+                    record[today][group_id][user_id] = force_target
+                    if force_target in record[today][group_id]: 
+                        original_wife = record[today][group_id][force_target]
+                        for _ in [force_target, original_wife]: del record[today][group_id][_]
+                    record[today][group_id][force_target] = user_id
+                    _wife = force_target
+                    target = MessageSegment.at(force_target)
+                else: force_wife_message = " 找不到要强娶的对象, 请检查输入格式\n"
             else: force_wife_message = " 强娶失败!"
         if "-s" in option: 
             for member in raw_group_members:

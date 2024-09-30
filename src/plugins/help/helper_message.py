@@ -59,6 +59,8 @@ class Helper_Messages:
 ———————— wife ————————\n \
 /wife 今日随机群老婆 \n \
     可选参数 -s 不@对方\n \
+    可选参数 -f [@target] 强娶[target]为群老婆\n \
+        *只有25%概率成功并且每天只能使用一次\n \
 /rbq 查看成为群老婆次数\n \
     数据统计开始于2024-09-21 \n\
 \n \
@@ -118,7 +120,8 @@ Sep 13 2024: 全面整理数据储存方式\n \
 Sep 15 2024: 群友最后发言时间改为本地记录\n \
 Sep 17 2024: 增加手绘风格绘制群友b话量统计; 芙芙自己也会加入统计\n \
 Sep 19 2024: 自动更新chromedriver\n \
-Sep 21 2024: 支持统计群老婆次数"]
+Sep 21 2024: 支持统计群老婆次数\n \
+Sep 30 2024: 支持指定对象强娶群老婆功能"]
     
     def get_helper_messages(self):
         return self.helper_messages

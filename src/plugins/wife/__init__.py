@@ -18,7 +18,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-wife_today_json_path = get_IO_path("wife_record", "json")
+wife_today_json_path = get_IO_path("wife_record_today", "json")
 wife_all_json_path = get_IO_path("wife_record_all", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 

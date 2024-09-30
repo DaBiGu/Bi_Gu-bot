@@ -70,7 +70,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                     force_target = str(seg.data.get("qq"))
                     break
             if force_target:
-                if get_force_wife_date(group_id, force_target) != today:
+                if get_force_wife_date(group_id, user_id) != today:
                     if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
                     else:
                         force_wife_random = random.randint(1, 100)

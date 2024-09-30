@@ -69,15 +69,15 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if seg.type == "at": 
                     force_target = str(seg.data.get("qq"))
                     break
-            if get_force_wife_date(group_id, force_target) != today:
-                force_wife_random = random.randint(1, 100)
-                await bot.send_group_msg(group_id = group_id, message = str(force_wife_random))
-                if force_wife_random <= 25:
-                    if force_target:
-                        if force_target == user_id: force_wife_message = " 强娶失败!不能强娶自己\n"
-                        else:
+            if force_target:
+                if get_force_wife_date(group_id, force_target) != today:
+                    if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
+                    else:
+                        force_wife_random = random.randint(1, 100)
+                        await bot.send_group_msg(group_id = group_id, message = str(force_wife_random))
+                        if force_wife_random <= 25:
                             set_force_wife_date(group_id, user_id)
-                            force_wife_message = " 强娶成功!"
+                            force_wife_message = " 强娶成功！"
                             if user_id in record[today][group_id]: 
                                 original_wife = record[today][group_id][user_id] # get B
                                 for _ in [user_id, original_wife]: del record[today][group_id][_] # delete A to B, B to A
@@ -94,9 +94,9 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             record_wife_count(group_id, force_target)
                             _wife = force_target
                             target = MessageSegment.at(force_target)
-                    else: force_wife_message = " 找不到要强娶的对象, 请检查输入格式\n"
-                else: force_wife_message = " 强娶失败!"
-            else: force_wife_message = " 强娶失败!今天已经强娶过了\n"
+                        else: force_wife_message = " 强娶失败!"
+                else: force_wife_message = " 强娶失败！今天已经强娶过了\n"
+            else: force_wife_message = " 强娶失败！找不到对象: 请@要强娶的群友\n"
         if "-s" in option: 
             for member in raw_group_members:
                 if str(member["user_id"]) == _wife: target = MessageSegment.text(" @" + member["nickname"])

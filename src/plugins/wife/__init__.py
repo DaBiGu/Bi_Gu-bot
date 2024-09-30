@@ -34,14 +34,15 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     with open(wife_today_json_path, "r") as f: record = json.load(f)
     with open(wife_all_json_path, "r") as f: _record = json.load(f)
     with open(last_sent_time_json_path, "r") as f: last_sent_time = json.load(f)
-    def record_wife_count(group_id: str, user_ids: List[str]):
+    def update_wife_count(group_id: str, user_ids: List[str], delete: bool):
         if group_id not in _record: _record[group_id] = {}
         for user_id in user_ids:
             if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "last_force_wife_date": "1970-01-01"}
-            _record[group_id][user_id]["wife_count"] += 1
-    def delete_wife_count(group_id: str, user_ids: List[str]):
-        for user_id in user_ids: _record[group_id][user_id]["wife_count"] -= 1
+            _record[group_id][user_id]["wife_count"] += -1 if delete else 1
     def set_force_wife_date(group_id: str, user_ids: List[str]):
+        if group_id not in _record: _record[group_id] = {}
+        for user_id in user_ids:
+            if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "last_force_wife_date": "1970-01-01"}
         for user_id in user_ids: _record[group_id][user_id]["last_force_wife_date"] = today
     def get_force_wife_date(group_id: str, user_id: str):
         return _record[group_id][user_id]["last_force_wife_date"]
@@ -61,7 +62,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id
-        record_wife_count(group_id, [user_id, _wife])
+        update_wife_count(group_id, [user_id, _wife], delete = False)
     target = MessageSegment.at(_wife)
     force_wife_message = ""
     if option := args.extract_plain_text():
@@ -82,15 +83,15 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             if user_id in record[today][group_id]: 
                                 original_wife = record[today][group_id][user_id] # get B
                                 for _ in [user_id, original_wife]: del record[today][group_id][_] # delete A to B, B to A
-                                delete_wife_count(group_id, [user_id, original_wife])
+                                update_wife_count(group_id, [user_id, original_wife], delete = True)
                             record[today][group_id][user_id] = force_target # record A to C
-                            record_wife_count(group_id, [user_id])
+                            update_wife_count(group_id, [user_id], delete = False)
                             if force_target in record[today][group_id]: # check if C to D exists
                                 original_wife = record[today][group_id][force_target] # get D
                                 for _ in [force_target, original_wife]: del record[today][group_id][_] # delete C to D, D to C
-                                delete_wife_count(group_id, [force_target, original_wife])
+                                update_wife_count(group_id, [force_target, original_wife], delete = True)
                             record[today][group_id][force_target] = user_id # record C to A
-                            record_wife_count(group_id, [force_target])
+                            update_wife_count(group_id, [force_target], delete = False)
                             _wife = force_target
                             target = MessageSegment.at(force_target)
                         else: force_wife_message = " 强娶失败!"

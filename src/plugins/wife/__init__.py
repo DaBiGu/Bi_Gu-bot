@@ -68,11 +68,12 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     force_wife_message = ""
     if option := args.extract_plain_text():
         if "-f" in option:
+            force_target = "-114514"
             for seg in event.message:
                 if seg.type == "at": 
                     force_target = str(seg.data.get("qq"))
                     break
-            if force_target and force_target in group_member_qqs:
+            if force_target in group_member_qqs:
                 if get_force_wife_date(group_id, user_id) != today:
                     if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
                     else:

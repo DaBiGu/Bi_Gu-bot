@@ -78,20 +78,20 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                     else:
                         force_wife_random = random.randint(1, 100)
                         if force_wife_random <= 25:
-                            set_force_wife_date(group_id, user_id)
+                            set_force_wife_date(group_id, [user_id])
                             force_wife_message = " 强娶成功！"
                             if user_id in record[today][group_id]: 
                                 original_wife = record[today][group_id][user_id] # get B
                                 for _ in [user_id, original_wife]: del record[today][group_id][_] # delete A to B, B to A
                                 update_wife_count(group_id, [user_id, original_wife], delete = True)
                             record[today][group_id][user_id] = force_target # record A to C
-                            update_wife_count(group_id, list(user_id), delete = False)
+                            update_wife_count(group_id, [user_id], delete = False)
                             if force_target in record[today][group_id]: # check if C to D exists
                                 original_wife = record[today][group_id][force_target] # get D
                                 for _ in [force_target, original_wife]: del record[today][group_id][_] # delete C to D, D to C
                                 update_wife_count(group_id, [force_target, original_wife], delete = True)
                             record[today][group_id][force_target] = user_id # record C to A
-                            update_wife_count(group_id, list(force_target), delete = False)
+                            update_wife_count(group_id, [force_target], delete = False)
                             _wife = force_target
                             target = MessageSegment.at(force_target)
                         else: force_wife_message = " 强娶失败!"

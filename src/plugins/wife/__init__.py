@@ -31,6 +31,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
+    group_member_qqs = [str(member["user_id"]) for member in raw_group_members]
     with open(wife_today_json_path, "r") as f: record = json.load(f)
     with open(wife_all_json_path, "r") as f: _record = json.load(f)
     with open(last_sent_time_json_path, "r") as f: last_sent_time = json.load(f)
@@ -71,12 +72,11 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if seg.type == "at": 
                     force_target = str(seg.data.get("qq"))
                     break
-            if force_target:
+            if force_target and force_target in group_member_qqs:
                 if get_force_wife_date(group_id, user_id) != today:
                     if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
                     else:
                         force_wife_random = random.randint(1, 100)
-                        await bot.send_group_msg(group_id = group_id, message = str(force_wife_random))
                         if force_wife_random <= 25:
                             set_force_wife_date(group_id, user_id)
                             force_wife_message = " 强娶成功！"

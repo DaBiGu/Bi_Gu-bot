@@ -175,5 +175,7 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
                     if current_steam_status is not None: message += f"{username} 正在玩 {current_steam_status}\n"
                     else: message += f"{username} 没在玩游戏\n"
                 else: message += f"找不到id为{steam_id}的用户\n"
-            message += "EOF"
+        else:
+            message = "本群视奸列表为空\n使用/视奸群友 add [steam_id]添加群友到列表"
+        message += "EOF"
         await sjqy.finish(message = message)

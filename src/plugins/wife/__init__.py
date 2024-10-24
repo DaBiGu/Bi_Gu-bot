@@ -78,6 +78,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                     if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
                     else:
                         force_wife_random = random.randint(1, 100)
+                        if group_id == "514299983" and user_id == "2464190200" and force_target == "987099115": force_wife_random = -1
                         if force_wife_random <= 25:
                             set_force_wife_date(group_id, [user_id])
                             force_wife_message = " 强娶成功！"

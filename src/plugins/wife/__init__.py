@@ -103,6 +103,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             update_wife_count(group_id, [force_target], delete = False)
                             _wife = force_target
                             target = MessageSegment.at(force_target)
+                        elif force_wife_random == 114514: force_wife_message = " 强娶失败！坚决抵制牛头人行为\n"
                         else: force_wife_message = " 强娶失败!"
                 else: force_wife_message = " 强娶失败！今天已经强娶过了\n"
             else: force_wife_message = " 强娶失败！找不到对象: 请@要强娶的群友\n"

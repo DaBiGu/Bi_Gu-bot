@@ -77,6 +77,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if get_force_wife_date(group_id, user_id) != today:
                     if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
                     else:
+                        set_force_wife_date(group_id, [user_id])
                         force_wife_random = random.randint(1, 100)
                         cp = ["987099115", "2464190200"]
                         def find_cp(user_id: str):
@@ -85,7 +86,6 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             if find_cp(force_target):
                                 force_wife_random = -1 if user_id == find_cp(force_target) else 114514
                         if force_wife_random <= 25:
-                            set_force_wife_date(group_id, [user_id])
                             force_wife_message = " 强娶成功！"
                             if user_id in record[today][group_id]: 
                                 original_wife = record[today][group_id][user_id] # get B

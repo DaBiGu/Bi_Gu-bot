@@ -2,6 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
+from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, Message
 from utils.utils import get_output_path, get_IO_path
 
@@ -21,9 +22,11 @@ config = get_plugin_config(Config)
 
 wife_today_json_path = get_IO_path("wife_record_today", "json")
 wife_all_json_path = get_IO_path("wife_record_all", "json")
+wife_cp_json_path = get_IO_path("wife_record_cp", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
-wife = on_command("wife", aliases={"群老婆"})
+wife = on_command("wife", aliases={"群老婆"}, priority = 2)
+permission = SUPERUSER
 
 @wife.handle()
 async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
@@ -132,3 +135,8 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
             count = record[group_id][user_id]["wife_count"]
     message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{count}次群友的老婆了, 可喜可贺")
     await wife_count.finish(message = message)
+
+wife_bind = on_command("wife test", priority = 1)
+@wife_bind.handle()
+async def wife_bind_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
+    await wife_bind.finish(message = "test")

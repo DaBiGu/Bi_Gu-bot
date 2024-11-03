@@ -82,7 +82,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                     else:
                         set_force_wife_date(group_id, [user_id])
                         force_wife_random = random.randint(1, 100)
-                        cps = cp_record[group_id] if group_id in cp_record else [0]
+                        cps = cp_record[group_id] if group_id in cp_record else [["0"]]
                         def find_cp(user_id: str):
                             for cp in cps:
                                 if user_id in cp: return cp[cp.index(user_id) - 1]

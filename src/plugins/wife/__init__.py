@@ -26,7 +26,6 @@ wife_cp_json_path = get_IO_path("wife_record_cp", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
 wife = on_command("wife", aliases={"群老婆"}, priority = 2)
-permission = SUPERUSER
 
 @wife.handle()
 async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
@@ -136,7 +135,32 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
     message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{count}次群友的老婆了, 可喜可贺")
     await wife_count.finish(message = message)
 
-wife_bind = on_command("wife test", priority = 1)
+wife_bind = on_command("wife bind", aliases={"wife -b"}, priority = 1)
 @wife_bind.handle()
 async def wife_bind_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
-    await wife_bind.finish(message = "test")
+    permission = SUPERUSER
+    if not await permission(bot, event):
+        await wife_bind.finish("你没有权限执行此操作")
+    with open(wife_cp_json_path, "r") as f: record = json.load(f)
+    raw_group_members = await bot.get_group_member_list(group_id = event.group_id)
+    group_id = str(event.group_id)
+    def check_legal_member(user_id: str):
+        for member in raw_group_members:
+            if str(member["user_id"]) == user_id: return member["nickname"]
+        return None
+    is_legal = False
+    if cmd_params := args.extract_plain_text():
+        if " " in cmd_params: 
+            targets = cmd_params.split(" ")
+            if len(targets) == 2:
+                if check_legal_member(targets[0]) and check_legal_member(targets[1]):
+                    if group_id not in record: record[group_id] = []
+                    record[group_id].append(targets)
+                    is_legal = True
+    if is_legal:
+        message = f"群cp绑定成功:\n{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]})"
+    else: message = "群cp绑定失败, 请检查输入\n 正确的输入格式为/wife bind|-b [qq1] [qq2]"
+    with open(wife_cp_json_path, "w") as f: json.dump(record, f)
+    await wife_bind.finish(message = message)
+
+

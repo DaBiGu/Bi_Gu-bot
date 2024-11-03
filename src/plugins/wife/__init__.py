@@ -36,6 +36,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     group_member_qqs = [str(member["user_id"]) for member in raw_group_members]
     with open(wife_today_json_path, "r") as f: record = json.load(f)
     with open(wife_all_json_path, "r") as f: _record = json.load(f)
+    with open(wife_cp_json_path, "r") as f: cp_record = json.load(f)
     with open(last_sent_time_json_path, "r") as f: last_sent_time = json.load(f)
     def update_wife_count(group_id: str, user_ids: List[str], delete: bool):
         if group_id not in _record: _record[group_id] = {}
@@ -81,7 +82,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                     else:
                         set_force_wife_date(group_id, [user_id])
                         force_wife_random = random.randint(1, 100)
-                        cps = [["987099115", "2464190200"], ["1968539712", "1059602967"]]
+                        cps = cp_record[group_id] if group_id in cp_record else [0]
                         def find_cp(user_id: str):
                             for cp in cps:
                                 if user_id in cp: return cp[cp.index(user_id) - 1]

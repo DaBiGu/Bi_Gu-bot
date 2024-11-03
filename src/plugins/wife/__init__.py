@@ -87,9 +87,8 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             for cp in cps:
                                 if user_id in cp: return cp[cp.index(user_id) - 1]
                             return None
-                        if group_id == "514299983":
-                            if find_cp(force_target):
-                                force_wife_random = -1 if user_id == find_cp(force_target) else 114514
+                        if find_cp(force_target):
+                            force_wife_random = -1 if user_id == find_cp(force_target) else 114514
                         if force_wife_random <= 25:
                             force_wife_message = " 强娶成功！"
                             if user_id in record[today][group_id]: 

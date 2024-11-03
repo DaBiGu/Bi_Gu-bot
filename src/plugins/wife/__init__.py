@@ -148,18 +148,20 @@ async def wife_bind_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg
         for member in raw_group_members:
             if str(member["user_id"]) == user_id: return member["nickname"]
         return None
-    is_legal = False
+    bind_status = -1
     if cmd_params := args.extract_plain_text():
         if " " in cmd_params: 
             targets = cmd_params.split(" ")
             if len(targets) == 2:
                 if check_legal_member(targets[0]) and check_legal_member(targets[1]):
                     if group_id not in record: record[group_id] = []
-                    record[group_id].append(targets)
-                    is_legal = True
-    if is_legal:
-        message = f"群cp绑定成功:\n{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]})"
-    else: message = "群cp绑定失败, 请检查输入\n 正确的输入格式为/wife bind|-b [qq1] [qq2]"
+                    if targets in record[group_id]: bind_status = 0
+                    else:
+                        record[group_id].append(targets)
+                        bind_status = 1
+    message = f"群cp绑定成功:\n{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]})" if bind_status == 1 \
+    else f"{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]}) 已经绑定过了" if bind_status == 0 \
+    else "群cp绑定失败, 请检查输入\n 正确的输入格式为/wife bind|-b [qq1] [qq2]"
     with open(wife_cp_json_path, "w") as f: json.dump(record, f)
     await wife_bind.finish(message = message)
 

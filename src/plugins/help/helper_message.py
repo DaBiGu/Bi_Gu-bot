@@ -75,7 +75,12 @@ class Helper_Messages:
 /help 查看指令列表\n \
 /ys|今日运势 查看今日运势\n \
 /早安 对芙芙说早安吧 (此条命令需要@芙芙)\n \
-/update log 查看芙芙更新日志"]
+/update log 查看芙芙更新日志\n \
+———————— SUPERUSER ————————\n \
+(以下指令需要开发者权限)\n \
+/update 更新芙芙(与github同步)\n \
+/reboot 重启芙芙\n \
+/wife bind|-b [qq1] [qq2] 绑定群cp"]
 
         self.update_logs = ["———————— Full update log of Bi_Gu-bot ————————\n \
 Feb 25 2024: 初代版本上线, 搭载插件crypto|ncm|roll|setu|sleep|steam|work\n \
@@ -121,7 +126,9 @@ Sep 15 2024: 群友最后发言时间改为本地记录\n \
 Sep 17 2024: 增加手绘风格绘制群友b话量统计; 芙芙自己也会加入统计\n \
 Sep 19 2024: 自动更新chromedriver\n \
 Sep 21 2024: 支持统计群老婆次数\n \
-Sep 30 2024: 支持指定对象强娶群老婆功能"]
+Sep 30 2024: 支持指定对象强娶群老婆功能\n \
+\n \
+Nov 3 2024: 支持绑定群cp"]
     
     def get_helper_messages(self):
         return self.helper_messages

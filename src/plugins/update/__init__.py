@@ -2,7 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import Bot
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
@@ -19,11 +19,14 @@ __plugin_meta__ = PluginMetadata(
 )
 
 config = get_plugin_config(Config)
+permission = SUPERUSER
 
-update = on_command("update", permission = SUPERUSER, priority = 2)
+update = on_command("update", priority = 2)
 
 @update.handle()
-async def update_handle():
+async def update_handle(bot: Bot, event: GroupMessageEvent):
+    if not await permission(bot, event):
+        await update.finish(message = "你没有权限执行此操作")
     update_status = os.popen("git pull").read()
     if "Already up to date" in update_status:
         await update.finish(message = "Already up to date")
@@ -34,8 +37,10 @@ async def update_handle():
 reboot = on_command("reboot", permission = SUPERUSER)
 
 @reboot.handle()
-async def reboot_handle():
-    await reboot.send(message = "Furina Rebooting...")
+async def reboot_handle(bot: Bot, event: GroupMessageEvent):
+    if not await permission(bot, event):
+        await update.finish(message = "你没有权限执行此操作")
+    await reboot.send(message = "芙芙重启中...")
     subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  
 
 @scheduler.scheduled_job("cron", hour = 0, minute = 0)

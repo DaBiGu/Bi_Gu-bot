@@ -1,6 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_command, on_fullmatch
+from nonebot import on_command
 from nonebot.adapters.onebot.v11 import Message
 
 from .config import Config
@@ -27,7 +27,7 @@ async def help_handle():
     for i in range(len(helper_messages)):
         await _help.send(draw_help(helper_messages[i], i+1, len(helper_messages)))
 
-_update_log = on_fullmatch("/update log", priority = 1)
+_update_log = on_command("update log", priority = 1)
 
 @_update_log.handle()
 async def update_log_handle():

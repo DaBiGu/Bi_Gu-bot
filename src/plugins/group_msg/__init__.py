@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_message, on_notice, on_command
 from nonebot.rule import to_me
 from nonebot.params import CommandArg
+from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
@@ -132,7 +133,10 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
 antirecall_ctrl = on_command("antirecall")
 
 @antirecall_ctrl.handle()
-async def antirecall_ctrl_handle(event: GroupMessageEvent, args = CommandArg()):
+async def antirecall_ctrl_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
+    permission = SUPERUSER
+    if not await permission(bot, event):
+        await antirecall_ctrl.finish("你没有权限执行此操作")
     group_id = event.group_id
     with open(antirecall_json_path, "r") as f: group_list = json.load(f)
     cmd_params = args.extract_plain_text()

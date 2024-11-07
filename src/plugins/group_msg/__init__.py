@@ -121,7 +121,7 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
         if member["user_id"] == event.user_id: username = member["nickname"]
         if member["user_id"] == event.operator_id: operatorname = member["nickname"]
     message = None
-    for seg in raw_message["message"][0]:
+    for seg in raw_message["message"]:
         if seg["type"] == "text": message = seg["data"]["text"]
     if message:
         if "撤回了" in message and "一条消息" in message: return

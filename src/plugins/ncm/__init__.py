@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 from .config import Config
-from .ncm import ncm_search_song, get_ncm_song_card, draw_lyrics_card
+from .ncm import draw_search_card, get_ncm_song_card, draw_lyrics_card
 
 __plugin_meta__ = PluginMetadata(
     name="ncm",
@@ -26,7 +26,7 @@ async def ncm_handle_func(args = CommandArg()):
         cmd_params_list = cmd_params.split(" ")
         if cmd_params_list[0] == "search":
             search_keyword = " ".join(cmd_params_list[1:])
-            response = ncm_search_song(search_keyword)
+            response = draw_search_card(search_keyword)
         elif cmd_params_list[0] == "id":
             #response = MessageSegment.music(type_ = "163", id_ = cmd_params_list[1])
             response = get_ncm_song_card(int(cmd_params_list[1]))

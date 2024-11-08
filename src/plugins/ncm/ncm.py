@@ -5,36 +5,118 @@ from typing import Dict, List, Any, Tuple
 from PIL import Image, ImageDraw, ImageFont
 import matplotlib.pyplot as plt
 import pandas as pd
-import re
+import re, requests
 from utils.fonts import get_font
 from utils.utils import get_copyright_str, get_output_path
 
-def ncm_search_song(keyword: str, limit: int = 30) -> MessageSegment:
+def ncm_search_song(keyword: str, limit: int = 20) -> Dict[str, Any]:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
     limit = len(search_result)
-    song_names, song_artists, song_ids = [], [], []
+    songs = []
     for song in search_result:
-        song_names.append(song["name"])
-        _song_artists = [song["ar"][x]["name"] for x in range(len(song["ar"]))]
-        _song_artists_str = " / ".join(_song_artists)
-        song_artists.append(_song_artists_str)
-        song_ids.append(song["id"])
-    df = pd.DataFrame({"Song Name": song_names, "Artists": song_artists, "Song ID": song_ids})
-    plt.figure(figsize=(20, 5 * limit / 10))
-    plt.style.use('default')
-    Table(df, 
-          textprops={"fontsize": 15, "ha": "center", "fontfamily": "DengXian"},
-          column_definitions=[
-            ColDef(name = "index", width = 5),
-            ColDef(name = "Song Name", width = 30),
-            ColDef(name = "Artists", width = 20),
-            ColDef(name = "Song ID", width = 20),
-          ],       
-          col_label_cell_kw={"facecolor":"#a5d8ff"},
-          cell_kw={"facecolor":"#e7f5ff"},
-          )
-    output_path = get_output_path("ncm_search_song")
-    plt.savefig(output_path, bbox_inches='tight', dpi = 512)
+        song_info = {}
+        song_info["title"] = song["name"]
+        song_info["artist"] = " / ".join([song["ar"][x]["name"] for x in range(len(song["ar"]))])
+        song_info["song_id"] = song["id"]
+        temp_path = get_output_path(f"ncm_cover_{song_info['song_id']}", temp = True)
+        with open(temp_path, "wb") as f:
+            f.write(requests.get(song["al"]["picUrl"]).content)
+        song_info["cover_path"] = temp_path
+        songs.append(song_info)
+    return songs
+
+def draw_search_card(keyword: str, limit: int = 20) -> MessageSegment:
+    songs = ncm_search_song(keyword, limit)[:limit]  
+
+    cover_size = (200, 200)  
+    title_font_size = 36
+    details_font_size = 28   
+    line_spacing_title_artist = 15  
+    line_spacing_artist_id = 10     
+    max_text_width = 340            
+    column_spacing = 800          
+    header_font_size = 42
+    footer_font_size = 28
+
+    title_font = get_font("noto-sans", size = title_font_size, weight = 700)
+    details_font = get_font("noto-sans", size = details_font_size, weight = 400)
+    header_font = get_font("noto-sans", size = header_font_size, weight = 700)
+    footer_font = get_font("noto-sans", size = footer_font_size, weight = 400)
+    header_text = f"Search result for '{keyword}':"
+    footer_text = get_copyright_str()
+
+    temp_canvas = Image.new("RGB", (1, 1))
+    temp_draw = ImageDraw.Draw(temp_canvas)
+
+    def wrap_text(text, font, max_width, max_chars=20):
+        lines, current_line = [], []
+        words = text.split()
+        for word in words:
+            test_line = ' '.join(current_line + [word])
+            bbox = temp_draw.textbbox((0, 0), test_line, font=font)
+            width = bbox[2] - bbox[0]
+            if width <= max_width and len(test_line) <= max_chars: current_line.append(word)
+            else:
+                lines.append(' '.join(current_line))
+                current_line = [word]
+        if current_line: lines.append(' '.join(current_line))
+        wrapped_lines = []
+        for line in lines:
+            while len(line) > max_chars:
+                wrapped_lines.append(line[:max_chars])
+                line = line[max_chars:]
+            if line: wrapped_lines.append(line)
+        return wrapped_lines
+
+    header_width = temp_draw.textbbox((0, 0), header_text, font=header_font)[2]
+    footer_width = temp_draw.textbbox((0, 0), footer_text, font=footer_font)[2]
+
+    margin_x, margin_y = 10, 20
+    text_offset_x = cover_size[0] + 30  
+    initial_row_height = cover_size[1] + 30
+    grid_heights = []
+
+    for song in songs:
+        title_lines = wrap_text(song["title"], title_font, max_text_width)
+        artist_lines = wrap_text(song["artist"], details_font, max_text_width)
+        num_lines = len(title_lines) + len(artist_lines) + 1
+        grid_height = initial_row_height + (num_lines - 1) * details_font_size + line_spacing_title_artist + line_spacing_artist_id
+        grid_heights.append(grid_height)
+
+    canvas_height = margin_y * 2 + header_font_size + 40 + sum(grid_heights[:10]) + 40 + footer_font_size
+    canvas_width = max(column_spacing * 2 + margin_x * 2, header_width + 40, footer_width + 40) + 180
+
+    background_color = (31, 31, 46)
+    canvas = Image.new("RGB", (canvas_width, canvas_height), background_color)
+    draw = ImageDraw.Draw(canvas)
+
+    header_x = (canvas_width - header_width) // 2
+    draw.text((header_x, margin_y), header_text, font=header_font, fill="white")
+
+    current_y_offset = margin_y + header_font_size + 40
+    for index, song in enumerate(songs):
+        row, col = index // 2, index % 2
+        x_offset = margin_x + col * column_spacing + (column_spacing - cover_size[0] - text_offset_x) // 2
+        y_offset = current_y_offset
+        album_cover = Image.open(song["cover_path"]).resize(cover_size)
+        canvas.paste(album_cover, (x_offset, y_offset))
+        text_x_offset = x_offset + text_offset_x
+        text_y_offset = y_offset
+        for line in wrap_text(song["title"], title_font, max_text_width):
+            draw.text((text_x_offset, text_y_offset), line, font=title_font, fill="white")
+            text_y_offset += title_font_size
+        text_y_offset += line_spacing_title_artist
+        for line in wrap_text(song["artist"], details_font, max_text_width):
+            draw.text((text_x_offset, text_y_offset), line, font=details_font, fill="#A2A5C2")
+            text_y_offset += details_font_size
+        text_y_offset += line_spacing_artist_id
+        draw.text((text_x_offset, text_y_offset), f"ID: {song['song_id']}", font=details_font, fill="lightgray")
+        if col == 1: current_y_offset += grid_heights[row]
+    footer_x = (canvas_width - footer_width) // 2
+    draw.text((footer_x, canvas_height - footer_font_size - 20), footer_text, font=footer_font, fill="white")
+
+    output_path = get_output_path("ncm_search_card")
+    canvas.save(output_path)
     return MessageSegment.image("file:///" + output_path)
 
 def get_ncm_song_card(song_id: int) -> MessageSegment:

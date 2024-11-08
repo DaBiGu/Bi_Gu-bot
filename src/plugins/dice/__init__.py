@@ -17,6 +17,8 @@ __plugin_meta__ = PluginMetadata(
 
 def roll_dice(dice_num: int, dice_face: int, dice_add: int = 0) -> str:
     result = []
+    if dice_num > 1000 or dice_num < 1: return "骰子数量必须为1至1000的整数"
+    if dice_face < 1: return "骰子面数必须大于1"
     for _ in range(dice_num):
         result.append(random.randint(1, dice_face) + dice_add)
     return str(result)

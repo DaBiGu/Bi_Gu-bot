@@ -128,7 +128,8 @@ Sep 19 2024: 自动更新chromedriver\n \
 Sep 21 2024: 支持统计群老婆次数\n \
 Sep 30 2024: 支持指定对象强娶群老婆功能\n \
 \n \
-Nov 3 2024: 支持绑定群cp"]
+Nov 3 2024: 支持绑定群cp \n \
+Nov 8 2024: 更好的网易云音乐歌曲搜索卡片"]
     
     def get_helper_messages(self):
         return self.helper_messages

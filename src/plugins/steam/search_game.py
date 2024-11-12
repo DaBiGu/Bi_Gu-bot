@@ -41,7 +41,8 @@ def draw_search_result(game_name: str) -> MessageSegment:
     background_color = (50, 50, 50)  
     text_color = (255, 255, 255)     
     banner_size = (400, 187)         
-    padding = 50                    
+    padding = 30                     
+    item_spacing = 80                
     discount_bg_color = (88, 127, 53)  
     discount_text_color = (195, 255, 101)  
 
@@ -52,7 +53,7 @@ def draw_search_result(game_name: str) -> MessageSegment:
     title_font = get_font("noto-sans", size = 40, weight = 500)
     discount_font = get_font("noto-sans", size = 50, weight = 700)
 
-    total_height = len(games) * (banner_size[1] + padding) + 80
+    total_height = len(games) * (banner_size[1] + padding + item_spacing) + 80
     image_width = banner_size[0] + 1500 
 
     image = Image.new("RGB", (image_width, total_height), background_color)
@@ -99,9 +100,9 @@ def draw_search_result(game_name: str) -> MessageSegment:
         text_y += font_size + padding / 2
         draw.text((text_x, text_y+10), f"History Low Price: {game['history_low']}", font=font, fill=text_color)
         
-        y_offset += banner_size[1] + padding
+        y_offset += banner_size[1] + padding + item_spacing
 
-    draw.text((40, total_height-50), get_copyright_str(), fill=(255, 255, 255, 255), font=font)
+    draw.text((40, total_height - 120), get_copyright_str(), fill=(255, 255, 255, 255), font=font)
     output_path = get_output_path("steam_search_result")
     image.save(output_path)
-    return MessageSegment.image("file:///" + output_path) 
+    return MessageSegment.image("file:///" + output_path)

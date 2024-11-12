@@ -35,13 +35,13 @@ def search_game(game_name: str) -> List[Dict[str, str]]:
             game = {"name": name, "banner_path": temp_file_path, "current_price": current_price, 
                     "regular_price": regular_price, "history_low": history_low, "discount": f"-{discount}%"}
             games.append(game)
-    return games
+    return sorted(games, key=lambda x: int(x["discount"].strip('-%')), reverse=True)
 
 def draw_search_result(game_name: str) -> MessageSegment:
     background_color = (50, 50, 50)  
     text_color = (255, 255, 255)     
     banner_size = (400, 187)         
-    padding = 25                    
+    padding = 50                    
     discount_bg_color = (88, 127, 53)  
     discount_text_color = (195, 255, 101)  
 

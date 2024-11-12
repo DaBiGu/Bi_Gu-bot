@@ -11,6 +11,7 @@ from nonebot import on_command, on_fullmatch, on_notice, on_keyword
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
 from utils.utils import get_asset_path, second_to_hms
+from utils.cooldown import Cooldown
 
 import time, random, os
 
@@ -138,17 +139,14 @@ async def poke_handle(event: PokeNotifyEvent, bot: Bot):
         else: await bot.call_api("friend_poke", user_id = event.user_id)
 
 ciallo = on_keyword(["ciallo", "Ciallo"])
-last_ciallo_time = {}
+last_ciallo_time = Cooldown(countdown = 300.0)
 
 @ciallo.handle()
 async def ciallo_handle_func(event: GroupMessageEvent):
     global last_ciallo_time
-    group_id = event.group_id
-    if group_id not in last_ciallo_time: last_ciallo_time[group_id] = 0.0
-    if time.time() - last_ciallo_time[group_id] <= 300.0: return
-    else:
-        last_ciallo_time[group_id] = time.time()
+    if last_ciallo_time.use(event.group_id):
         await ciallo.finish(MessageSegment.record("file:///" + get_asset_path("ciallo.mp3")))
+    else: return
 
 leave = on_notice()
 

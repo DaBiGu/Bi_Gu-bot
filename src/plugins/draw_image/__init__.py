@@ -2,8 +2,9 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command, on_fullmatch
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import MessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from utils.utils import get_output_path
+from utils.cooldown import Cooldown
 
 from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
@@ -37,9 +38,13 @@ async def bb_handle_func(args = CommandArg()):
     message = draw_bad_news(text)
     await bb.finish(message = message)
 
+last_symmetric_time = Cooldown(countdown = 180.0)
+
 symmetric = on_command("对称", aliases={"symmetric"})
 @symmetric.handle()
-async def symmetric_handle(event: MessageEvent, args = CommandArg()):
+async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
+    if not last_symmetric_time.use(event.group_id):
+        await symmetric.finish("该功能正在冷却中")
     cmd_params = args.extract_plain_text() 
     source_url = None
     for seg in event.reply.message:

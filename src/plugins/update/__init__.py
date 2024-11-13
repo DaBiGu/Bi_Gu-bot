@@ -1,7 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
-from nonebot import on_command
+from nonebot import on_command, on_fullmatch
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent
 from nonebot_plugin_apscheduler import scheduler
 
@@ -34,7 +34,7 @@ async def update_handle(bot: Bot, event: GroupMessageEvent):
         await update.send(message = draw_update_message(update_status))
         subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])
 
-reboot = on_command("reboot", permission = SUPERUSER)
+reboot = on_command("reboot")
 
 @reboot.handle()
 async def reboot_handle(bot: Bot, event: GroupMessageEvent):
@@ -43,12 +43,14 @@ async def reboot_handle(bot: Bot, event: GroupMessageEvent):
     await reboot.send(message = "芙芙重启中...")
     subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  
 
+_update_chromedriver = on_command("update chromedriver", priority = 1)
 @scheduler.scheduled_job("cron", hour = 0, minute = 0)
+@_update_chromedriver.handle()
 async def update_chromedriver():
     request_url, download_url = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json", None
     for data in requests.get(request_url).json()["channels"]["Stable"]["downloads"]["chromedriver"]:
         if data["platform"] == "win64": download_url = data["url"]
     with open(get_data_path("chromedriver.zip", temp = True), "wb") as file: file.write(requests.get(download_url).content)
     with zipfile.ZipFile(get_data_path("chromedriver.zip", temp = True), "r") as file: file.extractall(get_data_path(temp = True))
-    os.remove(os.getcwd() + "/chromedriver.exe")
-    shutil.move(get_data_path("chromedriver-win64/chromedriver.exe"), os.getcwd())
+    if os.path.exists(os.getcwd() + "/chromedriver.exe"): os.remove(os.getcwd() + "/chromedriver.exe")
+    shutil.move(get_data_path("chromedriver-win64/chromedriver.exe", temp = True), os.getcwd())

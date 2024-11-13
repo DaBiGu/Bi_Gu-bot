@@ -102,7 +102,7 @@ def draw_search_result(game_name: str) -> MessageSegment:
         
         y_offset += banner_size[1] + padding + item_spacing
 
-    draw.text((40, total_height - 120), get_copyright_str(), fill=(255, 255, 255, 255), font=font)
+    draw.text((40, total_height - 80), get_copyright_str(), fill=(255, 255, 255, 255), font=font)
     output_path = get_output_path("steam_search_result")
     image.save(output_path)
     return MessageSegment.image("file:///" + output_path)

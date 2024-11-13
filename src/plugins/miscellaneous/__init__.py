@@ -118,6 +118,11 @@ die = on_command("kill")
 async def die_handle_func():
     await die.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/die.png"))]))
 
+pupu = on_command("噗噗", aliases= {"pupu"})
+@pupu.handle()
+async def pupu_handle_func():
+    await pupu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/pupu.png"))]))
+
 sb = on_fullmatch("阿姨洗铁路")
 
 @sb.handle()

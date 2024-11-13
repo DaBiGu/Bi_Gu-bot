@@ -43,7 +43,7 @@ async def reboot_handle(bot: Bot, event: GroupMessageEvent):
     await reboot.send(message = "芙芙重启中...")
     subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  
 
-_update_chromedriver = on_command("update chromedriver", priority = 1)
+_update_chromedriver = on_command("update chromedriver", priority = 1, permission = permission)
 @scheduler.scheduled_job("cron", hour = 0, minute = 0)
 @_update_chromedriver.handle()
 async def update_chromedriver():

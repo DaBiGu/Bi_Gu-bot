@@ -43,8 +43,9 @@ last_symmetric_time = Cooldown(countdown = 180.0)
 symmetric = on_command("对称", aliases={"symmetric"})
 @symmetric.handle()
 async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
-    if not last_symmetric_time.use(event.group_id):
-        await symmetric.finish("该功能正在冷却中")
+    if not last_symmetric_time.use(event.group_id)[0]:
+        remaining_time = last_symmetric_time.use(event.group_id)[1]
+        await symmetric.finish(f"该功能还有{remaining_time}秒冷却时间")
     cmd_params = args.extract_plain_text() 
     source_url = None
     for seg in event.reply.message:

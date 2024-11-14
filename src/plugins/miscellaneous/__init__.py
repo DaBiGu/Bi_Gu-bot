@@ -149,7 +149,7 @@ last_ciallo_time = Cooldown(countdown = 300.0)
 @ciallo.handle()
 async def ciallo_handle_func(event: GroupMessageEvent):
     global last_ciallo_time
-    if last_ciallo_time.use(event.group_id):
+    if last_ciallo_time.use(event.group_id)[0]:
         await ciallo.finish(MessageSegment.record("file:///" + get_asset_path("ciallo.mp3")))
     else: return
 

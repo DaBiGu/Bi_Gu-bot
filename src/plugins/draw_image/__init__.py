@@ -2,7 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command, on_fullmatch
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment
 from utils.utils import get_output_path
 from utils.cooldown import Cooldown
 
@@ -62,7 +62,12 @@ async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
         if direction in directions: direction = directions.get(direction) 
         else: return
         message = _symmetric(original_img_path, direction, int(percent))
-        await symmetric.finish(message = message)
+        if isinstance(message, MessageSegment):
+            if not last_symmetric_time.use(event.group_id)[0]:
+                remaining_time = last_symmetric_time.use(event.group_id)[1]
+                await symmetric.finish(f"该功能还有{remaining_time}秒冷却时间")
+            else: await symmetric.finish(message = message)
+        else: await symmetric.finish(message = message)
     else:
         await symmetric.finish("找不到源图片\ntips: 不支持表情, 可以截图后进行操作; bot无法获取自己发送的图片")
 

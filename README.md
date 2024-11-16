@@ -39,6 +39,9 @@
 * `/ncm id [song id]` 返回`id`歌曲的分享卡片
 * `/ncm lyrics [song id]` 返回`id`歌曲的歌词
 
+## `phigros`
+* `/phigros search [songname]` 返回名为`songname`的phigros歌曲信息(支持模糊搜索)
+
 ## `setu`
 
 * `/setu` 返回随机色图

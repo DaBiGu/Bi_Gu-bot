@@ -31,6 +31,8 @@ class Helper_Messages:
 /ncm id [song_id] 获取[song_id]对应的歌曲卡片\n \
 /ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词卡片\n \
 \n \
+———————— phigros ————————\n \
+/phigros search [songname] 搜索歌名为[songname]的phigros歌曲信息(支持模糊匹配)\n \
 ———————— setu ————————\n \
 /setu 返回随机色图\n \
 /setu search 对消息记录中的图片回复该指令进行以图搜图\n \
@@ -130,7 +132,8 @@ Sep 21 2024: 支持统计群老婆次数\n \
 Sep 30 2024: 支持指定对象强娶群老婆功能\n \
 \n \
 Nov 3 2024: 支持绑定群cp \n \
-Nov 8 2024: 更好的网易云音乐歌曲搜索卡片"]
+Nov 8 2024: 更好的网易云音乐歌曲搜索卡片\n \
+Nov 17 2024 支持模糊搜索phigros歌曲"]
     
     def get_helper_messages(self):
         return self.helper_messages

@@ -2,6 +2,7 @@ from nonebot import get_plugin_config, get_adapter
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Adapter, Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
+from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
 
 from .config import Config
@@ -169,3 +170,10 @@ async def welcome_handle(event: GroupIncreaseNoticeEvent):
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
                       MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)
+
+recall = on_command("recall", permission = SUPERUSER)
+
+@recall.handle()
+async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
+    if event.reply:
+        await bot.call_api("delete_msg", message_id = event.reply.message_id)

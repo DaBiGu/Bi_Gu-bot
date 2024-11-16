@@ -83,6 +83,7 @@ class Helper_Messages:
 /update 更新芙芙(与github同步)\n \
 /update chromedriver 更新chromedriver\n \
 /reboot 重启芙芙\n \
+/recall 让芙芙撤回自己的消息\n \
 /wife bind|-b [qq1] [qq2] 绑定群cp"]
 
         self.update_logs = ["———————— Full update log of Bi_Gu-bot ————————\n \

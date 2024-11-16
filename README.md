@@ -93,6 +93,8 @@
 * `/早安` 对芙芙说早安吧
 * `/update log` 查看本项目更新日志
 * `/update` 更新芙芙 (需要`SUPERUSER`权限)
+* `/update chromedriver` 更新本机chromedriver (需要`SUPERUSER`权限)
 * `/reboot` 重启芙芙 (需要`SUPERUSER`权限)
+* `/recall` 让芙芙撤回自己的消息 (需要`SUPERUSER`权限)
 
 ### 更多最新最热功能随缘开发中

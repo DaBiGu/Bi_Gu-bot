@@ -2,6 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
+from nonebot.adapters.onebot.v11 import Message, MessageSegment
 
 from .config import Config
 from .search_song import phigros_search_song
@@ -25,6 +26,6 @@ async def phigros_handle_func(args = CommandArg()):
         cmd_params_list = cmd_params.split(" ")
         if cmd_params_list[0] == "search":
             search_keyword = " ".join(cmd_params_list[1:])
-            response = phigros_search_song(search_keyword)
+            message = Message([MessageSegment.text(f"Search result for \"{search_keyword}\":"), phigros_search_song(search_keyword)])
         else: return
-    await phigros.finish(response)
+    await phigros.finish(message)

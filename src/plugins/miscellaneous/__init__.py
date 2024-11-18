@@ -99,30 +99,6 @@ async def sc_handle_func(event: MessageEvent, args = CommandArg()):
         with open("./src/data/miscellaneous/mstbt_counter.txt", "w") as f:
             f.write(str(mstbt_counter))
     await _sc.finish(message_str)
-    
-
-yuyu = on_command("玉玉", aliases= {"yuyu"})
-
-@yuyu.handle()
-async def yuyu_handle_func():
-    await yuyu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/yuyu.gif"))]))
-
-fufu = on_command("芙芙", aliases= {"fufu"})
-
-@fufu.handle()
-async def fufu_handle_func():
-    await fufu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))
-
-die = on_command("kill")
-
-@die.handle()
-async def die_handle_func():
-    await die.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/die.png"))]))
-
-pupu = on_command("噗噗", aliases= {"pupu"})
-@pupu.handle()
-async def pupu_handle_func():
-    await pupu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/pupu.png"))]))
 
 sb = on_fullmatch("阿姨洗铁路")
 

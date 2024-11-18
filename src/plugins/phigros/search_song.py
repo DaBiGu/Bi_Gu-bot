@@ -1,4 +1,4 @@
-import json
+import json, random
 from thefuzz import process
 from typing import Dict, Any
 from PIL import Image, ImageDraw, ImageFont
@@ -7,6 +7,7 @@ from utils.fonts import get_font
 from nonebot.adapters.onebot.v11 import MessageSegment
 
 json_path = get_asset_path("phigros/music-info.json")
+tips_path = get_asset_path("phigros/tips.txt")
 
 def search_similar_song(songname: str) -> str:
     with open(json_path, "r", encoding="utf-8") as f: music_info = json.load(f)
@@ -75,6 +76,9 @@ def create_song_image(song_data: Dict[str, Any]) -> MessageSegment:
         if idx < len(difficulty_texts) - 1:
             draw.text((x, difficulty_y), " / ", font=difficulty_font , fill=(255, 255, 255), anchor="lm")
             x += difficulty_font.getbbox(" / ")[2] 
+    with open(tips_path, "r", encoding="utf-8") as f: tips = f.readlines()
+    tip = random.choice(tips).strip()
+    draw.text((20, height - 80), f"Tip: {tip}", fill=(255, 255, 255), font=get_embedded_font(24))
     draw.text((20, height - 40), get_copyright_str(), fill=(255, 255, 255), font=get_embedded_font(24))
 
     output_path = get_output_path("phigros_search_song")

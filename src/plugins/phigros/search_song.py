@@ -36,7 +36,7 @@ def get_embedded_font(size: int) -> ImageFont:
 def create_song_image(song_data: Dict[str, Any]) -> MessageSegment:
     cover_img = Image.open(song_data["cover_url"])
     
-    width, height = 1600, 900  
+    width, height = 1600, 1000  
     background_color = (45, 45, 45)
     difficulty_colors = {"EZ":(50, 205, 50),"HD":(30, 144, 255),"IN":(255, 69, 0),"AT":(169, 169, 169)}
     

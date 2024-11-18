@@ -1,15 +1,12 @@
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.options import Options
 from nonebot.adapters.onebot.v11 import MessageSegment
 from utils.utils import get_output_path
-import datetime, os, asyncio
+from utils.chrome import get_chromedriver
+import os, asyncio
 
 async def gen_ba(left: str, right: str) -> MessageSegment:
-    options = Options()
-    options.add_argument("--headless")
-    chrome = webdriver.Chrome(options = options)
+    chrome = await get_chromedriver()
     chrome.get("file:///" + os.getcwd() + "/src/assets/ba/ba.html")
     input_left = chrome.find_element(By.ID, "textL")
     input_right = chrome.find_element(By.ID, "textR")

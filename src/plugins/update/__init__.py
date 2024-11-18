@@ -7,7 +7,7 @@ from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .draw_update_message import draw_update_message
-from utils.utils import get_data_path
+from utils.utils import get_data_path, get_asset_path
 
 import subprocess, os, requests, zipfile, shutil
 
@@ -52,5 +52,6 @@ async def update_chromedriver():
         if data["platform"] == "win64": download_url = data["url"]
     with open(get_data_path("chromedriver.zip", temp = True), "wb") as file: file.write(requests.get(download_url).content)
     with zipfile.ZipFile(get_data_path("chromedriver.zip", temp = True), "r") as file: file.extractall(get_data_path(temp = True))
-    if os.path.exists(os.getcwd() + "/chromedriver.exe"): os.remove(os.getcwd() + "/chromedriver.exe")
-    shutil.move(get_data_path("chromedriver-win64/chromedriver.exe", temp = True), os.getcwd())
+    output_path = get_asset_path("chrome")
+    if os.path.exists(f"{output_path}/chromedriver.exe"): os.remove(f"{output_path}/chromedriver.exe")
+    shutil.move(get_data_path("chromedriver-win64/chromedriver.exe", temp = True), output_path)

@@ -65,7 +65,7 @@ def get_random_game_info(steamid: int = None, appid: int = None, recommended: bo
         })
     return _game_info
 
-def draw_game_card(steamid: int = None, appid: int = None, recommended: bool = True) -> MessageSegment:
+async def draw_game_card(steamid: int = None, appid: int = None, recommended: bool = True) -> MessageSegment:
     game_info = get_random_game_info(steamid, appid, recommended)
     banner = Image.open(game_info["banner_path"]).resize((1200, 688))
     

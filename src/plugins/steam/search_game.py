@@ -6,7 +6,7 @@ from passwords import get_passwords
 from utils.fonts import get_font
 from utils.utils import get_copyright_str, get_output_path
 
-def search_game(game_name: str) -> List[Dict[str, str]]:
+async def search_game(game_name: str) -> List[Dict[str, str]]:
     api_key = get_passwords("isthereanydeal_api_key")
     search_url = "https://api.isthereanydeal.com/games/search/v1"
     info_url = "https://api.isthereanydeal.com/games/info/v2"
@@ -37,7 +37,7 @@ def search_game(game_name: str) -> List[Dict[str, str]]:
             games.append(game)
     return sorted(games, key=lambda x: int(x["discount"].strip('-%')), reverse=True)
 
-def draw_search_result(game_name: str) -> MessageSegment:
+async def draw_search_result(game_name: str) -> MessageSegment:
     background_color = (50, 50, 50)  
     text_color = (255, 255, 255)     
     banner_size = (400, 187)         
@@ -46,7 +46,7 @@ def draw_search_result(game_name: str) -> MessageSegment:
     discount_bg_color = (88, 127, 53)  
     discount_text_color = (195, 255, 101)  
 
-    games = search_game(game_name)
+    games = await search_game(game_name)
 
     font_size, discount_font_size = 30, 50
     font = get_font("noto-sans", size = 40, weight = 400)

@@ -97,11 +97,11 @@ async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg
             kawaii = False if _[1] == "-o" else True
         else: time_range, kawaii = cmd_params, True
         if time_range in ["today", "week", "month", "year"]: 
-            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), time_range), time_range, nicknames, kawaii)
+            message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), time_range), time_range, nicknames, kawaii)
         elif time_range == "-o":
-            message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames, kawaii = False)
+            message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames, kawaii = False)
         else: message = "不支持的时间范围\n目前支持today|week|month|year"
-    else: message = draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames)
+    else: message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames)
     await chatcount.finish(message = message)
 
 antirecall = on_notice()

@@ -26,6 +26,6 @@ async def phigros_handle_func(args = CommandArg()):
         cmd_params_list = cmd_params.split(" ")
         if cmd_params_list[0] == "search":
             search_keyword = " ".join(cmd_params_list[1:])
-            message = Message([MessageSegment.text(f"Search result for \"{search_keyword}\":"), phigros_search_song(search_keyword)])
+            message = Message([MessageSegment.text(f"Search result for \"{search_keyword}\":"), await phigros_search_song(search_keyword)])
         else: return
     await phigros.finish(message)

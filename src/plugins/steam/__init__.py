@@ -44,14 +44,14 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
         if search_keywords[0] == "search":
             game_name = " ".join(search_keywords[1:])
             message = MessageSegment.text(f"Search Result for {game_name}:")
-            message += draw_search_result(game_name)
+            message += await draw_search_result(game_name)
         elif search_keywords[0] == "recommend":
             if len(search_keywords) == 2:
                 steam_id = search_keywords[1]
-                message = draw_game_card(steamid = int(steam_id), recommended = True)
+                message = await draw_game_card(steamid = int(steam_id), recommended = True)
             elif len(search_keywords) == 3:
                 steam_id, appid = search_keywords[1:]
-                message = draw_game_card(steamid = int(steam_id), appid = int(appid), recommended = True)
+                message = await draw_game_card(steamid = int(steam_id), appid = int(appid), recommended = True)
         elif search_keywords[0] == "random":
             if search_keywords[1] == "add":
                 if group_name not in recommend_list: recommend_list[group_name] = {}

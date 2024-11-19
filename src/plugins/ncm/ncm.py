@@ -25,7 +25,7 @@ def ncm_search_song(keyword: str, limit: int = 20) -> Dict[str, Any]:
         songs.append(song_info)
     return songs
 
-def draw_search_card(keyword: str, limit: int = 20) -> MessageSegment:
+async def draw_search_card(keyword: str, limit: int = 20) -> MessageSegment:
     songs = ncm_search_song(keyword, limit)[:limit]  
 
     cover_size = (200, 200)  
@@ -170,7 +170,7 @@ def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], str]:
     lyrics["combined_lyrics"] = combined_lyrics
     return (lyrics, song_type)
 
-def draw_lyrics_card(song_id: int) -> MessageSegment:
+async def draw_lyrics_card(song_id: int) -> MessageSegment:
     lyrics, song_type = get_raw_lyrics(song_id)
     song_info = {"title": lyrics["song_name"], "artists": lyrics["song_artists"]}
     combined_lyrics = lyrics["combined_lyrics"]

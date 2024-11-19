@@ -2,7 +2,7 @@ import requests, os, datetime
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from utils.utils import get_output_path
 
-def get_setu(setu_tags: list[str] = None) -> Message:
+async def get_setu(setu_tags: list[str] = None) -> Message:
     headers = {
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
     'accept-language': 'en,zh-CN;q=0.9,zh;q=0.8,bg;q=0.7,zh-TW;q=0.6',
@@ -41,4 +41,3 @@ def get_setu(setu_tags: list[str] = None) -> Message:
     output_path = get_output_path("setu")
     with open(output_path, "wb") as f: f.write(img_response.content)
     return Message([MessageSegment.image("file:///" + output_path), MessageSegment.text(img_details)])
-

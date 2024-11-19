@@ -22,7 +22,7 @@ setu = on_command("setu", priority = 2)
 @setu.handle()
 async def setu_handle(args = CommandArg()):
     setu_tags = args.extract_plain_text().split(" ")
-    message = get_setu(setu_tags)
+    message = await get_setu(setu_tags)
     await setu.finish(message = message)
 
 search = on_fullmatch("/setu search", priority = 1)
@@ -33,7 +33,7 @@ async def search_handle(event: MessageEvent):
         if seg.type == "image":
             source_url = seg.data.get("url")
             break
-    if source_url: result = search_setu(source_url)
+    if source_url: result = await search_setu(source_url)
     result_str = "Search result(s):\n"
     for item in result:
         result_str += f"{item}\n"

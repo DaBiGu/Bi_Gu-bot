@@ -37,7 +37,7 @@ def get_chatcount(group_id: str, time_range: str) -> Dict[str, int] | None:
     sorted_chatcount = dict(sorted(chatcount.items(), key = lambda item: item[1], reverse = True))
     return dict(list(sorted_chatcount.items())[:10]) if len(sorted_chatcount) > 10 else sorted_chatcount
 
-def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknames: Dict[int, str], kawaii: bool = True) -> MessageSegment:
+async def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknames: Dict[int, str], kawaii: bool = True) -> MessageSegment:
     font_path = Path(get_font_path("noto-sans-regular")) if not kawaii else Path(get_font_path("xiaolai"))
     _data = {}
     time_range_dict = {"today": "今日", "week": "本周", "month": "本月", "year": "本年"}

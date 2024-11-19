@@ -3,7 +3,7 @@ from typing import List, Dict
 from passwords import get_passwords
 import re, os
 
-def search_setu(setu_url: str, search_num: int = 1) -> List[Dict[str, str]]:
+async def search_setu(setu_url: str, search_num: int = 1) -> List[Dict[str, str]]:
     saucenao = SauceNao(get_passwords("saucenao_api"))
     #md5_value = extract_MD5(setu_url)
     #target_url = f"https://gchat.qpic.cn/gchatpic_new/0/0-0-{md5_value}/0?term=0"

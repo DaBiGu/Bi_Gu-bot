@@ -3,7 +3,7 @@ import os, datetime
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from utils.utils import get_output_path
 
-def _symmetric(original_image_path: str, direction: str, percent = 50):
+async def _symmetric(original_image_path: str, direction: str, percent = 50):
     try:
         original_image = Image.open(original_image_path)
     except Exception:

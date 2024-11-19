@@ -27,7 +27,7 @@ xb = on_command("喜报", aliases={"xb"})
 @xb.handle()
 async def xb_handle_func(args = CommandArg()):
     text = args.extract_plain_text()
-    message = draw_good_news(text)
+    message = await draw_good_news(text)
     await xb.finish(message = message)
 
 bb = on_command("悲报", aliases={"bb"})
@@ -35,7 +35,7 @@ bb = on_command("悲报", aliases={"bb"})
 @bb.handle()
 async def bb_handle_func(args = CommandArg()):
     text = args.extract_plain_text()
-    message = draw_bad_news(text)
+    message = await draw_bad_news(text)
     await bb.finish(message = message)
 
 last_symmetric_time = Cooldown(countdown = 180.0)
@@ -58,7 +58,7 @@ async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
         direction, percent = cmd_params.split(" ") if " " in cmd_params else (cmd_params, 50)
         if direction in directions: direction = directions.get(direction) 
         else: direction = "left"
-        message = _symmetric(original_img_path, direction, int(percent))
+        message = await _symmetric(original_img_path, direction, int(percent))
         if isinstance(message, MessageSegment):
             if not last_symmetric_time.use(event.group_id)[0]:
                 remaining_time = last_symmetric_time.use(event.group_id)[1]

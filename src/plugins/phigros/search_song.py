@@ -33,7 +33,7 @@ def song_preprocess(_song: Dict[str, Any]) -> Dict[str, Any]:
 def get_embedded_font(size: int) -> ImageFont:
     return ImageFont.FreeTypeFontFamily(get_font("Saira", size = size), get_font("sourcehan-sans", size = size))
 
-def create_song_image(song_data: Dict[str, Any]) -> MessageSegment:
+async def create_song_image(song_data: Dict[str, Any]) -> MessageSegment:
     cover_img = Image.open(song_data["cover_url"])
     
     width, height = 1600, 1000  
@@ -86,6 +86,6 @@ def create_song_image(song_data: Dict[str, Any]) -> MessageSegment:
     img.save(output_path)
     return MessageSegment.image("file:///" + output_path) 
 
-def phigros_search_song(songname: str) -> MessageSegment:
+async def phigros_search_song(songname: str) -> MessageSegment:
     song_data = song_preprocess(get_song_info(search_similar_song(songname)))
-    return create_song_image(song_data)
+    return await create_song_image(song_data)

@@ -17,4 +17,5 @@ async def gen_ba(left: str, right: str) -> MessageSegment:
     output_path = get_output_path("ba")
     await asyncio.sleep(0.5)
     chrome.find_element(By.ID, "canvas").screenshot(output_path)
+    chrome.quit()
     return MessageSegment.image("file:///" + output_path)

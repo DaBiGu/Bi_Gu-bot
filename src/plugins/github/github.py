@@ -10,7 +10,7 @@ async def get_github_chart(github_id: str, _2d: bool = False) -> Message:
     chrome = await get_chromedriver()
     try:
         chrome.get(f"https://github.com/{github_id}")
-        asyncio.sleep(3)
+        await asyncio.sleep(3)
         chrome.maximize_window()
         if _2d:
             button = WebDriverWait(chrome, 10).until(
@@ -25,7 +25,7 @@ async def get_github_chart(github_id: str, _2d: bool = False) -> Message:
         for text in texts:
             if "contributions" in text.text: _text = text.text
         chrome.execute_script("arguments[0].scrollIntoView(true);", chart)
-        time.sleep(1)
+        await asyncio.sleep(1)
         output_path = get_output_path(f"{github_id}_chart", temp = True)  
         chart.screenshot(output_path)
         return Message([MessageSegment.text(_text), MessageSegment.image(f"file:///{output_path}")])

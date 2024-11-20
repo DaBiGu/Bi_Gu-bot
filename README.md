@@ -13,6 +13,11 @@
 * `/rd xdy` 掷`x`个`y`面骰子
 * `/rd xdy+z` 掷`x`个`y`面骰子，加`z`点修正值
 
+## `github`
+* `/github [username]` 查看`[username]`的github contributions chart
+    * 搭载3d可视化插件[GitHub Isometric Contributions](https://chromewebstore.google.com/detail/github-isometric-contribu/mjoedlfflcchnleknnceiplgaeoegien)
+    * 可选参数 `-2d` 返回原始2d图
+
 ## `group_msg`
 * 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
 * 群内消息防撤回

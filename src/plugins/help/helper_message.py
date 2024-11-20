@@ -11,6 +11,8 @@ class Helper_Messages:
 /rd xdy 掷x个y面骰子\n \
 /rd xdy+z 掷x个y面骰子,加z点修正值\n \
 \n \
+———————— github ————————\n \
+/github [username] 查看[username]的github contributions chart\n \
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
 /chatcount|cc today|week|month 查看今日/本周/本月群内b话量top10\n \

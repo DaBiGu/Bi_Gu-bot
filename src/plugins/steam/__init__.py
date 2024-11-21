@@ -168,14 +168,13 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
         with open(watchlist_json_path, "r") as f: steam_status = json.load(f)
         group_id = str(group_id)
         if group_id in steam_status:
-            message = ""
+            message = "视奸群友中...\n"
             for steam_id in steam_status[group_id]:
                 username, current_steam_status = get_steam_playing(steam_id)
                 if username:
-                    if current_steam_status is not None: message += f"{username} 正在玩 {current_steam_status}\n"
-                    else: message += f"{username} 没在玩游戏\n"
-                else: message += f"找不到id为{steam_id}的用户\n"
+                    if current_steam_status is not None: message += f"\n{username} 正在玩 {current_steam_status}"
+                    else: message += f"\n{username} 没在玩游戏"
+                else: message += f"\n找不到id为{steam_id}的用户"
         else:
             message = "本群视奸列表为空\n使用/视奸群友 add [steam_id]添加群友到列表"
-        message += "EOF"
         await sjqy.finish(message = message)

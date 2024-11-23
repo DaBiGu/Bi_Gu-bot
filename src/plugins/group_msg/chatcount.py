@@ -84,7 +84,7 @@ async def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknam
     fig.text(0.75, -0.1, get_copyright_str(), ha='center', font = font_path, fontsize = 12)
     plt.ylabel('b话量', font = font_path)
     plt.title(f'你群{time_range_dict[time_range]}top10 b话王', font = font_path, fontsize = 16, loc='center', x=0.5, y=1.05)
-    now = datetime.datetime.now().strftime("%H:%M")
+    now = "23:59" if time_range == "yesterday" else datetime.datetime.now().strftime("%H:%M")
     fig.text(0.75, 0.9, f"数据范围: {get_datelist(time_range)[0]} 00:00 至{get_datelist(time_range)[-1]} {now}", ha='center', font = font_path, fontsize = 12)
     plt.xticks(rotation=45)
     output_path = get_output_path("chatcount")

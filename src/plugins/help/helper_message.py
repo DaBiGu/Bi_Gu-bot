@@ -16,7 +16,7 @@ class Helper_Messages:
     可选参数 -2d 返回原始2d图\n \
 ———————— group_msg ————————\n \
 /antirecall on|off 开启/关闭群内消息防撤回\n \
-/chatcount|cc today|week|month 查看今日/本周/本月群内b话量top10\n \
+/chatcount|cc today|yesterday|week|month|year 查看今日/昨日/本周/本月/年度群内b话量top10\n \
     可选参数 -o 以默认风格绘制\n \
     数据统计开始于2024-09-06 \n\
 \n \
@@ -138,7 +138,8 @@ Sep 30 2024: 支持指定对象强娶群老婆功能\n \
 Nov 3 2024: 支持绑定群cp \n \
 Nov 8 2024: 更好的网易云音乐歌曲搜索卡片\n \
 Nov 17 2024 支持模糊搜索phigros歌曲\n \
-Nov 20 2024 支持查询用户github contributions chart"]
+Nov 20 2024 支持查询用户github contributions chart\n \
+Nov 23 2024 支持查看昨日群发言排行"]
     
     def get_helper_messages(self):
         return self.helper_messages

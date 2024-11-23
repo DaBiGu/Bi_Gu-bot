@@ -22,7 +22,7 @@
 * 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
 * 群内消息防撤回
     * 使用`/antirecall on/off` 来开启/关闭此功能
-* `/chatcount|cc today|week|month` 返回今日/本周/本月群内发言量top10
+* `/chatcount|cc today|yesterday|week|month|year` 返回今日/昨日/本周/本月/年度群内发言量top10
     * 可选参数 `-o` 以默认风格绘制
     * 数据统计开始于2024-09-06
 

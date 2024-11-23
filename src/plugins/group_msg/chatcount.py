@@ -14,11 +14,11 @@ def mix_color(color, white=(1, 1, 1), ratio=0.5):
     return [(1 - ratio) * c + ratio * w for c, w in zip(color, white)]
 
 def get_datelist(time_range: str) -> List[str]:
-    today = datetime.datetime.now()
-    first_day = today - datetime.timedelta(days = today.weekday()) if time_range == "week" else today.replace(day = 1) if time_range == "month" else \
-                today.replace(month = 1, day = 1) if time_range == "year" else today
+    last_day = datetime.datetime.now() - datetime.timedelta(days = 1) if time_range == "yesterday" else datetime.datetime.now()
+    first_day = last_day - datetime.timedelta(days = last_day.weekday()) if time_range == "week" else last_day.replace(day = 1) if time_range == "month" else \
+                last_day.replace(month = 1, day = 1) if time_range == "year" else last_day
     datelist, current_day = [], first_day
-    while current_day <= today:
+    while current_day <= last_day:
         datelist.append(current_day.strftime("%Y-%m-%d"))
         current_day += datetime.timedelta(days = 1)
     return datelist

@@ -155,9 +155,3 @@ recall = on_command("recall", permission = SUPERUSER)
 async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
-
-@event_preprocessor
-async def check_blacklist(event: MessageEvent):
-    blacklist = ["3368971160"]
-    if event.get_user_id() in blacklist:
-        raise IgnoredException("Blacklisted user")

@@ -1,9 +1,9 @@
-import time, os, csv, datetime
+import time, re, csv, datetime
 from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from utils.utils import get_output_path, get_IO_path
+from utils.utils import get_output_path, get_IO_path, second_to_hms
 
 def get_last_status(data: List[List[str]]) -> str | None:
     return data[-1][1] if data else None
@@ -38,13 +38,14 @@ def get_daily_sleep_duration(user_id: str) -> MessageSegment:
         else: _data = [0, 0]
         sleep_durations_day.append(sum([float(_data[i+1]) - float(_data[i]) for i in range(0, len(_data), 2)]))
     average_sleep_duration = np.mean([x for x in sleep_durations_day if x != 0])
+    average_sleep_duration_str = re.sub(r"\d+s", "", second_to_hms(average_sleep_duration, eng=True))
     plt.style.use('default')
     plt.figure(figsize = (10, 5))
     sleep_durations_name = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     bars = plt.bar(sleep_durations_name, [x/3600 for x in sleep_durations_day], width = 0.5)
     for bar, value in zip(bars, sleep_durations_day):
-        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height(), round(value/3600, 2), ha = "center", va = "bottom")
-    plt.text(0, average_sleep_duration/3600, f"Average: {round(average_sleep_duration/3600, 2)} h", ha = "center", va = "bottom", color = "r")
+        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height(), re.sub(r"\d+s", "", second_to_hms(value, eng=True)), ha = "center", va = "bottom")
+    plt.text(0, average_sleep_duration/3600, f"Average: {average_sleep_duration_str}", ha = "center", va = "bottom", color = "r")
     plt.axhline(y = average_sleep_duration/3600, color = "r", linestyle = "--", label = "Average")
     plt.title(f"{user_id}'s daily sleep duration of the week", fontweight = "bold")
     plt.ylabel("Sleep duration (h)")

@@ -17,7 +17,7 @@ def get_IO_path(filename: str, file_type: str) -> str:
 def get_asset_path(subpath: str) -> str:
     return os.getcwd() + f"/src/assets/{subpath}"
 
-def second_to_hms(seconds):
+def second_to_hms(seconds, eng: bool = False) -> str:
     h, r = divmod(seconds, 3600)
     m, s = divmod(r, 60)
-    return f"{int(h)}小时{int(m)}分钟{int(s)}秒" 
+    return f"{int(h)}小时{int(m)}分钟{int(s)}秒" if not eng else f"{int(h)}h{int(m)}m{int(s)}s"

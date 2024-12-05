@@ -108,6 +108,7 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
 
 steam_data = Steam_Data()
 
+"""
 @scheduler.scheduled_job("interval", minutes = 1)
 async def report_steam_status():
     to_sends = []
@@ -124,6 +125,7 @@ async def report_steam_status():
     steam_data.set_data(steam_status)
     for group_id, username, current_steam_status in to_sends:
         await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
+"""
 
 sjqy = on_command("视奸群友")
 @sjqy.handle()

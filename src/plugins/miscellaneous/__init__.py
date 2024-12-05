@@ -27,6 +27,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
+"""
 def draw_progress_bar(progress: float) -> str:
     filled_length = int(20 * progress)
     bar = "=" * filled_length + "-" * (20 - filled_length)
@@ -107,6 +108,7 @@ sb = on_fullmatch("阿姨洗铁路")
 @sb.handle()
 async def sb_handle_func():
     await sb.finish("傻逼")
+"""
 
 zm = on_fullmatch("在吗", rule=to_me())
 

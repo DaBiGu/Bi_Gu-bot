@@ -158,7 +158,7 @@ async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
 
-xm = on_keyword("羡慕")
+xm = on_keyword(keywords=["羡慕", "xm"])
 
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):

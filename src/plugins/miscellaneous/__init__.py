@@ -157,3 +157,10 @@ recall = on_command("recall", permission = SUPERUSER)
 async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
+
+xm = on_keyword("羡慕")
+
+@xm.handle()
+async def xm_handle_func(event: GroupMessageEvent):
+    if event.group_id == 872560805: await xm.finish("这也羡慕那也羡慕")
+    else: return

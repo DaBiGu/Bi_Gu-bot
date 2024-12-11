@@ -7,7 +7,7 @@ from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
-from utils.utils import get_IO_path
+from utils.utils import get_IO_path, random_trigger
 from typing import Dict, Any, Optional
 
 import re, time, random, json, os, datetime
@@ -45,6 +45,7 @@ last_message = {}
 message_times = {}
 repeated_messages = []
 shortest_times = 2
+MIN_REPEAT_INTERVAL = 180
 
 @m.handle()
 async def group_message_handle(event: GroupMessageEvent, bot: Bot):
@@ -62,10 +63,9 @@ async def group_message_handle(event: GroupMessageEvent, bot: Bot):
     if message_times.get(group_id) == shortest_times:
         for item in repeated_messages:
             if item[1] == group_id and item[0] == message:
-                if time.time() - item[2] < 60: return
+                if time.time() - item[2] < MIN_REPEAT_INTERVAL: return
                 else: repeated_messages.remove(item)
-        if random.randint(1, 100) <= 40:
-            await bot.send_group_msg(group_id = event.group_id, message = raw_message, auto_escape = False)
+        if random_trigger(40): await bot.send_group_msg(group_id = event.group_id, message = raw_message, auto_escape = False)
         repeated_messages.append([message, group_id, time.time()])
     last_message[group_id] = message
 

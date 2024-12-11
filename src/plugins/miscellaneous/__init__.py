@@ -11,7 +11,7 @@ from ..setu import get_setu
 from nonebot import on_command, on_fullmatch, on_notice, on_keyword
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
-from utils.utils import get_asset_path, second_to_hms
+from utils.utils import get_asset_path, second_to_hms, random_trigger
 from utils.cooldown import Cooldown
 
 from nonebot.exception import IgnoredException
@@ -158,9 +158,12 @@ async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
 
-xm = on_keyword(keywords=["羡慕", "xm"])
+xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
 
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):
-    if event.group_id == 872560805: await xm.finish("这也羡慕那也羡慕")
+    if event.group_id == 872560805:
+        if random_trigger(25):
+            await xm.finish("这也羡慕那也羡慕")
+        else: return
     else: return

@@ -14,12 +14,12 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-yuyu = on_command("玉玉", aliases= {"yuyu"})
+yuyu = on_command("玉玉", aliases= {"yuyu", "jade jade"})
 @yuyu.handle()
 async def yuyu_handle_func():
     await yuyu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/yuyu.gif"))]))
 
-fufu = on_command("芙芙", aliases= {"fufu"})
+fufu = on_command("芙芙", aliases= {"fufu", "furina"})
 @fufu.handle()
 async def fufu_handle_func():
     await fufu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))

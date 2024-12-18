@@ -8,7 +8,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNotic
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
 from utils.utils import get_IO_path, random_trigger
-from utils.plugin_ctrl import create_plugin_ctrl
+from utils.plugin_ctrl import create_plugin_ctrl, check_plugin_ctrl
 from typing import Dict, Any, Optional
 
 import re, time, random, json, os, datetime
@@ -22,7 +22,6 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-ctrl_json_path = get_IO_path("plugin_ctrl", "json")
 morning_json_path = get_IO_path("morning", "json")
 chatcount_json_path = get_IO_path("chatcount", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
@@ -109,10 +108,8 @@ antirecall = on_notice()
 
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
+    if check_plugin_ctrl("antirecall", event.group_id, default_on = False): return
     group_id = event.group_id
-    with open(ctrl_json_path, "r") as f: data = json.load(f)
-    group_list = data["antirecall"]
-    if group_id not in group_list: return
     message_id = event.message_id
     username = event.user_id
     if event.user_id == int(bot.self_id): return
@@ -165,10 +162,7 @@ xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
 
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):
-    group_id = event.group_id
-    with open(ctrl_json_path, "r") as f: data = json.load(f)
-    group_list = data["xm"]
-    if group_id not in group_list: return
+    if check_plugin_ctrl("xm", event.group_id, default_on = True): return
     if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
     else: return
 

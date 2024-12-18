@@ -36,3 +36,9 @@ def create_plugin_ctrl(names: List[str], description: str, default_on: bool = Tr
         data[name] = group_list
         with open(get_IO_path("plugin_ctrl", "json"), "w") as f: json.dump(data, f)
     return plugin_ctrl
+
+def check_plugin_ctrl(name: str, group_id: int, default_on: bool = True) -> bool:
+    with open(get_IO_path("plugin_ctrl", "json"), "r") as f: data = json.load(f)
+    if name not in data: data[name] = []
+    group_list = data[name]
+    return group_id not in group_list if default_on else group_id in group_list

@@ -11,12 +11,13 @@ from ..setu import get_setu
 from nonebot import on_command, on_fullmatch, on_notice, on_keyword
 from nonebot.params import CommandArg
 from nonebot.rule import to_me
-from utils.utils import get_asset_path, second_to_hms, random_trigger
+from utils.utils import get_asset_path, second_to_hms, random_trigger, get_IO_path
 from utils.cooldown import Cooldown
+from utils.plugin_ctrl import create_plugin_ctrl
 
 from nonebot.exception import IgnoredException
 from nonebot.message import event_preprocessor
-import time, random, os
+import time, random, os, json
 
 __plugin_meta__ = PluginMetadata(
     name="miscellaneous",
@@ -26,6 +27,8 @@ __plugin_meta__ = PluginMetadata(
 )
 
 config = get_plugin_config(Config)
+
+ctrl_json_path = get_IO_path("plugin_ctrl", "json")
 
 """
 def draw_progress_bar(progress: float) -> str:
@@ -138,7 +141,9 @@ leave = on_notice()
 
 @leave.handle()
 async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
-    if event.group_id == 514299983: return
+    with open(ctrl_json_path, "r") as f: data = json.load(f)
+    group_list = data["leave"]
+    if event.group_id in group_list: return
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")
@@ -147,9 +152,15 @@ welcome = on_notice()
 
 @welcome.handle()
 async def welcome_handle(event: GroupIncreaseNoticeEvent):
+    with open(ctrl_json_path, "r") as f: data = json.load(f)
+    group_list = data["welcome"]
+    if event.group_id in group_list: return
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
                       MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)
+
+welcome_ctrl = create_plugin_ctrl(["welcome", "欢迎"], "欢迎新群友")
+leave_ctrl = create_plugin_ctrl(["leave", "退群"], "群友退群通知")
 
 recall = on_command("recall", permission = SUPERUSER)
 
@@ -157,13 +168,3 @@ recall = on_command("recall", permission = SUPERUSER)
 async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
-
-xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
-
-@xm.handle()
-async def xm_handle_func(event: GroupMessageEvent):
-    if event.group_id == 872560805:
-        if random_trigger(25):
-            await xm.finish("这也羡慕那也羡慕")
-        else: return
-    else: return

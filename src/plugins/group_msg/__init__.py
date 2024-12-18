@@ -1,6 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_message, on_notice, on_command
+from nonebot import on_message, on_notice, on_command, on_keyword
 from nonebot.rule import to_me
 from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNotic
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
 from utils.utils import get_IO_path, random_trigger
+from utils.plugin_ctrl import create_plugin_ctrl
 from typing import Dict, Any, Optional
 
 import re, time, random, json, os, datetime
@@ -21,7 +22,7 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-antirecall_json_path = get_IO_path("antirecall", "json")
+ctrl_json_path = get_IO_path("plugin_ctrl", "json")
 morning_json_path = get_IO_path("morning", "json")
 chatcount_json_path = get_IO_path("chatcount", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
@@ -109,7 +110,8 @@ antirecall = on_notice()
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
     group_id = event.group_id
-    with open(antirecall_json_path, "r") as f: group_list = json.load(f)
+    with open(ctrl_json_path, "r") as f: data = json.load(f)
+    group_list = data["antirecall"]
     if group_id not in group_list: return
     message_id = event.message_id
     username = event.user_id
@@ -131,8 +133,11 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
             await bot.send_group_msg(group_id = group_id, message = f"{operatorname}撤回了{username}的一条消息:\n{message}")
 
 
-antirecall_ctrl = on_command("antirecall")
+#antirecall_ctrl = on_command("antirecall")
 
+antirecall_ctrl = create_plugin_ctrl(["antirecall"], "消息防撤回", default_on = False)
+
+"""
 @antirecall_ctrl.handle()
 async def antirecall_ctrl_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     permission = SUPERUSER
@@ -143,7 +148,6 @@ async def antirecall_ctrl_handle(bot: Bot, event: GroupMessageEvent, args = Comm
     cmd_params = args.extract_plain_text()
     if cmd_params:
         if cmd_params == "on":
-            print(group_id, group_list)
             if group_id not in group_list:
                 group_list.append(group_id)
                 await antirecall_ctrl.send("已成功开启本群消息防撤回")
@@ -152,6 +156,7 @@ async def antirecall_ctrl_handle(bot: Bot, event: GroupMessageEvent, args = Comm
                 group_list.remove(group_id)
                 await antirecall_ctrl.send("已成功关闭本群消息防撤回")
     with open(antirecall_json_path, "w") as f: json.dump(group_list, f)
+"""
 
 morning = on_command("早安", aliases = {"早", "早上好"}, rule=to_me())
 
@@ -179,6 +184,19 @@ async def morning_handle(event: GroupMessageEvent):
     with open(morning_json_path, "w") as f: json.dump(record, f)
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(message_str)])
     await morning.finish(message = message)
+
+xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
+
+@xm.handle()
+async def xm_handle_func(event: GroupMessageEvent):
+    group_id = event.group_id
+    with open(ctrl_json_path, "r") as f: data = json.load(f)
+    group_list = data["xm"]
+    if group_id not in group_list: return
+    if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
+    else: return
+
+xm_ctrl = create_plugin_ctrl(["xm", "羡慕"], "这也羡慕那也羡慕")
 
 @Bot.on_called_api
 async def count_bot_messages(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):

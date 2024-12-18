@@ -15,8 +15,8 @@ class Helper_Messages:
 /github [username] 查看[username]的github contributions chart\n \
     可选参数 -2d 返回原始2d图\n \
 ———————— group_msg ————————\n \
-/antirecall on|off 开启/关闭群内消息防撤回\n \
-/chatcount|cc today|yesterday|week|month|year 查看今日/昨日/本周/本月/年度群内b话量top10\n \
+/chatcount|cc today|yesterday|week|month|year\n \
+    查看今日/昨日/本周/本月/年度群内b话量top10\n \
     可选参数 -o 以默认风格绘制\n \
     数据统计开始于2024-09-06 \n\
 \n \
@@ -83,6 +83,7 @@ class Helper_Messages:
 /update log 查看芙芙更新日志\n \
 ———————— SUPERUSER ————————\n \
 (以下指令需要开发者权限)\n \
+/antirecall on|off 开启/关闭群内消息防撤回\n \
 /update 更新芙芙(与github同步)\n \
 /update chromedriver 更新chromedriver\n \
 /reboot 重启芙芙\n \
@@ -139,7 +140,10 @@ Nov 3 2024: 支持绑定群cp \n \
 Nov 8 2024: 更好的网易云音乐歌曲搜索卡片\n \
 Nov 17 2024 支持模糊搜索phigros歌曲\n \
 Nov 20 2024 支持查询用户github contributions chart\n \
-Nov 23 2024 支持查看昨日群发言排行"]
+Nov 23 2024 支持查看昨日群发言排行\n \
+Nov 26 2024 增加用户黑名单\n \
+\n \
+Dec 18 2024 给插件增加全局开关模块"]
     
     def get_helper_messages(self):
         return self.helper_messages

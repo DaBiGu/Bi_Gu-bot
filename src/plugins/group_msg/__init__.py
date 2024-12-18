@@ -132,31 +132,7 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
         else:
             await bot.send_group_msg(group_id = group_id, message = f"{operatorname}撤回了{username}的一条消息:\n{message}")
 
-
-#antirecall_ctrl = on_command("antirecall")
-
 antirecall_ctrl = create_plugin_ctrl(["antirecall"], "消息防撤回", default_on = False)
-
-"""
-@antirecall_ctrl.handle()
-async def antirecall_ctrl_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
-    permission = SUPERUSER
-    if not await permission(bot, event):
-        await antirecall_ctrl.finish("你没有权限执行此操作")
-    group_id = event.group_id
-    with open(antirecall_json_path, "r") as f: group_list = json.load(f)
-    cmd_params = args.extract_plain_text()
-    if cmd_params:
-        if cmd_params == "on":
-            if group_id not in group_list:
-                group_list.append(group_id)
-                await antirecall_ctrl.send("已成功开启本群消息防撤回")
-        elif cmd_params == "off":
-            if group_id in group_list:
-                group_list.remove(group_id)
-                await antirecall_ctrl.send("已成功关闭本群消息防撤回")
-    with open(antirecall_json_path, "w") as f: json.dump(group_list, f)
-"""
 
 morning = on_command("早安", aliases = {"早", "早上好"}, rule=to_me())
 

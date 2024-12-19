@@ -1,8 +1,8 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_message, on_notice, on_command, on_keyword
+from nonebot import on_message, on_notice, on_command, on_keyword, on_regex
 from nonebot.rule import to_me
-from nonebot.params import CommandArg
+from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
@@ -167,6 +167,18 @@ async def xm_handle_func(event: GroupMessageEvent):
     else: return
 
 xm_ctrl = create_plugin_ctrl(["xm", "羡慕"], "这也羡慕那也羡慕")
+
+# copied from https://github.com/NumberSir/nonebot-plugin-questionmark
+question = on_regex(r"^([?？¿!！¡\s]+)$", priority = 9)
+
+@question.handle()
+async def question_handle_func(rgx = RegexGroup()):
+    if not rgx: return
+    response = rgx[0] \
+        .replace("¿", "d").replace("?", "¿").replace("？", "¿").replace("d", "?") \
+        .replace("¡", "d").replace("!", "¡").replace("！", "¡").replace("d", "!")
+    if random_trigger(50): await question.finish(response)
+    else: return
 
 @Bot.on_called_api
 async def count_bot_messages(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):

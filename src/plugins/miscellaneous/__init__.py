@@ -56,7 +56,7 @@ leave = on_notice()
 
 @leave.handle()
 async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
-    if check_plugin_ctrl("leave", event.group_id, default_on = True): return
+    if not check_plugin_ctrl("leave", event.group_id, default_on = True): return
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")
@@ -65,7 +65,7 @@ welcome = on_notice()
 
 @welcome.handle()
 async def welcome_handle(event: GroupIncreaseNoticeEvent):
-    if check_plugin_ctrl("welcome", event.group_id, default_on = True): return
+    if not check_plugin_ctrl("welcome", event.group_id, default_on = True): return
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
                       MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)

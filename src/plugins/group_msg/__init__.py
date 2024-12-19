@@ -108,7 +108,7 @@ antirecall = on_notice()
 
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
-    if check_plugin_ctrl("antirecall", event.group_id, default_on = False): return
+    if not check_plugin_ctrl("antirecall", event.group_id, default_on = False): return
     group_id = event.group_id
     message_id = event.message_id
     username = event.user_id
@@ -162,7 +162,7 @@ xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
 
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):
-    if check_plugin_ctrl("xm", event.group_id, default_on = True): return
+    if not check_plugin_ctrl("xm", event.group_id, default_on = True): return
     if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
     else: return
 

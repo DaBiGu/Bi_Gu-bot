@@ -59,7 +59,7 @@ leave_ctrl = global_plugin_ctrl.create_plugin(names = ["leave"], description = "
 
 @leave.handle()
 async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
-    if not leave_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
+    if not leave_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")
@@ -69,7 +69,7 @@ welcome_ctrl = global_plugin_ctrl.create_plugin(names = ["welcome"], description
 
 @welcome.handle()
 async def welcome_handle(event: GroupIncreaseNoticeEvent):
-    if not welcome_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
+    if not welcome_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
                       MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)

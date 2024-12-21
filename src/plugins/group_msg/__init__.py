@@ -120,7 +120,7 @@ antirecall_ctrl = global_plugin_ctrl.create_plugin(names = ["antirecall"], descr
 
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
-    if not antirecall_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
+    if not antirecall_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
     group_id = event.group_id
     message_id = event.message_id
     username = event.user_id
@@ -174,7 +174,7 @@ xm_ctrl = global_plugin_ctrl.create_plugin(names = ["xm", "羡慕"], description
 
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):
-    if not xm_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
+    if not xm_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
     if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
     else: return
 

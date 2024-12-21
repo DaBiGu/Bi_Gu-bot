@@ -1,5 +1,4 @@
 from PIL import Image
-import os, datetime
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from utils.utils import get_output_path
 

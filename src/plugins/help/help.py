@@ -1,5 +1,4 @@
-from PIL import Image, ImageDraw, ImageFont
-import datetime, os
+from PIL import Image, ImageDraw
 from nonebot.adapters.onebot.v11 import MessageSegment
 from utils.fonts import get_font
 from utils.utils import get_copyright_str, get_output_path, get_asset_path

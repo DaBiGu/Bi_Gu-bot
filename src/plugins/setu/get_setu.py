@@ -1,4 +1,4 @@
-import requests, os, datetime
+import requests
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from utils.utils import get_output_path
 

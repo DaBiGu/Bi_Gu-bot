@@ -1,11 +1,10 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, GroupMessageEvent
 from utils.utils import get_IO_path
 from .config import Config
-import random, json, os, datetime
+import random, json, datetime
 import numpy as np
 
 from utils import global_plugin_ctrl

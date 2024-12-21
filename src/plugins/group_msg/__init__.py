@@ -3,7 +3,6 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_message, on_notice, on_command, on_keyword, on_regex
 from nonebot.rule import to_me
 from nonebot.params import CommandArg, RegexGroup
-from nonebot.permission import SUPERUSER
 from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config

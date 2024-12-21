@@ -1,8 +1,7 @@
-import datetime, json, os, requests
+import datetime, json, requests
 from typing import List, Dict
 import matplotlib.pyplot as plt
 from PIL import Image
-import numpy as np
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from utils.utils import get_copyright_str, get_output_path, get_IO_path
 from utils.fonts import get_font_path

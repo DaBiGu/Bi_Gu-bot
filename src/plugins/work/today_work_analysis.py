@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-import datetime, os, csv
+import datetime, csv
 from typing import List
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from utils.utils import get_output_path, get_IO_path

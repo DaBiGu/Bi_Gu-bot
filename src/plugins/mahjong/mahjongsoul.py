@@ -1,11 +1,10 @@
-import requests, datetime, os
+import requests, time
 from matplotlib import pyplot as plt
 from matplotlib.patches import Patch
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from typing import List, Dict
 from utils.utils import get_copyright_str, get_output_path
 import numpy as np
-import time
 
 def forward(y):
     return 150 / (1 + np.exp(-y / 200))

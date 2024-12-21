@@ -4,7 +4,7 @@ from matplotlib.patches import Wedge
 from matplotlib.colors import LinearSegmentedColormap
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from utils.utils import get_copyright_str, get_output_path
-import requests, datetime, os
+import requests
 
 def get_market_fear_greed_index():
     radius, width = 0.4, 0.1

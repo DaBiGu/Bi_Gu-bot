@@ -1,6 +1,6 @@
-import requests, json, os, datetime
+import requests, json
 from typing import List, Dict
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 from nonebot.adapters.onebot.v11 import MessageSegment
 from passwords import get_passwords
 from utils.fonts import get_font

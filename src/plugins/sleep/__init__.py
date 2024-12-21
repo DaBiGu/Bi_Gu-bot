@@ -2,7 +2,6 @@ from nonebot import get_plugin_config
 from nonebot import on_command, get_adapter
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
-from nonebot.adapters import Event
 from nonebot.adapters.onebot.v11.event import MessageEvent
 from nonebot.adapters.onebot.v11.adapter import Adapter
 
@@ -118,9 +117,3 @@ async def awake_handle(event: MessageEvent, args = CommandArg()):
         await awake.send(message = username + "睡觉时长" + sleep_duration_str + "\n早安新的一天开始了哦!")
         await awake.send(message = f"{username}的本周睡眠时长统计如下:")
         await awake.finish(message = get_daily_sleep_duration(user_id))
-
-
-
-
-
-

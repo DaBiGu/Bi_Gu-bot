@@ -1,4 +1,4 @@
-import os, cv2, jieba, datetime
+import cv2, jieba
 import numpy as np
 from PIL import ImageFont, ImageDraw, Image
 from typing import List

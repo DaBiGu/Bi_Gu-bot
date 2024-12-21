@@ -1,7 +1,7 @@
 from nonebot.adapters.onebot.v11.message import MessageSegment
 import okx.MarketData as MarketData
 import okx.PublicData as PublicData
-import datetime, time, os
+import datetime, time
 import pandas as pd
 import mplfinance as mpf
 from passwords import get_passwords
@@ -70,4 +70,3 @@ def get_crypto_kline(crypto_name: str, time_interval: str = "15m") -> MessageSeg
     output_path = get_output_path("crypto_kline")
     fig.savefig(output_path)
     return MessageSegment.image("file:///" + output_path)
-

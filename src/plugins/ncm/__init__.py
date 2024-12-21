@@ -1,8 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from .config import Config
 from .ncm import draw_search_card, get_ncm_song_card, draw_lyrics_card

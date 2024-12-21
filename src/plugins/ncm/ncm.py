@@ -1,10 +1,7 @@
 from pyncm import apis
-from plottable import Table, ColDef
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from typing import Dict, List, Any, Tuple
-from PIL import Image, ImageDraw, ImageFont
-import matplotlib.pyplot as plt
-import pandas as pd
+from PIL import Image, ImageDraw
 import re, requests
 from utils.fonts import get_font
 from utils.utils import get_copyright_str, get_output_path

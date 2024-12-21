@@ -1,6 +1,6 @@
 import okx.MarketData as MarketData
 import okx.PublicData as PublicData
-import time, datetime, os
+import time, datetime
 
 from passwords import get_passwords
 

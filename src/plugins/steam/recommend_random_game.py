@@ -1,8 +1,8 @@
-import requests, random, datetime, os
+import requests, random
 from typing import Dict, Any
 from nonebot.adapters.onebot.v11 import MessageSegment
 from passwords import get_passwords
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 from utils.fonts import get_font
 from utils.utils import get_copyright_str, get_output_path
 

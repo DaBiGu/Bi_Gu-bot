@@ -1,13 +1,10 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_command, get_bot
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, Bot
-from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .get_steam_playing import get_steam_playing
-from .data import Steam_Data
 from .search_game import draw_search_result
 from .recommend_random_game import draw_game_card, check_legal_game
 from utils.utils import get_IO_path
@@ -118,25 +115,6 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
             else: message = f"找不到id为{steam_id}的用户"
     with open(random_json_path, "w") as f: json.dump(recommend_list, f)
     await steam.finish(message = message)
-
-################### Deprecated ###################
-# steam_data = Steam_Data()
-# @scheduler.scheduled_job("interval", minutes = 1)
-# async def report_steam_status():
-#     to_sends = []
-#     global steam_data
-#     steam_status = steam_data.get_data()
-#     bot = get_bot()
-#     for group_id, steam_ids in steam_status.items():
-#         for steam_id, game_status in steam_ids.items():
-#             username, current_steam_status = get_steam_playing(steam_id)
-#             if game_status != current_steam_status and current_steam_status is not None:
-#                 steam_status[group_id][steam_id] = current_steam_status
-#                 to_send = (group_id, username, current_steam_status)
-#                 if to_send not in to_sends: to_sends.append(to_send)
-#     steam_data.set_data(steam_status)
-#     for group_id, username, current_steam_status in to_sends:
-#         await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
 
 _sjqy = global_plugin_ctrl.create_plugin(names = ["视奸群友", "sjqy"], description = "视奸群友",
                                          help_info = "/视奸群友 一键视奸群友游戏状态 \n \

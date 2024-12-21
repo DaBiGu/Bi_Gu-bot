@@ -2,7 +2,7 @@ from nonebot.adapters.onebot.v11 import MessageSegment, Message
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time, asyncio
+import asyncio
 from utils.chrome import get_chromedriver
 from utils.utils import get_output_path
 

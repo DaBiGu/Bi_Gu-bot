@@ -1,7 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_command, get_adapter
-from nonebot.adapters.onebot.v11.event import MessageEvent, GroupMessageEvent
+from nonebot import get_adapter
+from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.adapter import Adapter
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11.message import MessageSegment, Message
@@ -63,4 +63,3 @@ async def work_handle(event: GroupMessageEvent, args = CommandArg()):
             _today_work_analysis, work_time = today_work_analysis(user_id = event.get_user_id())
             work_time_str = second_to_hms(work_time)
             await work.finish(message = Message([_today_work_analysis, MessageSegment.text(f"{username}今日工作总时长{work_time_str}")]))
-

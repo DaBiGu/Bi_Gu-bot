@@ -42,7 +42,7 @@ async def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknam
     _data = {}
     time_range_dict = {"today": "今日", "yesterday": "昨日", "week": "本周", "month": "本月", "year": "本年"}
     for key, value in data.items():
-        _data[nicknames[int(key)]] = value
+        _data[nicknames[int(key)]] = value if int(key) in nicknames else key
     user_ids = list(data.keys())
     _nicknames = list(_data.keys())
     counts = list(_data.values())

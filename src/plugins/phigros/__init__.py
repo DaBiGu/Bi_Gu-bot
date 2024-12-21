@@ -2,10 +2,12 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import Message, MessageSegment
+from nonebot.adapters.onebot.v11 import Message, MessageSegment, GroupMessageEvent
 
 from .config import Config
 from .search_song import phigros_search_song
+
+from utils import global_plugin_ctrl
 
 __plugin_meta__ = PluginMetadata(
     name="phigros",
@@ -16,10 +18,14 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-phigros = on_command("phigros")
+_phigros = global_plugin_ctrl.create_plugin(names = ["phigros"], description = "Phigros相关功能",
+                                            help_info = "/phigros search [songname] 搜索歌名为[songname]的phigros歌曲信息(支持模糊匹配)",
+                                            default_on = True, priority = 1)
+phigros = _phigros.base_plugin
 
 @phigros.handle()
-async def phigros_handle_func(args = CommandArg()):
+async def phigros_handle_func(event: GroupMessageEvent, args = CommandArg()):
+    if not _phigros.check_plugin_ctrl(event.group_id): await phigros.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
     if " " not in cmd_params: return
     else:

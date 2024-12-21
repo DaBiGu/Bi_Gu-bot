@@ -4,12 +4,14 @@ from nonebot import on_message, on_notice, on_command, on_keyword, on_regex
 from nonebot.rule import to_me
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
+from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
 from utils.utils import get_IO_path, random_trigger
-from utils.plugin_ctrl import create_plugin_ctrl, check_plugin_ctrl
 from typing import Dict, Any, Optional
+
+from utils import global_plugin_ctrl
 
 import re, time, random, json, os, datetime
 
@@ -82,9 +84,17 @@ async def group_message_handle(event: GroupMessageEvent, bot: Bot):
     record[group_id][user_id] = int(time.time())
     with open(last_sent_time_json_path, "w") as f: json.dump(record, f)
 
-chatcount = on_command("chatcount", aliases={"cc"})
+_chatcount = global_plugin_ctrl.create_plugin(names = ["chatcount", "cc"], description = "聊天统计",
+                                              help_info = "/chatcount|cc today|yesterday|week|month|year\n \
+                                                               查看今日/昨日/本周/本月/年度群内b话量top10\n \
+                                                               可选参数 -o 以默认风格绘制\n \
+                                                               数据统计开始于2024-09-06",
+                                              default_on = True, priority = 1)
+chatcount = _chatcount.base_plugin
+
 @chatcount.handle()
 async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    if not _chatcount.check_plugin_ctrl(event.group_id): await chatcount.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
     nicknames = {}
     group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
@@ -106,9 +116,11 @@ async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg
 
 antirecall = on_notice()
 
+antirecall_ctrl = global_plugin_ctrl.create_plugin(names = ["antirecall"], description = "消息防撤回", default_on = False)
+
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
-    if not check_plugin_ctrl("antirecall", event.group_id, default_on = False): return
+    if not antirecall_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
     group_id = event.group_id
     message_id = event.message_id
     username = event.user_id
@@ -128,8 +140,6 @@ async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
             await bot.send_group_msg(group_id = group_id, message = f"{username}撤回了一条消息:\n{message}")
         else:
             await bot.send_group_msg(group_id = group_id, message = f"{operatorname}撤回了{username}的一条消息:\n{message}")
-
-antirecall_ctrl = create_plugin_ctrl(["antirecall"], "消息防撤回", default_on = False)
 
 morning = on_command("早安", aliases = {"早", "早上好"}, rule=to_me())
 
@@ -160,13 +170,13 @@ async def morning_handle(event: GroupMessageEvent):
 
 xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
 
+xm_ctrl = global_plugin_ctrl.create_plugin(names = ["xm", "羡慕"], description = "这也羡慕那也羡慕", default_on = True)
+
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):
-    if not check_plugin_ctrl("xm", event.group_id, default_on = True): return
+    if not xm_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
     if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
     else: return
-
-xm_ctrl = create_plugin_ctrl(["xm", "羡慕"], "这也羡慕那也羡慕")
 
 # copied from https://github.com/NumberSir/nonebot-plugin-questionmark
 question = on_regex(r"^([?？¿!！¡\s]+)$", priority = 9)
@@ -177,7 +187,7 @@ async def question_handle_func(rgx = RegexGroup()):
     response = rgx[0] \
         .replace("¿", "d").replace("?", "¿").replace("？", "¿").replace("d", "?") \
         .replace("¡", "d").replace("!", "¡").replace("！", "¡").replace("d", "!")
-    if random_trigger(50): await question.finish(response)
+    if random_trigger(25): await question.finish(response)
     else: return
 
 @Bot.on_called_api

@@ -12,6 +12,8 @@ from .search_game import draw_search_result
 from .recommend_random_game import draw_game_card, check_legal_game
 from utils.utils import get_IO_path
 
+from utils import global_plugin_ctrl
+
 import json, os, random
 
 __plugin_meta__ = PluginMetadata(
@@ -25,9 +27,20 @@ config = get_plugin_config(Config)
 random_json_path = get_IO_path("steam_random", "json")
 watchlist_json_path = get_IO_path("steam_watchlist", "json")
 
-steam = on_command("steam")
+_steam = global_plugin_ctrl.create_plugin(names = ["steam"], description = "steam相关功能",
+                                          help_info = "/steam [steamid] 查看用户[steamid]的steam游戏状态\n \
+                                                       /steam random 从群友推荐列表中随机推荐一款游戏\n \
+                                                           可选参数 -a|all 使推荐的游戏可以来自其他群 \n \
+                                                       /steam random add [appid] 将游戏[appid]添加到本群推荐列表\n \
+                                                       /steam recommend [steamid] 随机从用户[steamid]的库存推荐游戏\n \
+                                                       /steam recommend [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏\n \
+                                                       /steam search [name] 搜索名为[name]的steam游戏",
+                                          default_on = True, priority = 1)
+
+steam = _steam.base_plugin
 @steam.handle()
 async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    if not _steam.check_plugin_ctrl(event.group_id): await steam.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     group_info = await bot.get_group_info(group_id = event.group_id)
@@ -106,28 +119,31 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     with open(random_json_path, "w") as f: json.dump(recommend_list, f)
     await steam.finish(message = message)
 
-steam_data = Steam_Data()
+################### Deprecated ###################
+# steam_data = Steam_Data()
+# @scheduler.scheduled_job("interval", minutes = 1)
+# async def report_steam_status():
+#     to_sends = []
+#     global steam_data
+#     steam_status = steam_data.get_data()
+#     bot = get_bot()
+#     for group_id, steam_ids in steam_status.items():
+#         for steam_id, game_status in steam_ids.items():
+#             username, current_steam_status = get_steam_playing(steam_id)
+#             if game_status != current_steam_status and current_steam_status is not None:
+#                 steam_status[group_id][steam_id] = current_steam_status
+#                 to_send = (group_id, username, current_steam_status)
+#                 if to_send not in to_sends: to_sends.append(to_send)
+#     steam_data.set_data(steam_status)
+#     for group_id, username, current_steam_status in to_sends:
+#         await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
 
-"""
-@scheduler.scheduled_job("interval", minutes = 1)
-async def report_steam_status():
-    to_sends = []
-    global steam_data
-    steam_status = steam_data.get_data()
-    bot = get_bot()
-    for group_id, steam_ids in steam_status.items():
-        for steam_id, game_status in steam_ids.items():
-            username, current_steam_status = get_steam_playing(steam_id)
-            if game_status != current_steam_status and current_steam_status is not None:
-                steam_status[group_id][steam_id] = current_steam_status
-                to_send = (group_id, username, current_steam_status)
-                if to_send not in to_sends: to_sends.append(to_send)
-    steam_data.set_data(steam_status)
-    for group_id, username, current_steam_status in to_sends:
-        await bot.send_group_msg(group_id = group_id, message = f"{username} 正在玩 {current_steam_status}")
-"""
+_sjqy = global_plugin_ctrl.create_plugin(names = ["视奸群友", "sjqy"], description = "视奸群友",
+                                         help_info = "/视奸群友 一键视奸群友游戏状态 \n \
+                                                          使用/视奸群友 add|remove [steamid] 管理视奸群友列表",
+                                         default_on = True, priority = 1)
 
-sjqy = on_command("视奸群友")
+sjqy = _sjqy.base_plugin
 @sjqy.handle()
 async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
     group_id = str(event.group_id)

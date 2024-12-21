@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Adapter, Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.permission import SUPERUSER
+from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11.event import MessageEvent, PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
 
 from .config import Config
@@ -13,11 +14,12 @@ from nonebot.params import CommandArg
 from nonebot.rule import to_me
 from utils.utils import get_asset_path, second_to_hms, random_trigger, get_IO_path
 from utils.cooldown import Cooldown
-from utils.plugin_ctrl import create_plugin_ctrl, check_plugin_ctrl
 
 from nonebot.exception import IgnoredException
 from nonebot.message import event_preprocessor
 import time, random, os, json
+
+from utils import global_plugin_ctrl
 
 __plugin_meta__ = PluginMetadata(
     name="miscellaneous",
@@ -53,25 +55,24 @@ async def ciallo_handle_func(event: GroupMessageEvent):
     else: return
 
 leave = on_notice()
+leave_ctrl = global_plugin_ctrl.create_plugin(names = ["leave"], description = "群友退群通知", default_on = True)
 
 @leave.handle()
 async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
-    if not check_plugin_ctrl("leave", event.group_id, default_on = True): return
+    if not leave_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")
 
 welcome = on_notice()
+welcome_ctrl = global_plugin_ctrl.create_plugin(names = ["welcome"], description = "欢迎新群友", default_on = True)
 
 @welcome.handle()
 async def welcome_handle(event: GroupIncreaseNoticeEvent):
-    if not check_plugin_ctrl("welcome", event.group_id, default_on = True): return
+    if not welcome_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
                       MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)
-
-welcome_ctrl = create_plugin_ctrl(["welcome", "欢迎"], "欢迎新群友")
-leave_ctrl = create_plugin_ctrl(["leave", "退群"], "群友退群通知")
 
 recall = on_command("recall", permission = SUPERUSER)
 

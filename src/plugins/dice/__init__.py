@@ -2,11 +2,13 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import MessageEvent, Message, MessageSegment
+from nonebot.adapters.onebot.v11 import Message, MessageSegment, GroupMessageEvent
 from utils.utils import get_IO_path
 from .config import Config
 import random, json, os, datetime
 import numpy as np
+
+from utils import global_plugin_ctrl
 
 __plugin_meta__ = PluginMetadata(
     name="dice",
@@ -25,10 +27,15 @@ def roll_dice(dice_num: int, dice_face: int, dice_add: int = 0) -> str:
 
 config = get_plugin_config(Config)
 
-rd = on_command("rd", aliases={"roll"})
+_rd = global_plugin_ctrl.create_plugin(names = ["rd", "roll"], description = "扔骰子",
+                                      help_info = "/rd xdy 掷x个y面骰子\n \
+                                                   /rd xdy+z 掷x个y面骰子,加z点修正值",
+                                      default_on = True)
+rd = _rd.base_plugin
 
 @rd.handle()
-async def rd_handle_func(args=CommandArg()):
+async def rd_handle_func(event: GroupMessageEvent, args=CommandArg()):
+    if not _rd.check_plugin_ctrl(event.group_id): await rd.finish("该插件在本群中已关闭")
     if _args := args.extract_plain_text():
         if "d" not in _args:
             await rd.finish("格式错误")
@@ -46,10 +53,14 @@ def get_luckiness() -> int:
     rolls = np.random.choice(range(1, 21), size = (1, 5), p = weights)
     return int(rolls.sum())
 
-ys = on_command("ys", aliases={"今日运势"})
+_ys = global_plugin_ctrl.create_plugin(names = ["ys", "今日运势"], description = "今日运势",
+                                      help_info = "/ys|今日运势 查看今日运势", default_on = True,
+                                      priority = 1)
+ys = _ys.base_plugin
 
 @ys.handle()
-async def ys_handle_func(event: MessageEvent):
+async def ys_handle_func(event: GroupMessageEvent):
+    if not _ys.check_plugin_ctrl(event.group_id): await ys.finish("该插件在本群中已关闭")
     json_path = get_IO_path("luckiness", "json")
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")

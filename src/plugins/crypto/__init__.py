@@ -2,11 +2,13 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
-
+from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from .config import Config
 from .okx_market_data import get_market_data
 from .okx_market_kline import get_crypto_kline
 from .fear_greed_index import get_market_fear_greed_index
+
+from utils import global_plugin_ctrl
 
 __plugin_meta__ = PluginMetadata(
     name="crypto",
@@ -17,9 +19,18 @@ __plugin_meta__ = PluginMetadata(
 
 config = get_plugin_config(Config)
 
-crypto = on_command("crypto")
+
+_crypto = global_plugin_ctrl.create_plugin(names = ["crypto"], description = "okx市场数据", 
+                                          help_info = "/crypto 查看过去2小时交易量涨幅300%及以上的币种\n \
+                                                       /crypto index 查看当日市场恐慌&贪婪指数\n \
+                                                       /crypto [name] 查看[name]币种过去24小时的15分钟k线图\n \
+                                                       /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图",
+                                          default_on = True, priority = 1)
+crypto = _crypto.base_plugin
+
 @crypto.handle()
-async def crypto_handle(args = CommandArg()):
+async def crypto_handle(event: GroupMessageEvent, args = CommandArg()):
+    if not _crypto.check_plugin_ctrl(event.group_id): await crypto.finish("该插件在本群中已关闭")
     if cmd_params := args.extract_plain_text():
         if " " in cmd_params:
             cmd_params = cmd_params.split(" ")

@@ -25,13 +25,15 @@ random_json_path = get_IO_path("steam_random", "json")
 watchlist_json_path = get_IO_path("steam_watchlist", "json")
 
 _steam = global_plugin_ctrl.create_plugin(names = ["steam"], description = "steam相关功能",
-                                          help_info = "/steam [steamid] 查看用户[steamid]的steam游戏状态\n \
-                                                       /steam random 从群友推荐列表中随机推荐一款游戏\n \
-                                                           可选参数 -a|all 使推荐的游戏可以来自其他群 \n \
-                                                       /steam random add [appid] 将游戏[appid]添加到本群推荐列表\n \
-                                                       /steam recommend [steamid] 随机从用户[steamid]的库存推荐游戏\n \
-                                                       /steam recommend [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏\n \
-                                                       /steam search [name] 搜索名为[name]的steam游戏",
+                                          help_info = """
+                                                        /steam [steamid] 查看用户[steamid]的steam游戏状态
+                                                        /steam random 从群友推荐列表中随机推荐一款游戏
+                                                            可选参数 -a|all 使推荐的游戏可以来自其他群
+                                                        /steam random add [appid] 将游戏[appid]添加到本群推荐列表
+                                                        /steam recommend [steamid] 随机从用户[steamid]的库存推荐游戏
+                                                        /steam recommend [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏
+                                                        /steam search [name] 搜索名为[name]的steam游戏
+                                                      """,
                                           default_on = True, priority = 1)
 
 steam = _steam.base_plugin
@@ -117,8 +119,10 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     await steam.finish(message = message)
 
 _sjqy = global_plugin_ctrl.create_plugin(names = ["视奸群友", "sjqy"], description = "视奸群友",
-                                         help_info = "/视奸群友 一键视奸群友游戏状态 \n \
-                                                          使用/视奸群友 add|remove [steamid] 管理视奸群友列表",
+                                         help_info = """
+                                                        /视奸群友 一键视奸群友游戏状态
+                                                            使用/视奸群友 add|remove [steamid] 管理视奸群友列表
+                                                     """,
                                          default_on = True, priority = 1)
 
 sjqy = _sjqy.base_plugin

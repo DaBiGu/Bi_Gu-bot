@@ -84,10 +84,12 @@ async def group_message_handle(event: GroupMessageEvent, bot: Bot):
     with open(last_sent_time_json_path, "w") as f: json.dump(record, f)
 
 _chatcount = global_plugin_ctrl.create_plugin(names = ["chatcount", "cc"], description = "聊天统计",
-                                              help_info = "/chatcount|cc today|yesterday|week|month|year\n \
-                                                               查看今日/昨日/本周/本月/年度群内b话量top10\n \
-                                                               可选参数 -o 以默认风格绘制\n \
-                                                               数据统计开始于2024-09-06",
+                                              help_info = """
+                                                            /chatcount|cc today|yesterday|week|month|year
+                                                                查看今日/昨日/本周/本月/年度群内b话量top10
+                                                                可选参数 -o 以默认风格绘制
+                                                                *数据统计开始于2024-09-06
+                                                          """,
                                               default_on = True, priority = 1)
 chatcount = _chatcount.base_plugin
 

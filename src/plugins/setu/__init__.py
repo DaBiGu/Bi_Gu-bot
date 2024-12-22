@@ -19,9 +19,11 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 _setu = global_plugin_ctrl.create_plugin(names = ["setu", "涩图"], description = "来点涩图",
-                                         help_info = "/setu 返回随机色图\n \
-                                                      /setu search 对消息记录中的图片回复该指令进行以图搜图\n \
-                                                      /setu [tags] 返回指定tags的色图; 可以传入多个tag, 以空格分隔",
+                                         help_info = """
+                                                        /setu 返回随机色图
+                                                        /setu search 对消息记录中的图片回复该指令进行以图搜图
+                                                        /setu [tags] 返回指定tags的色图; 可以传入多个tag, 以空格分隔
+                                                     """,
                                          default_on = True, priority = 1)
                                          
 

@@ -28,12 +28,14 @@ wife_cp_json_path = get_IO_path("wife_record_cp", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
 wife_ctrl = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], description = "群老婆",
-                                         help_info = "/wife 今日随机群老婆 \n \
-                                                          可选参数 -s 不@对方\n \
-                                                          可选参数 -f [@target] 强娶[target]为群老婆\n \
-                                                              *只有25%概率成功并且每天只能使用一次\n \
-                                                      /rbq 查看成为群老婆次数\n \
-                                                          数据统计开始于2024-09-21",
+                                         help_info = """
+                                                        /wife 今日随机群老婆
+                                                            可选参数 -s 不@对方
+                                                            可选参数 -f [@target] 强娶[target]为群老婆
+                                                                *只有25%概率成功并且每天只能使用一次
+                                                        /rbq 查看成为群老婆次数
+                                                            数据统计开始于2024-09-21
+                                                    """,
                                          default_on = True, priority = 2)
 
 wife = wife_ctrl.base_plugin
@@ -137,7 +139,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
 wife_count = on_command("rbq", aliases={"群魅魔"})
 @wife_count.handle()
 async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
-    if not _wife.check_plugin_ctrl(event.group_id): await wife_count.finish("该插件在本群中已关闭")
+    if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_count.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     count = 0
@@ -151,7 +153,7 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
 wife_bind = on_command("wife bind", aliases={"wife -b"}, priority = 1)
 @wife_bind.handle()
 async def wife_bind_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
-    if not _wife.check_plugin_ctrl(event.group_id): await wife_bind.finish("该插件在本群中已关闭")
+    if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_bind.finish("该插件在本群中已关闭")
     permission = SUPERUSER
     if not await permission(bot, event):
         await wife_bind.finish("你没有权限执行此操作")

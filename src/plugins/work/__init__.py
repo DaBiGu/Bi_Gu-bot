@@ -24,9 +24,11 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 _work = global_plugin_ctrl.create_plugin(names = ["work"], description = "工作记录", 
-                                         help_info = "/work start [name] 开始一项名为[name]的工作\n \
-                                                      /work stop 结束当前工作, 查看本次工作时长\n \
-                                                      /work today 查看本日工作统计",
+                                         help_info = """
+                                                        /work start [name] 开始一项名为[name]的工作
+                                                        /work stop 结束当前工作, 查看本次工作时长
+                                                        /work today 查看本日工作统计
+                                                     """,
                                          default_on = True, priority = 1)
 
 work = _work.base_plugin

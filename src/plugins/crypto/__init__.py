@@ -20,10 +20,12 @@ config = get_plugin_config(Config)
 
 
 _crypto = global_plugin_ctrl.create_plugin(names = ["crypto"], description = "okx市场数据", 
-                                          help_info = "/crypto 查看过去2小时交易量涨幅300%及以上的币种\n \
-                                                       /crypto index 查看当日市场恐慌&贪婪指数\n \
-                                                       /crypto [name] 查看[name]币种过去24小时的15分钟k线图\n \
-                                                       /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图",
+                                          help_info = """
+                                                        /crypto 查看过去2小时交易量涨幅300%及以上的币种
+                                                        /crypto index 查看当日市场恐慌&贪婪指数
+                                                        /crypto [name] 查看[name]币种过去24小时的15分钟k线图
+                                                        /crypto [name] [interval] 返回[name]币种的 15m/1h/4h/1D/1W k线图
+                                                      """,
                                           default_on = True, priority = 1)
 crypto = _crypto.base_plugin
 

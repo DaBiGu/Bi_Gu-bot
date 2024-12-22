@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from utils.utils import get_IO_path
 from typing import List, Tuple
-import json
+import json, textwrap
 
 plugin_ctrl_json_path = get_IO_path("plugin_ctrl", "json")
 
@@ -38,7 +38,7 @@ class Plugin:
                         await self.base_plugin.send(f"已成功关闭本群{description}")
                     else: await self.base_plugin.finish(f"本群{description}已处于关闭状态，无需重复关闭")
                 elif cmd_params == "help":
-                    await self.base_plugin.finish(self.help_info)
+                    await self.base_plugin.finish(textwrap.dedent(self.help_info).strip())
                 else: return
             else: return
             data[name] = group_list
@@ -70,8 +70,8 @@ class Plugin_Ctrl:
     
     def get_help_info(self) -> str:
         help_info = ""
-        for plugin in self.plugin_list:
-            help_info += f"————————{plugin.name}————————\n{plugin.help_info}\n"
+        for plugin in sorted(self.plugin_list, key = lambda x: x.name):
+            help_info += f"———————— {plugin.name} ————————\n{textwrap.dedent(plugin.help_info).strip()}\n"
         return help_info
 
 plugin_ctrl = Plugin_Ctrl()

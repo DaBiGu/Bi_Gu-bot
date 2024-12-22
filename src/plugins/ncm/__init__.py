@@ -18,9 +18,11 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 _ncm = global_plugin_ctrl.create_plugin(names = ["ncm"], description = "网易云音乐相关功能",
-                                        help_info = "/ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲\n \
-                                                     /ncm id [song_id] 获取[song_id]对应的歌曲卡片\n \
-                                                     /ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词卡片",
+                                        help_info = """
+                                                    /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲
+                                                    /ncm id [song_id] 获取[song_id]对应的歌曲卡片
+                                                    /ncm lyrics [song_id] 获取id为[song_id]歌曲的歌词卡片
+                                                    """,
                                        default_on = True, priority = 1)
 
 ncm = _ncm = _ncm.base_plugin

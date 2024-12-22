@@ -27,8 +27,10 @@ def roll_dice(dice_num: int, dice_face: int, dice_add: int = 0) -> str:
 config = get_plugin_config(Config)
 
 _rd = global_plugin_ctrl.create_plugin(names = ["rd", "roll"], description = "扔骰子",
-                                      help_info = "/rd xdy 掷x个y面骰子\n \
-                                                   /rd xdy+z 掷x个y面骰子,加z点修正值",
+                                      help_info = """
+                                                    /rd xdy 掷x个y面骰子
+                                                    /rd xdy+z 掷x个y面骰子,加z点修正值
+                                                  """,
                                       default_on = True)
 rd = _rd.base_plugin
 

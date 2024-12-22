@@ -17,8 +17,10 @@ __plugin_meta__ = PluginMetadata(
 config = get_plugin_config(Config)
 
 _github = global_plugin_ctrl.create_plugin(names = ["github"], description = "查看github用户数据",
-                                          help_info = "/github [username] 查看[username]的github contributions chart\n \
-                                                           可选参数 -2d 返回原始2d图",
+                                          help_info = """
+                                                        /github [username] 查看[username]的github contributions chart
+                                                            可选参数 -2d 返回原始2d图
+                                                      """,
                                           default_on = True, priority = 1)
 github = _github.base_plugin
 

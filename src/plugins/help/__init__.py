@@ -40,8 +40,9 @@ _plugin_status = on_command("plugin status")
 @_plugin_status.handle()
 async def plugin_status_handle(event: GroupMessageEvent):
     on, off = global_plugin_ctrl.check_plugin_status(event.group_id)
-    plugin_status = "本群插件状态\n\n开启的插件: "
-    plugin_status += " | ".join(sorted(on))
-    plugin_status += "\n关闭的插件: "
-    plugin_status += " | ".join(sorted(off))
-    await _plugin_status.finish(plugin_status)
+    await _plugin_status.finish("本群插件状态\n\n开启的插件: " + " | ".join(sorted(on)) + "\n关闭的插件: " + " | ".join(sorted(off)))
+
+_plugin_help = on_command("plugin help")
+@_plugin_help.handle()
+async def plugin_help_handle():
+    await _plugin_help.finish(global_plugin_ctrl.get_help_info())

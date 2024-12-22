@@ -27,7 +27,7 @@ wife_all_json_path = get_IO_path("wife_record_all", "json")
 wife_cp_json_path = get_IO_path("wife_record_cp", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
-_wife = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], description = "群老婆",
+wife_ctrl = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], description = "群老婆",
                                          help_info = "/wife 今日随机群老婆 \n \
                                                           可选参数 -s 不@对方\n \
                                                           可选参数 -f [@target] 强娶[target]为群老婆\n \
@@ -36,11 +36,11 @@ _wife = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], descript
                                                           数据统计开始于2024-09-21",
                                          default_on = True, priority = 2)
 
-wife = _wife.base_plugin
+wife = wife_ctrl.base_plugin
 
 @wife.handle()
 async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
-    if not _wife.check_plugin_ctrl(event.group_id): await wife.finish("该插件在本群中已关闭")
+    if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")

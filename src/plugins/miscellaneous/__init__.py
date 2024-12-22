@@ -79,5 +79,6 @@ like = _like.base_plugin
 
 @like.handle()
 async def like_handle_func(event: GroupMessageEvent, bot: Bot):
-    response = await bot.call_api("send_like", user_id = event.user_id, times = 10)
-    await like.finish("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦")
+    await bot.call_api("send_like", user_id = event.user_id, times = 10)
+    await like.finish(Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
+                               MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))

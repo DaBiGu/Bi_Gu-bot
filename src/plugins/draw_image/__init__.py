@@ -49,13 +49,13 @@ async def bb_handle_func(event: GroupMessageEvent, args = CommandArg()):
 
 last_symmetric_time = Cooldown(countdown = 180.0)
 
-_symmetric = global_plugin_ctrl.create_plugin(names = ["对称", "symmetric"], description = "图片对称",
+symmetric_ctrl = global_plugin_ctrl.create_plugin(names = ["对称", "symmetric"], description = "图片对称",
                                              help_info = "对图片回复 /对称 左|右|上|下 [percent] 将图片(以[percent]%为轴)进行对称翻转",
                                              default_on = True, priority = 1)
-symmetric = _symmetric.base_plugin
+symmetric = symmetric_ctrl.base_plugin
 @symmetric.handle()
 async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
-    if not _symmetric.check_plugin_ctrl(event.group_id): await symmetric.finish("该插件在本群中已关闭")
+    if not symmetric_ctrl.check_plugin_ctrl(event.group_id): await symmetric.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text() 
     source_url = None
     for seg in event.reply.message:

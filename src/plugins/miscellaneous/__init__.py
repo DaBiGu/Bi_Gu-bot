@@ -73,3 +73,11 @@ recall = on_command("recall", permission = SUPERUSER)
 async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
+
+_like = global_plugin_ctrl.create_plugin(names = ["like"], description = "qq资料卡点赞", default_on = True)
+like = _like.base_plugin
+
+@like.handle()
+async def like_handle_func(event: GroupMessageEvent, bot: Bot):
+    response = await bot.call_api("send_like", user_id = event.user_id, times = 10)
+    await like.finish("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦")

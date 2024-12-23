@@ -10,10 +10,12 @@ from nonebot.adapters.onebot.v11.event import PokeNotifyEvent, GroupMessageEvent
 from .config import Config
 from nonebot import on_command, on_fullmatch, on_notice, on_keyword
 from nonebot.rule import to_me
-from utils.utils import get_asset_path
+from utils.utils import get_asset_path, get_IO_path
 from utils.cooldown import Cooldown
 
 from utils import global_plugin_ctrl
+
+import json, datetime
 
 __plugin_meta__ = PluginMetadata(
     name="miscellaneous",
@@ -81,6 +83,15 @@ like = _like.base_plugin
 @like.handle()
 async def like_handle_func(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     if _like.check_base_plugin_functions(args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
-    await bot.call_api("send_like", user_id = event.user_id, times = 10)
-    await like.finish(Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
-                               MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))
+    with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
+    today = datetime.datetime.now().strftime("%Y-%m-%d")
+    if today not in record: record[today] = []
+    if str(event.user_id) not in record[today]: 
+        record[today].append(str(event.user_id))
+        await bot.call_api("send_like", user_id = event.user_id, times = 10)
+        message = Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
+                           MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
+    else:
+        message = "芙芙今天已经给你点过赞啦，明天再来吧"
+    with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
+    await like.finish(message)

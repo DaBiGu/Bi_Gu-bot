@@ -97,6 +97,7 @@ chatcount = _chatcount.base_plugin
 async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     if not _chatcount.check_plugin_ctrl(event.group_id): await chatcount.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
+    if _chatcount.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
     nicknames = {}
     group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
     for member in group_members_raw:

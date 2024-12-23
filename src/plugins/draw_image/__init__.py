@@ -1,6 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
+from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment
 from utils.utils import get_output_path
 from utils.cooldown import Cooldown
@@ -36,14 +37,14 @@ xb, bb = _xb.base_plugin, _bb.base_plugin
 @xb.handle()
 async def xb_handle_func(event: GroupMessageEvent, args = CommandArg()):
     if not _xb.check_plugin_ctrl(event.group_id): await xb.finish("该插件在本群中已关闭")
-    text = args.extract_plain_text()
+    if _xb.check_base_plugin_functions(text:=args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
     message = await draw_good_news(text)
     await xb.finish(message = message)
 
 @bb.handle()
 async def bb_handle_func(event: GroupMessageEvent, args = CommandArg()):
     if not _bb.check_plugin_ctrl(event.group_id): await bb.finish("该插件在本群中已关闭")
-    text = args.extract_plain_text()
+    if _bb.check_base_plugin_functions(text:=args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
     message = await draw_bad_news(text)
     await bb.finish(message = message)
 
@@ -57,6 +58,7 @@ symmetric = symmetric_ctrl.base_plugin
 async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
     if not symmetric_ctrl.check_plugin_ctrl(event.group_id): await symmetric.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text() 
+    if symmetric_ctrl.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
     source_url = None
     for seg in event.reply.message:
         if seg.type == "image":
@@ -90,6 +92,7 @@ ba = _ba.base_plugin
 async def ba_handle(event: GroupMessageEvent, args = CommandArg()):
     if not ba.check_plugin_ctrl(event.group_id): await ba.finish("该插件在本群中已关闭")
     if cmd_params := args.extract_plain_text():
+        if _ba.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
         left, right = cmd_params.split(" ") if " " in cmd_params else (cmd_params, "")
         message = await gen_ba(left, right)
         await ba.finish(message = message)

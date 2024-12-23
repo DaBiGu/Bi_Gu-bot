@@ -1,6 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
-from nonebot import on_command
+from nonebot.exception import IgnoredException
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
@@ -28,5 +28,6 @@ qh = _qh.base_plugin
 async def qh_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _qh.check_plugin_ctrl(event.group_id): await qh.finish("该插件在本群中已关闭")
     username = args.extract_plain_text()
+    if _qh.check_base_plugin_functions(username): raise IgnoredException("Handled by base plugin")
     message = get_user_data(username)
     await qh.finish(message = message)

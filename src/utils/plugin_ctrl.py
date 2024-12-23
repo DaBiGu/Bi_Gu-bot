@@ -50,6 +50,9 @@ class Plugin:
         group_list = data[self.name]
         return group_id not in group_list if self.default_on else group_id in group_list
     
+    def check_base_plugin_functions(self, args: str) -> bool:
+        return args in ["on", "off", "help"]
+    
 class Plugin_Ctrl:
     def __init__(self):
         self.plugin_list: List[Plugin] = []

@@ -1,6 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
+from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, Bot
 
 from .config import Config
@@ -40,6 +41,7 @@ steam = _steam.base_plugin
 @steam.handle()
 async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     if not _steam.check_plugin_ctrl(event.group_id): await steam.finish("该插件在本群中已关闭")
+    if _steam.check_base_plugin_functions(cmd_params:=args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     group_info = await bot.get_group_info(group_id = event.group_id)
@@ -50,7 +52,6 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
             user_id = member["nickname"]
             break
     with open(random_json_path, "r") as f: recommend_list = json.load(f)
-    cmd_params = args.extract_plain_text()
     if " " in cmd_params:
         search_keywords = cmd_params.split(" ")
         if search_keywords[0] == "search":
@@ -128,8 +129,10 @@ _sjqy = global_plugin_ctrl.create_plugin(names = ["视奸群友", "sjqy"], descr
 sjqy = _sjqy.base_plugin
 @sjqy.handle()
 async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
+    if not _sjqy.check_plugin_ctrl(event.group_id): await sjqy.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     if cmd_params := args.extract_plain_text():
+        if _sjqy.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
         if " " in cmd_params:
             _, steam_id = cmd_params.split(" ")
             if _ == "add":

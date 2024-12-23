@@ -1,6 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
+from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, GroupMessageEvent
 from utils.utils import get_IO_path
 from .config import Config
@@ -35,9 +36,10 @@ _rd = global_plugin_ctrl.create_plugin(names = ["rd", "roll"], description = "�
 rd = _rd.base_plugin
 
 @rd.handle()
-async def rd_handle_func(event: GroupMessageEvent, args=CommandArg()):
+async def rd_handle_func(event: GroupMessageEvent, args = CommandArg()):
     if not _rd.check_plugin_ctrl(event.group_id): await rd.finish("该插件在本群中已关闭")
     if _args := args.extract_plain_text():
+        if _rd.check_base_plugin_functions(_args): raise IgnoredException("Handled by base plugin")
         if "d" not in _args:
             await rd.finish("格式错误")
         else:
@@ -60,8 +62,10 @@ _ys = global_plugin_ctrl.create_plugin(names = ["ys", "今日运势"], descripti
 ys = _ys.base_plugin
 
 @ys.handle()
-async def ys_handle_func(event: GroupMessageEvent):
+async def ys_handle_func(event: GroupMessageEvent, args = CommandArg()):
     if not _ys.check_plugin_ctrl(event.group_id): await ys.finish("该插件在本群中已关闭")
+    if _args := args.extract_plain_text():
+        if _ys.check_base_plugin_functions(_args): raise IgnoredException("Handled by base plugin")
     json_path = get_IO_path("luckiness", "json")
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")

@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.permission import SUPERUSER
+from nonebot.params import CommandArg
 from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11.event import PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
 
@@ -78,7 +79,8 @@ _like = global_plugin_ctrl.create_plugin(names = ["like"], description = "qq资�
 like = _like.base_plugin
 
 @like.handle()
-async def like_handle_func(event: GroupMessageEvent, bot: Bot):
+async def like_handle_func(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    if _like.check_base_plugin_functions(args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
     await bot.call_api("send_like", user_id = event.user_id, times = 10)
     await like.finish(Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
                                MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))

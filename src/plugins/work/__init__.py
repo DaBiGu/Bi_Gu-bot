@@ -1,7 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import get_adapter
-from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11.event import GroupMessageEvent
 from nonebot.adapters.onebot.v11.adapter import Adapter
 from nonebot.params import CommandArg
@@ -37,7 +36,7 @@ work = _work.base_plugin
 @work.handle()
 async def work_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _work.check_plugin_ctrl(event.group_id): await work.finish("该插件在本群中已关闭")
-    if _work.check_base_plugin_functions(args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
+    if _work.check_base_plugin_functions(args.extract_plain_text()): return
     username = event.get_user_id()
     if "message.group" in str(event.get_event_name()):
         onebot_adapter = get_adapter(Adapter)

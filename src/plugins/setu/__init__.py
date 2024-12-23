@@ -1,7 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
-from nonebot.exception import IgnoredException
 from nonebot.params import CommandArg
 
 from .config import Config
@@ -33,7 +32,7 @@ setu = _setu.base_plugin
 @setu.handle()
 async def setu_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _setu.check_plugin_ctrl(event.group_id): await setu.finish("该插件在本群中已关闭")
-    if _setu.check_base_plugin_functions(cmd_params:=args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
+    if _setu.check_base_plugin_functions(cmd_params:=args.extract_plain_text()): return
     if cmd_params == "search":
         source_url = None
         for seg in event.reply.message:

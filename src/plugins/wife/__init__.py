@@ -2,7 +2,6 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
-from nonebot.exception import IgnoredException
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, Message
 from utils.utils import get_output_path, get_IO_path
@@ -44,7 +43,7 @@ wife = wife_ctrl.base_plugin
 @wife.handle()
 async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife.finish("该插件在本群中已关闭")
-    if wife_ctrl.check_base_plugin_functions(args.extract_plain_text()): raise IgnoredException("Handled by base plugin")   
+    if wife_ctrl.check_base_plugin_functions(args.extract_plain_text()): return   
     group_id = str(event.group_id)
     user_id = str(event.user_id)
     today = datetime.datetime.now().strftime("%Y-%m-%d")

@@ -1,7 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
-from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 
 from .config import Config
@@ -32,7 +31,7 @@ ncm = _ncm = _ncm.base_plugin
 async def ncm_handle_func(event: GroupMessageEvent, args = CommandArg()):
     if not _ncm.check_plugin_ctrl(event.group_id): await ncm.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
-    if _ncm.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
+    if _ncm.check_base_plugin_functions(cmd_params): return
     if " " not in cmd_params: return
     else:
         cmd_params_list = cmd_params.split(" ")

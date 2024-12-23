@@ -4,7 +4,6 @@ from nonebot.adapters.onebot.v11.adapter import Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.permission import SUPERUSER
 from nonebot.params import CommandArg
-from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11.event import PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
 
 from .config import Config
@@ -55,7 +54,7 @@ leave_ctrl = global_plugin_ctrl.create_plugin(names = ["leave"], description = "
 
 @leave.handle()
 async def leave_handle(event: GroupDecreaseNoticeEvent, bot: Bot):
-    if not leave_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
+    if not leave_ctrl.check_plugin_ctrl(event.group_id): return
     user_info = await bot.call_api("get_stranger_info", user_id = event.user_id)
     nickname = user_info["nickname"]
     await leave.finish(f"{nickname} ({event.user_id}) 退群了, 呜呜呜")
@@ -65,7 +64,7 @@ welcome_ctrl = global_plugin_ctrl.create_plugin(names = ["welcome"], description
 
 @welcome.handle()
 async def welcome_handle(event: GroupIncreaseNoticeEvent):
-    if not welcome_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
+    if not welcome_ctrl.check_plugin_ctrl(event.group_id): return
     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 欢迎新群友，喜欢您来"),
                       MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
     await welcome.finish(message)
@@ -82,7 +81,7 @@ like = _like.base_plugin
 
 @like.handle()
 async def like_handle_func(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
-    if _like.check_base_plugin_functions(args.extract_plain_text()): raise IgnoredException("Handled by base plugin")
+    if _like.check_base_plugin_functions(args.extract_plain_text()): return
     with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     if today not in record: record[today] = []

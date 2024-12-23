@@ -1,7 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
-from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, GroupMessageEvent
 
 from .config import Config
@@ -27,7 +26,7 @@ phigros = _phigros.base_plugin
 async def phigros_handle_func(event: GroupMessageEvent, args = CommandArg()):
     if not _phigros.check_plugin_ctrl(event.group_id): await phigros.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
-    if _phigros.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
+    if _phigros.check_base_plugin_functions(cmd_params): return
     if " " not in cmd_params: return
     else:
         cmd_params_list = cmd_params.split(" ")

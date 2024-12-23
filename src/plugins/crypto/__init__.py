@@ -1,7 +1,6 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
-from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import GroupMessageEvent
 from .config import Config
 from .okx_market_data import get_market_data
@@ -34,7 +33,7 @@ crypto = _crypto.base_plugin
 async def crypto_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _crypto.check_plugin_ctrl(event.group_id): await crypto.finish("该插件在本群中已关闭")
     if cmd_params := args.extract_plain_text():
-        if _crypto.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
+        if _crypto.check_base_plugin_functions(cmd_params): return
         if " " in cmd_params:
             cmd_params = cmd_params.split(" ")
             if len(cmd_params) == 2:

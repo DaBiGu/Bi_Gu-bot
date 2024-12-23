@@ -3,7 +3,6 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_message, on_notice, on_command, on_keyword, on_regex
 from nonebot.rule import to_me
 from nonebot.params import CommandArg, RegexGroup
-from nonebot.exception import IgnoredException
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
@@ -12,7 +11,7 @@ from typing import Dict, Any, Optional
 
 from utils import global_plugin_ctrl
 
-import re, time, random, json, os, datetime
+import re, time, json, datetime
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -97,7 +96,7 @@ chatcount = _chatcount.base_plugin
 async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     if not _chatcount.check_plugin_ctrl(event.group_id): await chatcount.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
-    if _chatcount.check_base_plugin_functions(cmd_params): raise IgnoredException("Handled by base plugin")
+    if _chatcount.check_base_plugin_functions(cmd_params): return
     nicknames = {}
     group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
     for member in group_members_raw:
@@ -122,7 +121,7 @@ antirecall_ctrl = global_plugin_ctrl.create_plugin(names = ["antirecall"], descr
 
 @antirecall.handle()
 async def antirecall_handle(event: GroupRecallNoticeEvent, bot: Bot):
-    if not antirecall_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
+    if not antirecall_ctrl.check_plugin_ctrl(event.group_id): return
     group_id = event.group_id
     message_id = event.message_id
     username = event.user_id
@@ -176,7 +175,7 @@ xm_ctrl = global_plugin_ctrl.create_plugin(names = ["xm", "羡慕"], description
 
 @xm.handle()
 async def xm_handle_func(event: GroupMessageEvent):
-    if not xm_ctrl.check_plugin_ctrl(event.group_id): raise IgnoredException("Plugin off in this group")
+    if not xm_ctrl.check_plugin_ctrl(event.group_id): return
     if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
     else: return
 

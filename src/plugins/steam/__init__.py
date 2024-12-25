@@ -68,7 +68,7 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
             steam_id = search_keywords[1]
             nickname = get_player_info(int(steam_id))["nickname"]
             total_playtime, top_10_games = get_player_game_info(int(steam_id))
-            message = f"{nickname}的游戏信息:\n总游戏时长:{total_playtime}\n"
+            message = f"{nickname}的游戏信息:\n{total_playtime}\n"
             for game in top_10_games:
                 message += f"\n{game}"
         elif search_keywords[0] == "random":

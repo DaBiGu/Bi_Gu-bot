@@ -6,7 +6,7 @@ from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, Bot
 from .config import Config
 from .get_steam_playing import get_steam_playing
 from .search_game import draw_search_result
-from .recommend_random_game import draw_game_card, check_legal_game
+from .recommend_random_game import draw_game_card, check_legal_game, get_player_info, get_player_game_info
 from utils.utils import get_IO_path
 
 from utils import global_plugin_ctrl
@@ -64,6 +64,13 @@ async def steam_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
             elif len(search_keywords) == 3:
                 steam_id, appid = search_keywords[1:]
                 message = await draw_game_card(steamid = int(steam_id), appid = int(appid), recommended = True)
+        elif search_keywords[0] == "info":
+            steam_id = search_keywords[1]
+            nickname = get_player_info(int(steam_id))["nickname"]
+            total_playtime, top_10_games = get_player_game_info(int(steam_id))
+            message = f"{nickname}的游戏信息:\n总游戏时长:{total_playtime}\n"
+            for game in top_10_games:
+                message += f"\n{game}"
         elif search_keywords[0] == "random":
             if search_keywords[1] == "add":
                 if group_name not in recommend_list: recommend_list[group_name] = {}

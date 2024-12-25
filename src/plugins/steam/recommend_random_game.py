@@ -1,5 +1,5 @@
 import requests, random
-from typing import Dict, Any
+from typing import Dict, Any, Tuple, List
 from nonebot.adapters.onebot.v11 import MessageSegment
 from passwords import get_passwords
 from PIL import Image, ImageDraw
@@ -33,6 +33,17 @@ def get_player_info(steamid: int) -> Dict[str, str]:
         f.write(requests.get(player_info["avatarfull"]).content)
     _player_info = {"nickname": player_info["personaname"], "avatar": avatar_path}
     return _player_info
+
+def get_player_game_info(steamid: int) -> Tuple[str, List[str]]:
+    games = requests.get("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001",
+                         params = {'key': get_passwords("steam_api_key"), 'steamid': steamid, 'include_played_free_games': True}).json()["response"]["games"]
+    total_time = f"Total playtime: {sum([game['playtime_forever'] for game in games])} minutes"
+    top_10_games = sorted(games, key=lambda x: x["playtime_forever"], reverse=True)[:10]
+    names = [requests.get(info_url, params={"key": api_key, "id": 
+                                            requests.get(lookup_url, params={"key": api_key, "appid": appid}).json()["game"]["id"]}).json()["title"] 
+            for appid in [game['appid'] for game in top_10_games]]
+    top_10_game_info = [f"{name}: {time} min" for name, time in zip(names, [game['playtime_forever'] for game in top_10_games])]
+    return total_time, top_10_game_info
 
 def get_random_game_info(steamid: int = None, appid: int = None, recommended: bool = True) -> Dict[str, Any]:
     game_steam = get_random_game(steamid, appid) if recommended else {"appid": appid}

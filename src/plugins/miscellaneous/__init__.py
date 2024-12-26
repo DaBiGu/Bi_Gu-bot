@@ -84,9 +84,9 @@ async def like_handle_func(event: GroupMessageEvent, bot: Bot, args = CommandArg
     if _like.check_base_plugin_functions(args.extract_plain_text()): return
     with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
-    if today not in record: record[today] = []
-    if str(event.user_id) not in record[today]: 
-        record[today].append(str(event.user_id))
+    if str(event.user_id) not in record: record[str(event.user_id)] = "1970-01-01"
+    if str(event.user_id) != today: 
+        record[str(event.user_id)] = today
         await bot.call_api("send_like", user_id = event.user_id, times = 10)
         message = Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
                            MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])

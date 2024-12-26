@@ -7,6 +7,7 @@ from .config import Config
 
 from .help import draw_help
 from .helper_message import Helper_Messages
+from .about import generate_bot_status_image
 
 from utils import global_plugin_ctrl
 
@@ -46,3 +47,8 @@ _plugin_help = on_command("plugin help")
 @_plugin_help.handle()
 async def plugin_help_handle():
     await _plugin_help.finish(global_plugin_ctrl.get_help_info())
+
+_about = on_command("about")
+@_about.handle()
+async def about_handle():
+    await _about.finish(generate_bot_status_image())

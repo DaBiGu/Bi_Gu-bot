@@ -1,7 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
-from nonebot.adapters.onebot.v11 import GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 
 from .config import Config
 
@@ -50,5 +50,5 @@ async def plugin_help_handle():
 
 _about = on_command("about")
 @_about.handle()
-async def about_handle():
-    await _about.finish(generate_bot_status_image())
+async def about_handle(bot: Bot):
+    await _about.finish(generate_bot_status_image(bot_id = bot.self_id))

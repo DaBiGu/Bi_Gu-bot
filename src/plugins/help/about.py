@@ -1,11 +1,42 @@
-import sys, psutil, platform, cpuinfo, winreg
+import sys, psutil, platform, cpuinfo, winreg, datetime
 from PIL import Image, ImageDraw
+from typing import Optional, Dict, Any
 from utils import global_plugin_ctrl
 from utils.utils import get_asset_path, get_output_path, get_copyright_str
 from utils.fonts import get_font
+from nonebot.adapters.onebot.v11 import Bot, Event
+from nonebot.message import event_preprocessor
+from nonebot import get_driver, on_command
 from nonebot.adapters.onebot.v11.message import MessageSegment
 
-def generate_bot_status_image(bot_name="Furina Bot"):
+nonebot_runtime = datetime.datetime.now()
+bot_connect_time = {}
+receive_message_count = {}
+send_message_count = {}
+
+driver = get_driver()
+
+@driver.on_bot_connect
+async def on_connect(bot: Bot):
+    bot_connect_time[bot.self_id] = datetime.datetime.now()
+    if bot.self_id not in receive_message_count: receive_message_count[bot.self_id] = 0
+    if bot.self_id not in send_message_count: send_message_count[bot.self_id] = 0
+
+@driver.on_bot_disconnect
+async def on_disconnect(bot: Bot):
+    bot_connect_time.pop(bot.self_id)
+
+@event_preprocessor
+async def check_receive(bot: Bot, event: Event):
+    if event.get_type() == "message":
+        receive_message_count[bot.self_id] += 1
+
+@Bot.on_called_api
+async def check_send(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):
+    if api == "send_msg" or "send_group_msg":
+        send_message_count[bot.self_id] += 1
+
+def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
     avatar_path = get_asset_path("images/avatar.jpg")
     icon_path = get_asset_path("images/icon.png")
     def get_windows_detailed_version():
@@ -44,12 +75,13 @@ def generate_bot_status_image(bot_name="Furina Bot"):
     disk = psutil.disk_usage("/")
     disk_used_gb, disk_total_gb = disk.used / (1024**3), disk.total / (1024**3)
     plugins_loaded = len(global_plugin_ctrl.plugin_list)
-    img_width, img_height = 1600, 2000
+    img_width, img_height = 1600, 2200
     base_img = Image.new("RGBA", (img_width, img_height), (255, 255, 255, 255))
     draw = ImageDraw.Draw(base_img)
     font_title = get_font("yahei-consolas", 80)
     font_bold  = get_font("yahei-consolas", 64)
     font_normal = get_font("yahei-consolas", 56)
+    font_small = get_font("yahei-consolas", 48)
     font_copyright = get_font("yahei-consolas", 36)
     top_margin = 100
     avatar_size = 240
@@ -79,6 +111,34 @@ def generate_bot_status_image(bot_name="Furina Bot"):
     name_y = avatar_y + avatar_size + avatar_center_margin
     draw.text((name_x, name_y), bot_name, font=font_title, fill=(50, 50, 50))
     current_y = name_y + h_name + 80
+    ct = bot_connect_time.get(bot_id, None)
+    rcv = receive_message_count.get(bot_id, 0)
+    snd = send_message_count.get(bot_id, 0)
+    if ct is not None:
+        now = datetime.datetime.now()
+        delta = now - ct
+        days, seconds = delta.days, delta.seconds
+        hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60
+        line_connect = f"Connected for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
+                else f"Connected for {hours}h {minutes}m {secs}s"
+    else:
+        line_connect = "Bot not connected"
+    line_msgs = f"Receive: {rcv}  |  Send: {snd}"
+
+    bbox_line1 = draw.textbbox((0, 0), line_connect, font=font_small)
+    w_line1 = bbox_line1[2] - bbox_line1[0]
+    h_line1 = bbox_line1[3] - bbox_line1[1]
+    line1_x = (img_width - w_line1) // 2
+    line1_y = current_y
+    draw.text((line1_x, line1_y), line_connect, font=font_small, fill=(40, 40, 40))
+    current_y += (h_line1 + 15)
+    bbox_line2 = draw.textbbox((0, 0), line_msgs, font=font_small)
+    w_line2 = bbox_line2[2] - bbox_line2[0]
+    h_line2 = bbox_line2[3] - bbox_line2[1]
+    line2_x = (img_width - w_line2) // 2
+    line2_y = current_y
+    draw.text((line2_x, line2_y), line_msgs, font=font_small, fill=(40, 40, 40))
+    current_y += (h_line2 + 80)
     color_cpu  = (112, 194, 255)
     color_mem  = (255, 153, 153)
     color_swap = (255, 182, 113)

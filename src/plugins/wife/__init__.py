@@ -183,8 +183,8 @@ async def wife_bind_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg
                                 bind_status = 3
     message = f"群cp绑定成功:\n{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]})" if bind_status == 3 \
     else f"群cp绑定失败: 要绑定的群友已经心有所属了" if bind_status == 2 \
-    else f"群cp绑定失败: 不能绑定自己" if bind_status == 1 \
-    else f"{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]}) 已经绑定过了" if bind_status == 0 \
+    else f"{check_legal_member(targets[0])}({targets[0]}) x {check_legal_member(targets[1])}({targets[1]}) 已经绑定过了" if bind_status == 1 \
+    else f"群cp绑定失败: 不能绑定自己" if bind_status == 0 \
     else "群cp绑定失败, 请检查输入\n 正确的输入格式为/wife bind|-b [qq1] [qq2]"
     with open(wife_cp_json_path, "w") as f: json.dump(record, f)
     await wife_bind.finish(message = message)

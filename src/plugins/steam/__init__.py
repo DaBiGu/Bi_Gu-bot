@@ -27,6 +27,7 @@ watchlist_json_path = get_IO_path("steam_watchlist", "json")
 _steam = global_plugin_ctrl.create_plugin(names = ["steam"], description = "steam相关功能",
                                           help_info = """
                                                         /steam [steamid] 查看用户[steamid]的steam游戏状态
+                                                        /steam info [steamid] 查看用户[steamid]的总游戏时长/时长top10
                                                         /steam random 从群友推荐列表中随机推荐一款游戏
                                                             可选参数 -a|all 使推荐的游戏可以来自其他群
                                                         /steam random add [appid] 将游戏[appid]添加到本群推荐列表

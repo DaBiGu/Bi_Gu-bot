@@ -1,3 +1,7 @@
+<div align="center">
+![Header image](https://imgse.com/i/pAxNEDg)
+</div>
+
 # 指令列表
 ### 按字母顺序排列
 
@@ -27,6 +31,7 @@
     * 数据统计开始于2024-09-06
 
 ## `help`
+* `/about` 返回芙芙运行状态
 * `/help` 返回当前支持的指令列表
 
 ## `image`
@@ -66,6 +71,7 @@
 
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
+* `/steam info [steamid]` 返回用户`[steamid]`的总游戏时长/时长top10
 * `/steam random` 从群友推荐列表中随机推荐一款游戏
     * 可选参数 `-a|all` 推荐的游戏可以来自其他群
 * `/steam random add [appid]` 将游戏`[appid]`添加到本群推荐列表

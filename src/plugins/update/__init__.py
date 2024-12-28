@@ -37,6 +37,7 @@ async def update_handle(bot: Bot, event: GroupMessageEvent):
 
 reboot = on_command("reboot")
 
+@scheduler.scheduled_job("cron", hour = 4, minute = 0)
 @reboot.handle()
 async def reboot_handle(bot: Bot, event: GroupMessageEvent):
     if not await permission(bot, event):

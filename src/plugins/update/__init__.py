@@ -7,6 +7,7 @@ from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .draw_update_message import draw_update_message
+from ..help.about import on_disconnect
 from utils.utils import get_data_path, get_asset_path
 
 import subprocess, os, requests, zipfile, shutil
@@ -41,6 +42,7 @@ async def reboot_handle(bot: Bot, event: GroupMessageEvent):
     if not await permission(bot, event):
         await update.finish(message = "你没有权限执行此操作")
     await reboot.send(message = "芙芙重启中...")
+    await on_disconnect(bot)
     subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  
 
 _update_chromedriver = on_command("update chromedriver", priority = 1, permission = permission)

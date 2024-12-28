@@ -1,13 +1,15 @@
-import sys, psutil, platform, cpuinfo, winreg, datetime
+import sys, psutil, platform, cpuinfo, winreg, datetime, json
 from PIL import Image, ImageDraw
 from typing import Optional, Dict, Any
 from utils import global_plugin_ctrl
-from utils.utils import get_asset_path, get_output_path, get_copyright_str
+from utils.utils import get_asset_path, get_output_path, get_copyright_str, get_IO_path 
 from utils.fonts import get_font
 from nonebot.adapters.onebot.v11 import Bot, Event
 from nonebot.message import event_preprocessor
-from nonebot import get_driver, on_command
+from nonebot import get_driver
 from nonebot.adapters.onebot.v11.message import MessageSegment
+
+json_path = get_IO_path("bot_status", "json")
 
 nonebot_runtime = datetime.datetime.now()
 bot_connect_time = {}
@@ -24,7 +26,16 @@ async def on_connect(bot: Bot):
 
 @driver.on_bot_disconnect
 async def on_disconnect(bot: Bot):
+    session_delta = datetime.datetime.now() - bot_connect_time[bot.self_id]
+    with open(json_path, "r") as f: data = json.load(f)
+    if bot.self_id not in data: data[bot.self_id] = {"total_run_seconds": 0, "total_received": 0, "total_sent": 0}
+    data[bot.self_id]["total_run_seconds"] += session_delta.total_seconds()
+    data[bot.self_id]["total_received"] += receive_message_count[bot.self_id]
+    data[bot.self_id]["total_sent"] += send_message_count[bot.self_id]
+    with open(json_path, "w") as f: json.dump(data, f)
     bot_connect_time.pop(bot.self_id)
+    receive_message_count.pop(bot.self_id)
+    send_message_count.pop(bot.self_id)
 
 @event_preprocessor
 async def check_receive(bot: Bot, event: Event):
@@ -111,20 +122,18 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
     name_y = avatar_y + avatar_size + avatar_center_margin
     draw.text((name_x, name_y), bot_name, font=font_title, fill=(50, 50, 50))
     current_y = name_y + h_name + 80
-    ct = bot_connect_time.get(bot_id, None)
-    rcv = receive_message_count.get(bot_id, 0)
-    snd = send_message_count.get(bot_id, 0)
-    if ct is not None:
-        now = datetime.datetime.now()
-        delta = now - ct
-        days, seconds = delta.days, delta.seconds
-        hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60
-        line_connect = f"Connected for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
-                else f"Connected for {hours}h {minutes}m {secs}s"
-    else:
-        line_connect = "Bot not connected"
-    line_msgs = f"Receive: {rcv}  |  Send: {snd}"
-
+    with open(json_path, "r") as f: history_data = json.load(f)
+    if bot_id not in history_data: history_data[bot_id] = {"total_run_seconds": 0, "total_received": 0, "total_sent": 0}
+    session_run_secs = (datetime.datetime.now() - bot_connect_time[bot_id]).total_seconds() if bot_id in bot_connect_time else 0
+    total_run_secs = history_data[bot_id]["total_run_seconds"] + session_run_secs
+    total_received = history_data[bot_id]["total_received"] + receive_message_count.get(bot_id, 0)
+    total_sent     = history_data[bot_id]["total_sent"] + send_message_count.get(bot_id, 0)
+    total_run_td = datetime.timedelta(seconds=total_run_secs)
+    days, seconds = total_run_td.days, total_run_td.seconds
+    hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60        
+    line_connect = f"Since Dec 28 2024 connected for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
+                else f"Since Dec 28 2024 connected for {hours}h {minutes}m {secs}s"
+    line_msgs = f"Received: {total_received}  |  Sent: {total_sent}"
     bbox_line1 = draw.textbbox((0, 0), line_connect, font=font_small)
     w_line1 = bbox_line1[2] - bbox_line1[0]
     h_line1 = bbox_line1[3] - bbox_line1[1]

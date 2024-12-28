@@ -1,6 +1,6 @@
 <div align="center">
 
-![Header image](https://imgse.com/i/pAxNEDg)
+<a href="https://imgse.com/i/pAxNEDg"><img src="https://s21.ax1x.com/2024/12/29/pAxNEDg.png" alt="pAxNEDg.png" border="0" /></a>
 
 </div>
 

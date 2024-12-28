@@ -52,6 +52,7 @@ class Helper_Messages:
 
 "———————— steam ————————\n \
 /steam [steamid] 查看用户[steamid]的steam游戏状态\n \
+/steam info [steamid] 查看用户[steamid]的总游戏时长和游玩时长top 10\n \
 /steam random 从群友推荐列表中随机推荐一款游戏\n \
     可选参数 -a|all 使推荐的游戏可以来自其他群 \n \
 /steam random add [appid] 将游戏[appid]添加到本群推荐列表\n \
@@ -78,6 +79,7 @@ class Helper_Messages:
 /yuyu 我有玉玉症\n \
 /fufu 芙芙可爱捏\n \
 /help 查看指令列表\n \
+/about 查看芙芙运行状态 \n \
 /ys|今日运势 查看今日运势\n \
 /早安 对芙芙说早安吧 (此条命令需要@芙芙)\n \
 /update log 查看芙芙更新日志\n \
@@ -143,7 +145,11 @@ Nov 20 2024 支持查询用户github contributions chart\n \
 Nov 23 2024 支持查看昨日群发言排行\n \
 Nov 26 2024 增加用户黑名单\n \
 \n \
-Dec 18 2024 给插件增加全局开关模块"]
+Dec 18 2024 给插件增加全局开关模块\n \
+Dec 21 2024 重构插件创建方式\n \
+Dec 22 2024 给每个插件添加单独的帮助信息; 支持qq资料卡点赞\n \
+Dec 25 2024 支持查看用户steam总游戏时长/游玩时长top 10\n \
+Dec 27 2024 支持查看bot运行状态"]
     
     def get_helper_messages(self):
         return self.helper_messages

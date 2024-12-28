@@ -1,6 +1,6 @@
 <div align="center">
 
-<a href="https://imgse.com/i/pAxNEDg"><img src="https://s21.ax1x.com/2024/12/29/pAxNEDg.png" alt="pAxNEDg.png" border="0" /></a>
+<img src="https://s21.ax1x.com/2024/12/29/pAxNEDg.png" alt="pAxNEDg.png" border="0" />
 
 </div>
 
@@ -73,7 +73,7 @@
 
 ## `steam`
 * `/steam [steamid]` 返回用户`[steamid]`的steam游戏状态
-* `/steam info [steamid]` 返回用户`[steamid]`的总游戏时长/时长top10
+* `/steam info [steamid]` 返回用户`[steamid]`的总游戏时长/游玩时长top 10
 * `/steam random` 从群友推荐列表中随机推荐一款游戏
     * 可选参数 `-a|all` 推荐的游戏可以来自其他群
 * `/steam random add [appid]` 将游戏`[appid]`添加到本群推荐列表
@@ -104,6 +104,7 @@
 * `/help` 查看目前支持的指令列表
 * `/ys|今日运势` 查看今日运势
 * `/早安` 对芙芙说早安吧
+* `/like` 让芙芙给你的qq资料卡点赞吧
 * `/update log` 查看本项目更新日志
 * `/update` 更新芙芙 (需要`SUPERUSER`权限)
 * `/update chromedriver` 更新本机chromedriver (需要`SUPERUSER`权限)

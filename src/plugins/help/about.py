@@ -131,8 +131,8 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
     total_run_td = datetime.timedelta(seconds=total_run_secs)
     days, seconds = total_run_td.days, total_run_td.seconds
     hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60        
-    line_connect = f"Since Dec 28 2024 connected for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
-                else f"Since Dec 28 2024 connected for {hours}h {minutes}m {secs}s"
+    line_connect = f"Since Dec 28 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
+                else f"Since Dec 28 2024 running for {hours}h {minutes}m {secs}s"
     line_msgs = f"Received: {total_received}  |  Sent: {total_sent}"
     bbox_line1 = draw.textbbox((0, 0), line_connect, font=font_small)
     w_line1 = bbox_line1[2] - bbox_line1[0]
@@ -140,7 +140,7 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
     line1_x = (img_width - w_line1) // 2
     line1_y = current_y
     draw.text((line1_x, line1_y), line_connect, font=font_small, fill=(40, 40, 40))
-    current_y += (h_line1 + 15)
+    current_y += (h_line1 + 25)
     bbox_line2 = draw.textbbox((0, 0), line_msgs, font=font_small)
     w_line2 = bbox_line2[2] - bbox_line2[0]
     h_line2 = bbox_line2[3] - bbox_line2[1]

@@ -1,6 +1,6 @@
-import sys, psutil, platform, cpuinfo, winreg, datetime, json
+import sys, psutil, platform, cpuinfo, winreg, datetime, json, requests
 from PIL import Image, ImageDraw
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 from utils import global_plugin_ctrl
 from utils.utils import get_asset_path, get_output_path, get_copyright_str, get_IO_path 
 from utils.fonts import get_font
@@ -46,6 +46,27 @@ async def check_receive(bot: Bot, event: Event):
 async def check_send(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):
     if api == "send_msg" or "send_group_msg":
         send_message_count[bot.self_id] += 1
+
+def get_brief_bot_status(bot_id: str) -> Tuple[str, str]:
+    with open(json_path, "r") as f: history_data = json.load(f)
+    if bot_id not in history_data: history_data[bot_id] = {"total_run_seconds": 0, "total_received": 0, "total_sent": 0}
+    session_run_secs = (datetime.datetime.now() - bot_connect_time[bot_id]).total_seconds() if bot_id in bot_connect_time else 0
+    total_run_secs = history_data[bot_id]["total_run_seconds"] + session_run_secs
+    total_received = history_data[bot_id]["total_received"] + receive_message_count.get(bot_id, 0)
+    total_sent     = history_data[bot_id]["total_sent"] + send_message_count.get(bot_id, 0)
+    total_run_td = datetime.timedelta(seconds=total_run_secs)
+    days, seconds = total_run_td.days, total_run_td.seconds
+    hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60        
+    line_connect = f"Since Dec 28 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
+                else f"Since Dec 28 2024 running for {hours}h {minutes}m {secs}s"
+    line_msgs = f"Received: {total_received}  |  Sent: {total_sent}"
+    return line_connect, line_msgs
+
+def get_about_image():
+    request_url = "https://socialify.git.ci/DaBiGu/Bi_Gu-bot/image?description=1&font=Jost&logo=https://s21.ax1x.com/2024/12/29/pAxNAKS.jpg&name=1&owner=1&pattern=Diagonal+Stripes&stargazers=1&theme=Dark"
+    output_path = get_output_path("about")
+    with open(output_path, "wb") as file: file.write(requests.get(request_url).content)
+    return MessageSegment.image(f"file:///{output_path}")
 
 def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
     avatar_path = get_asset_path("images/avatar.jpg")
@@ -122,18 +143,7 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
     name_y = avatar_y + avatar_size + avatar_center_margin
     draw.text((name_x, name_y), bot_name, font=font_title, fill=(50, 50, 50))
     current_y = name_y + h_name + 80
-    with open(json_path, "r") as f: history_data = json.load(f)
-    if bot_id not in history_data: history_data[bot_id] = {"total_run_seconds": 0, "total_received": 0, "total_sent": 0}
-    session_run_secs = (datetime.datetime.now() - bot_connect_time[bot_id]).total_seconds() if bot_id in bot_connect_time else 0
-    total_run_secs = history_data[bot_id]["total_run_seconds"] + session_run_secs
-    total_received = history_data[bot_id]["total_received"] + receive_message_count.get(bot_id, 0)
-    total_sent     = history_data[bot_id]["total_sent"] + send_message_count.get(bot_id, 0)
-    total_run_td = datetime.timedelta(seconds=total_run_secs)
-    days, seconds = total_run_td.days, total_run_td.seconds
-    hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60        
-    line_connect = f"Since Dec 28 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
-                else f"Since Dec 28 2024 running for {hours}h {minutes}m {secs}s"
-    line_msgs = f"Received: {total_received}  |  Sent: {total_sent}"
+    line_connect, line_msgs = get_brief_bot_status(bot_id)
     bbox_line1 = draw.textbbox((0, 0), line_connect, font=font_small)
     w_line1 = bbox_line1[2] - bbox_line1[0]
     h_line1 = bbox_line1[3] - bbox_line1[1]
@@ -206,7 +216,7 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot"):
         draw.text((left_margin - 100, current_y), info, font=font_normal, fill=(0, 0, 0))
         current_y += info_height + line_spacing
     draw.text((40, img_height - 60), get_copyright_str(), fill=(0, 0, 0, 255), font = font_copyright)
-    out_path = get_output_path("about")
+    out_path = get_output_path("status")
     base_img = base_img.convert("RGB")
     base_img.save(out_path)
     return MessageSegment.image(f"file:///{out_path}")

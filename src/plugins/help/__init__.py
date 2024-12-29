@@ -1,13 +1,14 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot import on_command
+from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 
 from .config import Config
 
 from .help import draw_help
 from .helper_message import Helper_Messages
-from .about import generate_bot_status_image
+from .about import generate_bot_status_image, get_brief_bot_status, get_about_image
 
 from utils import global_plugin_ctrl
 
@@ -48,7 +49,16 @@ _plugin_help = on_command("plugin help")
 async def plugin_help_handle():
     await _plugin_help.finish(global_plugin_ctrl.get_help_info())
 
+_status = on_command("status")
+@_status.handle()
+async def status_handle(bot: Bot, args = CommandArg()):
+    if cmd_params := args.extract_plain_text():
+        if cmd_params == "-b":
+            line1, line2 = get_brief_bot_status()
+            await _status.finish(message = line1 + "\n" + line2)
+    await _status.finish(generate_bot_status_image(bot_id = bot.self_id))
+
 _about = on_command("about")
 @_about.handle()
-async def about_handle(bot: Bot):
-    await _about.finish(generate_bot_status_image(bot_id = bot.self_id))
+async def about_handle(bot: Bot, event: GroupMessageEvent):
+    await _about.finish(get_about_image())

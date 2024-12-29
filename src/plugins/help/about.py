@@ -63,7 +63,7 @@ def get_brief_bot_status(bot_id: str) -> Tuple[str, str]:
     return line_connect, line_msgs
 
 def get_about_image():
-    request_url = "https://socialify.git.ci/DaBiGu/Bi_Gu-bot/image?description=1&font=Jost&logo=https://s21.ax1x.com/2024/12/29/pAxNAKS.jpg&name=1&owner=1&pattern=Diagonal+Stripes&stargazers=1&theme=Dark"
+    request_url = "https://socialify.git.ci/DaBiGu/Bi_Gu-bot/png?description=1&font=Jost&logo=https://s21.ax1x.com/2024/12/29/pAxNAKS.jpg&name=1&owner=1&pattern=Diagonal+Stripes&stargazers=1&theme=Dark"
     output_path = get_output_path("about")
     with open(output_path, "wb") as file: file.write(requests.get(request_url).content)
     return MessageSegment.image(f"file:///{output_path}")

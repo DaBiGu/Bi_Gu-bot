@@ -54,7 +54,7 @@ _status = on_command("status")
 async def status_handle(bot: Bot, args = CommandArg()):
     if cmd_params := args.extract_plain_text():
         if cmd_params == "-b":
-            line1, line2 = get_brief_bot_status()
+            line1, line2 = get_brief_bot_status(bot_id = bot.self_id)
             await _status.finish(message = line1 + "\n" + line2)
     await _status.finish(generate_bot_status_image(bot_id = bot.self_id))
 

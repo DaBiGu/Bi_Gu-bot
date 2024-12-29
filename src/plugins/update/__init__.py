@@ -1,4 +1,4 @@
-from nonebot import get_plugin_config
+from nonebot import get_plugin_config, get_bot
 from nonebot.plugin import PluginMetadata
 from nonebot.permission import SUPERUSER
 from nonebot import on_command
@@ -35,16 +35,19 @@ async def update_handle(bot: Bot, event: GroupMessageEvent):
         await update.send(message = draw_update_message(update_status))
         subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])
 
-reboot = on_command("reboot")
+_reboot = on_command("reboot")
 
 @scheduler.scheduled_job("cron", hour = 4, minute = 0)
-@reboot.handle()
+async def reboot():
+    await on_disconnect(get_bot())
+    subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])
+
+@_reboot.handle()
 async def reboot_handle(bot: Bot, event: GroupMessageEvent):
     if not await permission(bot, event):
         await update.finish(message = "你没有权限执行此操作")
-    await reboot.send(message = "芙芙重启中...")
-    await on_disconnect(bot)
-    subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])  
+    await _reboot.send(message = "芙芙重启中...")
+    await reboot()
 
 _update_chromedriver = on_command("update chromedriver", priority = 1, permission = permission)
 @scheduler.scheduled_job("cron", hour = 0, minute = 0)

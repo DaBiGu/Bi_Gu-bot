@@ -57,8 +57,8 @@ def get_brief_bot_status(bot_id: str) -> Tuple[str, str]:
     total_run_td = datetime.timedelta(seconds=total_run_secs)
     days, seconds = total_run_td.days, total_run_td.seconds
     hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60        
-    line_connect = f"Since Dec 28 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
-                else f"Since Dec 28 2024 running for {hours}h {minutes}m {secs}s"
+    line_connect = f"Since Dec 29 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
+                else f"Since Dec 29 2024 running for {hours}h {minutes}m {secs}s"
     line_msgs = f"Received: {total_received}  |  Sent: {total_sent}"
     return line_connect, line_msgs
 

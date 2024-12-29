@@ -33,6 +33,7 @@ async def update_handle(bot: Bot, event: GroupMessageEvent):
         await update.finish(message = "Already up to date")
     else:
         await update.send(message = draw_update_message(update_status))
+        await on_disconnect(bot)
         subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])
 
 _reboot = on_command("reboot")

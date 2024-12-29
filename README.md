@@ -1,6 +1,6 @@
 <div align="center">
 
-![](https://socialify.git.ci/DaBiGu/Bi_Gu-bot/image?description=1&font=Jost&logo=https%3A%2F%2Fs21.ax1x.com%2F2024%2F12%2F29%2FpAxNAKS.jpg&name=1&owner=1&pattern=Diagonal+Stripes&stargazers=1&theme=Dark)
+![](https://socialify.git.ci/DaBiGu/Bi_Gu-bot/image?description=1&font=Jost&logo=https%3A%2F%2Fs21.ax1x.com%2F2024%2F12%2F29%2FpAxNAKS.jpg&name=1&owner=1&pattern=Diagonal+Stripes&theme=Dark)
 
 </div>
 

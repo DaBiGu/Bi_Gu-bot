@@ -107,11 +107,11 @@ async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg
             time_range = _[0]
             kawaii = False if _[1] == "-o" else True
         else: time_range, kawaii = cmd_params, True
-        if time_range in ["today", "yesterday", "week", "month", "year"]: 
+        if time_range in ["today", "yesterday", "week", "month", "year", "last week", "last month"]: 
             message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), time_range), time_range, nicknames, kawaii)
         elif time_range == "-o":
             message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames, kawaii = False)
-        else: message = "不支持的时间范围\n目前支持today|yesterday|week|month|year"
+        else: message = "不支持的时间范围\n目前支持today|yesterday|(last) week|(last) month|year"
     else: message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames)
     await chatcount.finish(message = message)
 

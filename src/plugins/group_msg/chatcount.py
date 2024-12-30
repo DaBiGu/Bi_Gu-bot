@@ -13,9 +13,16 @@ def mix_color(color, white=(1, 1, 1), ratio=0.5):
     return [(1 - ratio) * c + ratio * w for c, w in zip(color, white)]
 
 def get_datelist(time_range: str) -> List[str]:
-    last_day = datetime.datetime.now() - datetime.timedelta(days = 1) if time_range == "yesterday" else datetime.datetime.now()
-    first_day = last_day - datetime.timedelta(days = last_day.weekday()) if time_range == "week" else last_day.replace(day = 1) if time_range == "month" else \
-                last_day.replace(month = 1, day = 1) if time_range == "year" else last_day
+    now = datetime.datetime.now()
+    last_day = (now - datetime.timedelta(days = 1) if time_range == "yesterday" else now if time_range in ["week", "month", "year"] 
+                else now - datetime.timedelta(days = now.weekday() + 1) if time_range == "last week" 
+                else now.replace(day = 1) - datetime.timedelta(days = 1) if time_range == "last month" 
+                else None)
+    first_day = (last_day if time_range == "yesterday" else last_day - datetime.timedelta(days = last_day.weekday()) if time_range in ["week", "last week"] 
+                 else last_day.replace(day = 1) if time_range in ["month", "last month"] else last_day.replace(month = 1, day = 1) if time_range == "year" 
+                 else None)
+    if last_day is None or first_day is None:
+        raise ValueError(f"Unsupported time range: {time_range}")
     datelist, current_day = [], first_day
     while current_day <= last_day:
         datelist.append(current_day.strftime("%Y-%m-%d"))
@@ -39,7 +46,7 @@ def get_chatcount(group_id: str, time_range: str) -> Dict[str, int] | None:
 async def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknames: Dict[int, str], kawaii: bool = True) -> MessageSegment:
     font_path = Path(get_font_path("noto-sans-regular")) if not kawaii else Path(get_font_path("xiaolai"))
     _data = {}
-    time_range_dict = {"today": "今日", "yesterday": "昨日", "week": "本周", "month": "本月", "year": "本年"}
+    time_range_dict = {"today": "今日", "yesterday": "昨日", "week": "本周", "month": "本月", "year": "本年", "last week": "上周", "last month": "上月"}
     for key, value in data.items():
         if int(key) in nicknames: _data[nicknames[int(key)]] = value
         else: _data[key] = value
@@ -84,7 +91,7 @@ async def draw_chatcount_bargraph(data: Dict[str, int], time_range: str, nicknam
     fig.text(0.75, -0.1, get_copyright_str(), ha='center', font = font_path, fontsize = 12)
     plt.ylabel('b话量', font = font_path)
     plt.title(f'你群{time_range_dict[time_range]}top10 b话王', font = font_path, fontsize = 16, loc='center', x=0.5, y=1.05)
-    now = "23:59" if time_range == "yesterday" else datetime.datetime.now().strftime("%H:%M")
+    now = "23:59" if time_range in ["yesterday", "last week", "last month"] else datetime.datetime.now().strftime("%H:%M")
     fig.text(0.75, 0.9, f"数据范围: {get_datelist(time_range)[0]} 00:00 至{get_datelist(time_range)[-1]} {now}", ha='center', font = font_path, fontsize = 12)
     plt.xticks(rotation=45)
     output_path = get_output_path("chatcount")

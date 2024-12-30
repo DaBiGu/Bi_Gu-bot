@@ -34,14 +34,14 @@ _bb = global_plugin_ctrl.create_plugin(names = ["悲报", "bb"], description = "
 xb, bb = _xb.base_plugin, _bb.base_plugin
 
 @xb.handle()
-async def xb_handle_func(event: GroupMessageEvent, args = CommandArg()):
+async def xb_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _xb.check_plugin_ctrl(event.group_id): await xb.finish("该插件在本群中已关闭")
     if _xb.check_base_plugin_functions(text:=args.extract_plain_text()): return
     message = await draw_good_news(text)
     await xb.finish(message = message)
 
 @bb.handle()
-async def bb_handle_func(event: GroupMessageEvent, args = CommandArg()):
+async def bb_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _bb.check_plugin_ctrl(event.group_id): await bb.finish("该插件在本群中已关闭")
     if _bb.check_base_plugin_functions(text:=args.extract_plain_text()): return
     message = await draw_bad_news(text)
@@ -95,3 +95,5 @@ async def ba_handle(event: GroupMessageEvent, args = CommandArg()):
         left, right = cmd_params.split(" ") if " " in cmd_params else (cmd_params, "")
         message = await gen_ba(left, right)
         await ba.finish(message = message)
+
+xb.append_handler(xb_handle); bb.append_handler(bb_handle); symmetric.append_handler(symmetric_handle); ba.append_handler(ba_handle)

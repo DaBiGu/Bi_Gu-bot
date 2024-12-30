@@ -35,7 +35,7 @@ _rd = global_plugin_ctrl.create_plugin(names = ["rd", "roll"], description = "�
 rd = _rd.base_plugin
 
 @rd.handle()
-async def rd_handle_func(event: GroupMessageEvent, args = CommandArg()):
+async def rd_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _rd.check_plugin_ctrl(event.group_id): await rd.finish("该插件在本群中已关闭")
     if _args := args.extract_plain_text():
         if _rd.check_base_plugin_functions(_args): return
@@ -61,7 +61,7 @@ _ys = global_plugin_ctrl.create_plugin(names = ["ys", "今日运势"], descripti
 ys = _ys.base_plugin
 
 @ys.handle()
-async def ys_handle_func(event: GroupMessageEvent, args = CommandArg()):
+async def ys_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _ys.check_plugin_ctrl(event.group_id): await ys.finish("该插件在本群中已关闭")
     if _args := args.extract_plain_text():
         if _ys.check_base_plugin_functions(_args): return
@@ -86,3 +86,5 @@ async def ys_handle_func(event: GroupMessageEvent, args = CommandArg()):
     for day in to_delete: del record[day]
     with open(json_path, "w") as f: json.dump(record, f)
     await ys.finish(message)
+    
+rd.append_handler(rd_handle); ys.append_handler(ys_handle)

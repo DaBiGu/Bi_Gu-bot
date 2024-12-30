@@ -30,3 +30,5 @@ async def qh_handle(event: GroupMessageEvent, args = CommandArg()):
     if _qh.check_base_plugin_functions(username): return
     message = get_user_data(username)
     await qh.finish(message = message)
+
+qh.append_handler(qh_handle)

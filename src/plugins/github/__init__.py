@@ -25,7 +25,7 @@ _github = global_plugin_ctrl.create_plugin(names = ["github"], description = "æŸ
 github = _github.base_plugin
 
 @github.handle()
-async def github_handle_func(args = CommandArg()):
+async def github_handle(args = CommandArg()):
     cmd_params = args.extract_plain_text()
     if _github.check_base_plugin_functions(cmd_params): return
     if " " in cmd_params:
@@ -37,3 +37,5 @@ async def github_handle_func(args = CommandArg()):
         else: message = await get_github_chart(" ".join(cmd_params_list))
     else: message = await get_github_chart(cmd_params)
     await github.finish(message = message)
+
+github.append_handler(github_handle)

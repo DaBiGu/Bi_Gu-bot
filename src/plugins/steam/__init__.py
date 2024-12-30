@@ -188,3 +188,5 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
         else:
             message = "本群视奸列表为空\n使用/视奸群友 add [steam_id]添加群友到列表"
         await sjqy.finish(message = message)
+
+steam.append_handler(steam_handle); sjqy.append_handler(sjqy_handle)

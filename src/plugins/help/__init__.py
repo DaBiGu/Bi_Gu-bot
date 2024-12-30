@@ -1,9 +1,13 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
+from nonebot.matcher import Matcher
+from nonebot.message import run_postprocessor
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
+from typing import Optional
+import json, re, datetime
 
 from .config import Config
 
@@ -12,6 +16,7 @@ from .helper_message import Helper_Messages
 from .about import generate_bot_status_image, get_brief_bot_status, get_about_image
 
 from utils import global_plugin_ctrl
+from utils.utils import get_IO_path
 
 __plugin_meta__ = PluginMetadata(
     name="help",
@@ -24,6 +29,7 @@ config = get_plugin_config(Config)
 
 helper_messages = Helper_Messages().get_helper_messages()
 update_logs = Helper_Messages().get_update_logs()
+funccount_json_path = get_IO_path("funccount", "json")
 
 _help = on_command("help", aliases = {"帮助"})
 
@@ -65,3 +71,18 @@ async def about_handle(bot: Bot, event: GroupMessageEvent):
     text = "https://github.com/DaBiGu/Bi_Gu-bot\n点个star谢谢喵"
     message = Message([get_about_image(), MessageSegment.text(text)])
     await _about.finish(message)
+
+@run_postprocessor
+async def count_handler_trigger(event: GroupMessageEvent, matcher: Matcher, exception: Optional[Exception]):
+    _ = matcher.handlers
+    handler = _[0] if _ else None
+    if handler:
+        match = re.search(r"Dependent\(call=([a-zA-Z_][a-zA-Z0-9_]*)_handle\)", str(handler))
+        funcname = match.group(1) if match else None
+        with open(funccount_json_path, "r") as f: funccount = json.load(f)
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        if today not in funccount: funccount[today] = {}
+        if funcname:
+            if funcname not in funccount[today]: funccount[today][funcname] = 0
+            funccount[today][funcname] += 1
+        with open(funccount_json_path, "w") as f: json.dump(funccount, f)

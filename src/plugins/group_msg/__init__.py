@@ -174,7 +174,7 @@ xm = on_keyword(keywords=["羡慕", "xm"], priority = 10)
 xm_ctrl = global_plugin_ctrl.create_plugin(names = ["xm", "羡慕"], description = "这也羡慕那也羡慕", default_on = True)
 
 @xm.handle()
-async def xm_handle_func(event: GroupMessageEvent):
+async def xm_handle(event: GroupMessageEvent):
     if not xm_ctrl.check_plugin_ctrl(event.group_id): return
     if random_trigger(25): await xm.finish("这也羡慕那也羡慕")
     else: return
@@ -183,7 +183,7 @@ async def xm_handle_func(event: GroupMessageEvent):
 question = on_regex(r"^([?？¿!！¡\s]+)$", priority = 9)
 
 @question.handle()
-async def question_handle_func(rgx = RegexGroup()):
+async def question_handle(rgx = RegexGroup()):
     if not rgx: return
     response = rgx[0] \
         .replace("¿", "d").replace("?", "¿").replace("？", "¿").replace("d", "?") \
@@ -203,3 +203,5 @@ async def count_bot_messages(bot: Bot, exception: Optional[Exception], api: str,
             if str(bot.self_id) not in chatcount[group_id][today]: chatcount[group_id][today][str(bot.self_id)] = 1
             else: chatcount[group_id][today][str(bot.self_id)] += 1
             with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)
+
+chatcount.append_handler(chatcount_handle); morning.append_handler(morning_handle)

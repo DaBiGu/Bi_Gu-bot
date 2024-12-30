@@ -28,7 +28,7 @@ config = get_plugin_config(Config)
 zm = on_fullmatch("在吗", rule=to_me())
 
 @zm.handle()
-async def welcome_handle_func():
+async def zm_handle():
     await zm.finish("はい、芙芙会一直陪伴在大家身边")
 
 poke = on_notice()
@@ -43,7 +43,7 @@ ciallo = on_keyword(["ciallo", "Ciallo"])
 last_ciallo_time = Cooldown(countdown = 300.0)
 
 @ciallo.handle()
-async def ciallo_handle_func(event: GroupMessageEvent):
+async def ciallo_handle(event: GroupMessageEvent):
     global last_ciallo_time
     if last_ciallo_time.use(event.group_id)[0]:
         await ciallo.finish(MessageSegment.record("file:///" + get_asset_path("ciallo.mp3")))
@@ -72,7 +72,7 @@ async def welcome_handle(event: GroupIncreaseNoticeEvent):
 recall = on_command("recall", permission = SUPERUSER)
 
 @recall.handle()
-async def recall_handle_func(event: GroupMessageEvent, bot: Bot):
+async def recall_handle(event: GroupMessageEvent, bot: Bot):
     if event.reply:
         await bot.call_api("delete_msg", message_id = event.reply.message_id)
 
@@ -80,7 +80,7 @@ _like = global_plugin_ctrl.create_plugin(names = ["like"], description = "qq资�
 like = _like.base_plugin
 
 @like.handle()
-async def like_handle_func(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+async def like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     if _like.check_base_plugin_functions(args.extract_plain_text()): return
     with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
@@ -94,3 +94,5 @@ async def like_handle_func(event: GroupMessageEvent, bot: Bot, args = CommandArg
         message = "芙芙今天已经给你点过赞啦，明天再来吧"
     with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
     await like.finish(message)
+
+like.append_handler(like_handle)

@@ -54,3 +54,5 @@ async def crypto_handle(event: GroupMessageEvent, args = CommandArg()):
     else:
         message = get_market_data()
         await crypto.finish(message = message)
+
+crypto.append_handler(crypto_handle)

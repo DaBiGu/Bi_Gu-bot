@@ -66,3 +66,5 @@ async def work_handle(event: GroupMessageEvent, args = CommandArg()):
             _today_work_analysis, work_time = today_work_analysis(user_id = event.get_user_id())
             work_time_str = second_to_hms(work_time)
             await work.finish(message = Message([_today_work_analysis, MessageSegment.text(f"{username}今日工作总时长{work_time_str}")]))
+
+work.append_handler(work_handle)

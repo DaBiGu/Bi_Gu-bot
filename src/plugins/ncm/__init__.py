@@ -28,7 +28,7 @@ _ncm = global_plugin_ctrl.create_plugin(names = ["ncm"], description = "网易�
 ncm = _ncm = _ncm.base_plugin
 
 @ncm.handle()
-async def ncm_handle_func(event: GroupMessageEvent, args = CommandArg()):
+async def ncm_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _ncm.check_plugin_ctrl(event.group_id): await ncm.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
     if _ncm.check_base_plugin_functions(cmd_params): return
@@ -44,3 +44,5 @@ async def ncm_handle_func(event: GroupMessageEvent, args = CommandArg()):
         elif cmd_params_list[0] == "lyrics":
             response = await draw_lyrics_card(int(cmd_params_list[1]))
     await ncm.finish(response)
+
+ncm.append_handler(ncm_handle)

@@ -48,3 +48,5 @@ async def setu_handle(event: GroupMessageEvent, args = CommandArg()):
         setu_tags = args.extract_plain_text().split(" ")
         message = await get_setu(setu_tags)
         await setu.finish(message = message)
+
+setu.append_handler(setu_handle)

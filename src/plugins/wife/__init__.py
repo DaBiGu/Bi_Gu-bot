@@ -188,3 +188,5 @@ async def wife_bind_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg
     else "群cp绑定失败, 请检查输入\n 正确的输入格式为/wife bind|-b [qq1] [qq2]"
     with open(wife_cp_json_path, "w") as f: json.dump(record, f)
     await wife_bind.finish(message = message)
+
+wife.append_handler(wife_handle); wife_count.append_handler(wife_count_handle);

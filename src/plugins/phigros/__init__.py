@@ -23,7 +23,7 @@ _phigros = global_plugin_ctrl.create_plugin(names = ["phigros"], description = "
 phigros = _phigros.base_plugin
 
 @phigros.handle()
-async def phigros_handle_func(event: GroupMessageEvent, args = CommandArg()):
+async def phigros_handle(event: GroupMessageEvent, args = CommandArg()):
     if not _phigros.check_plugin_ctrl(event.group_id): await phigros.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
     if _phigros.check_base_plugin_functions(cmd_params): return
@@ -35,3 +35,5 @@ async def phigros_handle_func(event: GroupMessageEvent, args = CommandArg()):
             message = Message([MessageSegment.text(f"Search result for \"{search_keyword}\":"), await phigros_search_song(search_keyword)])
         else: return
     await phigros.finish(message)
+
+phigros.append_handler(phigros_handle)

@@ -16,25 +16,28 @@ config = get_plugin_config(Config)
 
 yuyu = on_command("玉玉", aliases= {"yuyu", "jade jade"})
 @yuyu.handle()
-async def yuyu_handle_func():
+async def yuyu_handle():
     await yuyu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/yuyu.gif"))]))
 
 fufu = on_command("芙芙", aliases= {"fufu", "furina"})
 @fufu.handle()
-async def fufu_handle_func():
+async def fufu_handle():
     await fufu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]))
 
 die = on_command("kill")
 @die.handle()
-async def die_handle_func():
+async def die_handle():
     await die.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/die.png"))]))
 
 pupu = on_command("噗噗", aliases= {"pupu"})
 @pupu.handle()
-async def pupu_handle_func():
+async def pupu_handle():
     await pupu.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/pupu.png"))]))
 
 biebie = on_command("憋憋", aliases= {"biebie"})
 @biebie.handle()
-async def biebie_handle_func():
+async def biebie_handle():
     await biebie.finish(Message([MessageSegment.image("file:///" + get_asset_path("images/biebie.png"))]))
+
+yuyu.append_handler(yuyu_handle); fufu.append_handler(fufu_handle); die.append_handler(die_handle)
+pupu.append_handler(pupu_handle); biebie.append_handler(biebie_handle)

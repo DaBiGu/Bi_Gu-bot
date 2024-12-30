@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_command
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, Bot
+from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
 from .config import Config
 
@@ -61,4 +62,6 @@ async def status_handle(bot: Bot, args = CommandArg()):
 _about = on_command("about")
 @_about.handle()
 async def about_handle(bot: Bot, event: GroupMessageEvent):
-    await _about.finish(get_about_image())
+    text = "https://github.com/DaBiGu/Bi_Gu-bot\n点个star谢谢喵"
+    message = Message([get_about_image(), MessageSegment.text(text)])
+    await _about.finish(message)

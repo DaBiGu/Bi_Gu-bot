@@ -13,7 +13,7 @@ from .config import Config
 
 from .help import draw_help
 from .helper_message import Helper_Messages
-from .about import generate_bot_status_image, get_brief_bot_status, get_about_image, on_disconnect, on_connect
+from .about import generate_bot_status_image, get_brief_bot_status, get_about_image, on_disconnect, on_connect, draw_funccount_bargraph
 
 from utils import global_plugin_ctrl
 from utils.utils import get_IO_path
@@ -55,6 +55,11 @@ _plugin_help = on_command("plugin help")
 @_plugin_help.handle()
 async def plugin_help_handle():
     await _plugin_help.finish(global_plugin_ctrl.get_help_info())
+
+_plugin_count = on_command("plugin count", aliases={"pc"})
+@_plugin_count.handle()
+async def plugin_count_handle():
+    await _plugin_count.finish(draw_funccount_bargraph())
 
 _status = on_command("status")
 @_status.handle()

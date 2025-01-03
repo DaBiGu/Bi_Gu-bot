@@ -47,7 +47,7 @@ async def bb_handle(event: GroupMessageEvent, args = CommandArg()):
     message = await draw_bad_news(text)
     await bb.finish(message = message)
 
-last_symmetric_time = Cooldown(countdown = 180.0)
+last_symmetric_time = Cooldown(countdown = 60.0)
 
 symmetric_ctrl = global_plugin_ctrl.create_plugin(names = ["对称", "symmetric"], description = "图片对称",
                                              help_info = "对图片回复 /对称 左|右|上|下 [percent] 将图片(以[percent]%为轴)进行对称翻转",
@@ -74,8 +74,8 @@ async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
         else: direction = "left"
         message = await _symmetric(original_img_path, direction, int(percent))
         if isinstance(message, MessageSegment):
-            if not last_symmetric_time.use(event.group_id)[0]:
-                remaining_time = last_symmetric_time.use(event.group_id)[1]
+            if not symmetric_ctrl.cooldown.use(event.group_id)[0]:
+                remaining_time = symmetric_ctrl.cooldown.use(event.group_id)[1]
                 await symmetric.finish(f"该功能还有{remaining_time}秒冷却时间")
             else: await symmetric.finish(message = message)
         else: await symmetric.finish(message = message)

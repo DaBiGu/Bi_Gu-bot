@@ -13,7 +13,7 @@ from .config import Config
 
 from .help import draw_help
 from .helper_message import Helper_Messages
-from .about import generate_bot_status_image, get_brief_bot_status, get_about_image
+from .about import generate_bot_status_image, get_brief_bot_status, get_about_image, on_disconnect
 
 from utils import global_plugin_ctrl
 from utils.utils import get_IO_path
@@ -59,6 +59,7 @@ async def plugin_help_handle():
 _status = on_command("status")
 @_status.handle()
 async def status_handle(bot: Bot, args = CommandArg()):
+    await on_disconnect(bot)
     if cmd_params := args.extract_plain_text():
         if cmd_params == "-b":
             line1, line2 = get_brief_bot_status(bot_id = bot.self_id)

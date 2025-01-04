@@ -231,6 +231,7 @@ def draw_funccount_bargraph() -> MessageSegment:
     sorted_features = sorted(cumulative_data.items(), key=lambda x: x[1])[:20]
     features_sorted, values_sorted = zip(*sorted_features)
     fig = plt.figure(figsize=(12, 8))
+    plt.style.use('default')
     bars = plt.barh(features_sorted, values_sorted, color='black', edgecolor='black')
     for bar in bars: plt.text(bar.get_width() + 1.5, bar.get_y() + bar.get_height() / 2, str(bar.get_width()), ha='left', va='center', fontsize=12, color='black')
     plt.yticks(fontsize=12, color='black')

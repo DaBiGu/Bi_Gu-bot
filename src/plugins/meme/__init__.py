@@ -49,7 +49,7 @@ httpcat = on_command("httpcat")
 async def httpcat_handle(args = CommandArg()):
     code = args.extract_plain_text()
     output_path = get_output_path("httpcat", temp = True)
-    response = requests.get(f"https://httpcats.com/{code}.jpg")
+    response = requests.get(f"https://http.cat/{code}.jpg")
     if response.status_code == 200:
         with open(output_path, "wb") as f: f.write(response.content)
         await httpcat.finish(Message([MessageSegment.image("file:///" + output_path)]))

@@ -1,10 +1,13 @@
-from nonebot import get_plugin_config
+from nonebot import get_plugin_config, on_command
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import Message, MessageSegment, GroupMessageEvent
+from nonebot_plugin_apscheduler import scheduler
+from nonebot.permission import SUPERUSER
 
 from .config import Config
 from .search_song import phigros_search_song
+from .get_data import get_data
 
 from utils import global_plugin_ctrl
 
@@ -37,3 +40,10 @@ async def phigros_handle(event: GroupMessageEvent, args = CommandArg()):
     await phigros.finish(message)
 
 phigros.append_handler(phigros_handle)
+
+_phigros_update = on_command("phigros update", permission = SUPERUSER)
+
+@_phigros_update.handle()
+@scheduler.scheduled_job("cron", hour = 0, minute = 10)
+async def phigros_update_handle():
+    get_data()

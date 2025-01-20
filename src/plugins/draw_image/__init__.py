@@ -89,7 +89,7 @@ ba = _ba.base_plugin
 
 @ba.handle()
 async def ba_handle(event: GroupMessageEvent, args = CommandArg()):
-    if not ba.check_plugin_ctrl(event.group_id): await ba.finish("该插件在本群中已关闭")
+    if not _ba.check_plugin_ctrl(event.group_id): await ba.finish("该插件在本群中已关闭")
     if cmd_params := args.extract_plain_text():
         if _ba.check_base_plugin_functions(cmd_params): return
         left, right = cmd_params.split(" ") if " " in cmd_params else (cmd_params, "")

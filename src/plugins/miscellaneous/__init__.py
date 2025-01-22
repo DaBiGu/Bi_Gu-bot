@@ -1,8 +1,9 @@
-from nonebot import get_plugin_config
+from nonebot import get_plugin_config, get_bot
 from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.permission import SUPERUSER
+from nonebot_plugin_apscheduler import scheduler
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11.event import PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
 
@@ -79,20 +80,39 @@ async def recall_handle(event: GroupMessageEvent, bot: Bot):
 _like = global_plugin_ctrl.create_plugin(names = ["like"], description = "qq资料卡点赞", default_on = True)
 like = _like.base_plugin
 
-@like.handle()
-async def like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
-    if _like.check_base_plugin_functions(args.extract_plain_text()): return
+async def execute_like(user_id: str, bot: Bot) -> bool:
     with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
-    if str(event.user_id) not in record: record[str(event.user_id)] = "1970-01-01"
-    if record[str(event.user_id)] != today: 
-        record[str(event.user_id)] = today
-        await bot.call_api("send_like", user_id = event.user_id, times = 10)
-        message = Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
-                           MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))])
+    if user_id not in record: record[user_id] = "1970-01-01"
+    success = False
+    if record[user_id] != today: 
+        record[user_id] = today
+        success = True
+        await bot.call_api("send_like", user_id = int(user_id), times = 10)
+    with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
+    return success
+
+@like.handle()
+async def like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    if _like.check_base_plugin_functions(command_args:=args.extract_plain_text()): return
+    with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
+    if command_args == "auto":
+        if str(event.user_id) not in record["auto"]: 
+            record["auto"].append(str(event.user_id))
+            message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 添加成功，现在芙芙每天都会给你的资料卡点赞啦")])
+        else: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 已经添加过啦, 芙芙会记得点赞的")])
     else:
-        message = "芙芙今天已经给你点过赞啦，明天再来吧"
+        success = await execute_like(str(event.user_id), bot)
+        message = Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
+                           MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]) if success \
+                  else Message([MessageSegment.text("芙芙今天已经给你点过赞啦，明天再来吧")])
     with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
     await like.finish(message)
+
+@scheduler.scheduled_job("cron", hour = 4, minute = 0)
+async def auto_like():
+    with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
+    for user_id in record["auto"]:
+        await execute_like(user_id, get_bot())
 
 like.append_handler(like_handle)

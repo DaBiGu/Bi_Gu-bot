@@ -38,7 +38,7 @@ async def update_handle(bot: Bot, event: GroupMessageEvent):
 
 _reboot = on_command("reboot")
 
-@scheduler.scheduled_job("cron", hour = 4, minute = 0)
+@scheduler.scheduled_job("cron", hour = 3, minute = 30)
 async def reboot():
     await on_disconnect(get_bot())
     subprocess.Popen([os.getcwd() + "/run.bat", str(os.getpid())])

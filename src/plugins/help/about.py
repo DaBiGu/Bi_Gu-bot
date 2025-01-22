@@ -228,7 +228,7 @@ def draw_funccount_bargraph() -> MessageSegment:
     for day, features in data.items():
         for feature, count in features.items():
             cumulative_data[feature] = cumulative_data.get(feature, 0) + count
-    sorted_features = sorted(cumulative_data.items(), key=lambda x: x[1])[:20]
+    sorted_features = sorted(cumulative_data.items(), key=lambda x: x[1], reverse=True)[:20][::-1]
     features_sorted, values_sorted = zip(*sorted_features)
     fig = plt.figure(figsize=(12, 8))
     plt.style.use('default')

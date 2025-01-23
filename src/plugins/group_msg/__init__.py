@@ -226,35 +226,35 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
     if not _gamelist.check_plugin_ctrl(event.group_id): await gamelist.finish("该插件在本群中已关闭")
     cmd_params = args.extract_plain_text()
     if _gamelist.check_base_plugin_functions(cmd_params): return
-    with open(gamelist_json_path, "r") as f: gamelist = json.load(f)
+    with open(gamelist_json_path, "r") as f: data = json.load(f)
     if cmd_params:
         if " " in cmd_params:
             _ = cmd_params.split(" ")
             action, game = _[0], " ".join(_[1:])
             if action == "add":
                 if not await permission(bot, event): await gamelist.finish("你没有权限执行此操作")
-                if group_id not in gamelist: gamelist[group_id] = {}
-                if game not in gamelist[group_id]: 
-                    gamelist[group_id][game] = []
+                if group_id not in data: data[group_id] = {}
+                if game not in data[group_id]: 
+                    data[group_id][game] = []
                     message = f"成功添加{game}到本群游戏列表"
                 else: message = f"{game}已在本群游戏列表中"
             elif action == "remove":
                 if not await permission(bot, event): await gamelist.finish("你没有权限执行此操作")
-                if game in gamelist[group_id]:
-                    del gamelist[group_id][game]
+                if game in data[group_id]:
+                    del data[group_id][game]
                     message = f"成功从本群游戏列表删除{game}"
                 else: message = f"{game}不在本群游戏列表中"
             elif action == "join":
-                if game not in gamelist[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
-                elif user_id in gamelist[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你已在{game}游戏名单中，请勿重复加入")])
+                if game not in data[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
+                elif user_id in data[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你已在{game}游戏名单中，请勿重复加入")])
                 else:
-                    gamelist[group_id][game].append(user_id)
+                    data[group_id][game].append(user_id)
                     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 成功加入{game}游戏名单")])
             elif action == "quit":
-                if game not in gamelist[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
-                elif user_id not in gamelist[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你不在{game}游戏名单中，请先使用/gamelist join {game}加入")])
+                if game not in data[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
+                elif user_id not in data[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你不在{game}游戏名单中，请先使用/gamelist join {game}加入")])
                 else:
-                    gamelist[group_id][game].remove(user_id)
+                    data[group_id][game].remove(user_id)
                     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 成功退出{game}游戏名单")])
             else: return
         else: return
@@ -262,11 +262,11 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
         group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
         nicknames = {}
         for member in group_members_raw: nicknames[member["user_id"]] = member["nickname"]
-        if group_id not in gamelist: message = "本群暂无游戏列表"
+        if group_id not in data: message = "本群暂无游戏列表"
         else:
-            for game in gamelist[group_id]: 
-                message += f"\n{game}: " + ", ".join([nicknames[user_id] if user_id in nicknames else user_id for user_id in gamelist[group_id][game]])
-    with open(gamelist_json_path, "w") as f: json.dump(gamelist, f)
+            for game in data[group_id]: 
+                message += f"\n{game}: " + ", ".join([nicknames[user_id] if user_id in nicknames else user_id for user_id in data[group_id][game]])
+    with open(gamelist_json_path, "w") as f: json.dump(data, f)
     await gamelist.finish(message)
 
 gamelist.append_handler(gamelist_handle)

@@ -227,6 +227,7 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
     cmd_params = args.extract_plain_text()
     if _gamelist.check_base_plugin_functions(cmd_params): return
     with open(gamelist_json_path, "r") as f: data = json.load(f)
+    message = None
     if cmd_params:
         if " " in cmd_params:
             _ = cmd_params.split(" ")
@@ -267,6 +268,6 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
             for game in data[group_id]: 
                 message += f"\n{game}: " + ", ".join([nicknames[user_id] if user_id in nicknames else user_id for user_id in data[group_id][game]])
     with open(gamelist_json_path, "w") as f: json.dump(data, f)
-    await gamelist.finish(message)
+    if message: await gamelist.finish(message)
 
 gamelist.append_handler(gamelist_handle)

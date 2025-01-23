@@ -3,7 +3,9 @@ from nonebot.plugin import PluginMetadata
 from nonebot import on_message, on_notice, on_command, on_keyword, on_regex
 from nonebot.rule import to_me
 from nonebot.params import CommandArg, RegexGroup
+from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
+from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from .config import Config
 from .chatcount import get_chatcount, draw_chatcount_bargraph
 from utils.utils import get_IO_path, random_trigger
@@ -24,6 +26,7 @@ config = get_plugin_config(Config)
 
 morning_json_path = get_IO_path("morning", "json")
 chatcount_json_path = get_IO_path("chatcount", "json")
+gamelist_json_path = get_IO_path("gamelist", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
 
 # copied from https://github.com/Utmost-Happiness-Planet/nonebot-plugin-repeater/blob/main/nonebot_plugin_repeater/__init__.py
@@ -205,3 +208,65 @@ async def count_bot_messages(bot: Bot, exception: Optional[Exception], api: str,
             with open(chatcount_json_path, "w") as f: json.dump(chatcount, f)
 
 chatcount.append_handler(chatcount_handle); morning.append_handler(morning_handle)
+
+_gamelist = global_plugin_ctrl.create_plugin(names = ["gamelist", "gl"], description = "群游戏列表", 
+                                             help_info = """
+                                                            /gamelist|gl 查看本群游戏列表
+                                                            /gamelist add|remove [game] 添加/删除游戏 (需要管理员权限)
+                                                            /gamelist join|quit [game] 加入/退出[game]列表 
+                                                          """,
+                                             default_on = True, priority = 1)
+
+gamelist = _gamelist.base_plugin
+permission = SUPERUSER | GROUP_ADMIN | GROUP_OWNER
+
+@gamelist.handle()
+async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    user_id, group_id = str(event.user_id), str(event.group_id)
+    if not _gamelist.check_plugin_ctrl(event.group_id): await gamelist.finish("该插件在本群中已关闭")
+    cmd_params = args.extract_plain_text()
+    if _gamelist.check_base_plugin_functions(cmd_params): return
+    with open(gamelist_json_path, "r") as f: gamelist = json.load(f)
+    if cmd_params:
+        if " " in cmd_params:
+            _ = cmd_params.split(" ")
+            action, game = _[0], " ".join(_[1:])
+            if action == "add":
+                if not await permission(bot, event): await gamelist.finish("你没有权限执行此操作")
+                if group_id not in gamelist: gamelist[group_id] = {}
+                if game not in gamelist[group_id]: 
+                    gamelist[group_id][game] = []
+                    message = f"成功添加{game}到本群游戏列表"
+                else: message = f"{game}已在本群游戏列表中"
+            elif action == "remove":
+                if not await permission(bot, event): await gamelist.finish("你没有权限执行此操作")
+                if game in gamelist[group_id]:
+                    del gamelist[group_id][game]
+                    message = f"成功从本群游戏列表删除{game}"
+                else: message = f"{game}不在本群游戏列表中"
+            elif action == "join":
+                if game not in gamelist[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
+                elif user_id in gamelist[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你已在{game}游戏名单中，请勿重复加入")])
+                else:
+                    gamelist[group_id][game].append(user_id)
+                    message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 成功加入{game}游戏名单")])
+            elif action == "quit":
+                if game not in gamelist[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
+                elif user_id not in gamelist[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你不在{game}游戏名单中，请先使用/gamelist join {game}加入")])
+                else:
+                    gamelist[group_id][game].remove(user_id)
+                    message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 成功退出{game}游戏名单")])
+            else: return
+        else: return
+    else: 
+        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+        nicknames = {}
+        for member in group_members_raw: nicknames[member["user_id"]] = member["nickname"]
+        if group_id not in gamelist: message = "本群暂无游戏列表"
+        else:
+            for game in gamelist[group_id]: 
+                message += f"\n{game}: " + ", ".join([nicknames[user_id] if user_id in nicknames else user_id for user_id in gamelist[group_id][game]])
+    with open(gamelist_json_path, "w") as f: json.dump(gamelist, f)
+    await gamelist.finish(message)
+
+gamelist.append_handler(gamelist_handle)

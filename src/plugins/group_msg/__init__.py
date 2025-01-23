@@ -267,7 +267,7 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
         else:
             message = "====== 本群游戏列表 ======"
             for game in data[group_id]: 
-                message += f"\n{game}: " + ", ".join([nicknames[user_id] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
+                message += f"\n{game}: " + ", ".join([nicknames[int(user_id)] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
     with open(gamelist_json_path, "w") as f: json.dump(data, f)
     if message: await gamelist.finish(message)
 

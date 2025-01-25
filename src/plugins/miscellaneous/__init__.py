@@ -109,6 +109,9 @@ async def like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
     await like.finish(message)
 
+execute_like = on_command("execute like", permission = SUPERUSER)
+
+@execute_like.handle()
 @scheduler.scheduled_job("cron", hour = 4, minute = 0)
 async def auto_like():
     with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)

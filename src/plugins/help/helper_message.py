@@ -16,6 +16,12 @@ class Helper_Messages:
                                 ———————— github ————————
                                 /github [username] 查看[username]的github contributions chart
                                     可选参数 -2d 返回原始2d图
+                                
+                                ———————— gamelist ————————
+                                /gamelist|gl 查看本群游戏列表
+                                /gamelist add|remove [game] 本群游戏列表添加/删除[game] (需要管理员权限)
+                                /gamelist join|quit [game] 加入/退出[game]
+                                
                                 ———————— group_msg ————————
                                 /chatcount|cc today|yesterday|week|month|year
                                     查看今日/昨日/本周/本月/年度群内b话量top10
@@ -38,11 +44,13 @@ class Helper_Messages:
                                 
                                 ———————— phigros ————————
                                 /phigros search [songname] 搜索歌名为[songname]的phigros歌曲信息(支持模糊匹配)
+
                                 ———————— setu ————————
                                 /setu 返回随机色图
                                 /setu search 对消息记录中的图片回复该指令进行以图搜图
                                 /setu [tags] 返回指定tags的色图; 可以传入多个tag, 以空格分隔
-                                
+                                """,
+                                """
                                 ———————— sleep ————————
                                 /sleep 开始睡觉并记录睡觉时间
                                 /sleep [hh:mm] 手动指定睡觉时间
@@ -51,8 +59,7 @@ class Helper_Messages:
                                 /awake [hh:mm] 手动指定起床时间
                                 /awake [hh:mm] [utc±t] 手动指定于指定时区的起床时间
                                 /sleep status 查看本周睡眠状况统计
-                                """,
-                                """
+
                                 ———————— steam ————————
                                 /steam [steamid] 查看用户[steamid]的steam游戏状态
                                 /steam info [steamid] 查看用户[steamid]的总游戏时长和游玩时长top 10
@@ -63,7 +70,7 @@ class Helper_Messages:
                                 /steam recommend [steamid] [appid] 从用户[steamid]的库存推荐id为[appid]的游戏
                                 /steam search [name] 搜索名为[name]的steam游戏
                                 /视奸群友 一键视奸群友游戏状态 
-                                使用/视奸群友 add|remove [steamid] 管理视奸群友列表
+                                    使用/视奸群友 add|remove [steamid] 管理视奸群友列表
                                 
                                 ———————— wife ————————
                                 /wife 今日随机群老婆 
@@ -86,6 +93,11 @@ class Helper_Messages:
                                 /ys|今日运势 查看今日运势
                                 /早安 对芙芙说早安吧 (此条命令需要@芙芙)
                                 /update log 查看芙芙更新日志
+                                /plugin count|pc 查看各插件使用量
+                                /like 让芙芙给你的qq资料卡点赞吧
+                                /like auto 每天自动点赞 (通常为服务器时间4am)
+                                """,
+                                """
                                 ———————— SUPERUSER ————————
                                 (以下指令需要开发者权限)
                                 /antirecall on|off 开启/关闭群内消息防撤回
@@ -156,6 +168,12 @@ class Helper_Messages:
                             Dec 22 2024 给每个插件添加单独的帮助信息; 支持qq资料卡点赞
                             Dec 25 2024 支持查看用户steam总游戏时长/游玩时长top 10
                             Dec 27 2024 支持查看bot运行状态
+                            Dec 30 2024 支持查看上周/上月b话量统计
+
+                            Jan 3 2025 支持统计各插件使用量
+                            Jan 4 2025 支持获取httpcat meme
+                            Jan 19 2025 自动更新phigros资源
+                            Jan 23 2025 自动资料卡点赞; 支持群友游戏列表管理
                             """]
     
     def get_helper_messages(self):

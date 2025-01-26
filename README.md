@@ -24,6 +24,11 @@
     * 搭载3d可视化插件[GitHub Isometric Contributions](https://chromewebstore.google.com/detail/github-isometric-contribu/mjoedlfflcchnleknnceiplgaeoegien)
     * 可选参数 `-2d` 返回原始2d图
 
+## `gamelist`
+* `/gamelist|gl` 查看本群游戏列表
+* `/gamelist add|remove [game]` 本群游戏列表添加/删除`[game]` (需要管理员权限)
+* `/gamelist join|quit [game]` 加入/退出`[game]`
+
 ## `group_msg`
 * 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
 * 群内消息防撤回
@@ -105,6 +110,8 @@
 * `/ys|今日运势` 查看今日运势
 * `/早安` 对芙芙说早安吧
 * `/like` 让芙芙给你的qq资料卡点赞吧
+* `/like auto` 每天自动点赞 (通常为服务器时间4am)
+* `/plugin count|pc` 查看各插件使用量
 * `/update log` 查看本项目更新日志
 * `/update` 更新芙芙 (需要`SUPERUSER`权限)
 * `/update chromedriver` 更新本机chromedriver (需要`SUPERUSER`权限)

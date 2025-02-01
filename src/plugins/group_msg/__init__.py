@@ -13,7 +13,7 @@ from typing import Dict, Any, Optional
 
 from utils import global_plugin_ctrl
 
-import re, time, json, datetime
+import re, time, json, datetime, random
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -263,8 +263,8 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                     message = MessageSegment.text("")
                     for user_id in data[group_id][game]:
                         if int(user_id) == event.user_id: continue
-                        message += MessageSegment.at(user_id)
-                    message += MessageSegment.text(f" 来玩{game}啦~")
+                        message += (MessageSegment.at(user_id) + MessageSegment.text(" "))
+                    message += MessageSegment.text(random.choice([f"来玩{game}啦~", f"byd速度上号{game}!", f"杂鱼们赶紧来玩{game}", f"玩牛子不如玩{game}"]))
             else: return
         else: return
     else: 

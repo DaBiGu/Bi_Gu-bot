@@ -251,12 +251,20 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                 else:
                     data[group_id][game].append(user_id)
                     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 成功加入{game}游戏名单")])
-            elif action == "quit":
+            elif action in ["quit", "leave"]:
                 if game not in data[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
                 elif user_id not in data[group_id][game]: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 你不在{game}游戏名单中，请先使用/gamelist join {game}加入")])
                 else:
                     data[group_id][game].remove(user_id)
                     message = Message([MessageSegment.at(event.user_id), MessageSegment.text(f" 成功退出{game}游戏名单")])
+            elif action in ["summon", "zhqy", "召唤群友"]:
+                if game not in data[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
+                else:
+                    message = MessageSegment.text("")
+                    for user_id in data[group_id][game]:
+                        if int(user_id) == event.user_id: continue
+                        message += MessageSegment.at(user_id)
+                    message += MessageSegment.text(f" 来玩{game}啦~")
             else: return
         else: return
     else: 

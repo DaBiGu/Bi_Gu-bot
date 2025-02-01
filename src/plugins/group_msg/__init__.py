@@ -261,10 +261,12 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                 if game not in data[group_id]: message = f"本群游戏列表中找不到名为{game}的游戏"
                 else:
                     message = MessageSegment.text("")
-                    for user_id in data[group_id][game]:
-                        if int(user_id) == event.user_id: continue
-                        message += (MessageSegment.at(user_id) + MessageSegment.text(" "))
-                    message += MessageSegment.text(random.choice([f"来玩{game}啦~", f"byd速度上号{game}!", f"杂鱼们赶紧来玩{game}", f"玩牛子不如玩{game}"]))
+                    if not data[group_id][game]: message += f"本群{game}游戏名单为空"
+                    else:
+                        for user_id in data[group_id][game]:
+                            if int(user_id) == event.user_id: continue
+                            message += (MessageSegment.at(user_id) + MessageSegment.text(" "))
+                        message += MessageSegment.text(random.choice([f"来玩{game}啦~", f"byd速度上号{game}!", f"杂鱼们赶紧来玩{game}", f"玩牛子不如玩{game}"]))
             else: return
         else: return
     else: 

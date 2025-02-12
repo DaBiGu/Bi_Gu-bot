@@ -48,7 +48,7 @@ async def check_send(bot: Bot, exception: Optional[Exception], api: str, data: D
     if api == "send_msg" or "send_group_msg":
         send_message_count[bot.self_id] += 1
 
-def get_brief_bot_status(bot_id: str) -> Tuple[str, str]:
+def get_brief_bot_status(bot_id: str) -> Tuple[str, str, str]:
     with open(json_path, "r") as f: history_data = json.load(f)
     if bot_id not in history_data: history_data[bot_id] = {"total_run_seconds": 0, "total_received": 0, "total_sent": 0}
     session_run_secs = (datetime.datetime.now() - bot_connect_time[bot_id]).total_seconds() if bot_id in bot_connect_time else 0
@@ -56,12 +56,17 @@ def get_brief_bot_status(bot_id: str) -> Tuple[str, str]:
     total_received = history_data[bot_id]["total_received"] + receive_message_count.get(bot_id, 0)
     total_sent     = history_data[bot_id]["total_sent"] + send_message_count.get(bot_id, 0)
     total_run_td = datetime.timedelta(seconds=total_run_secs)
+    session_run_td = datetime.timedelta(seconds=session_run_secs)
     days, seconds = total_run_td.days, total_run_td.seconds
-    hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60        
-    line_connect = f"Since Dec 29 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
+    _days, _seconds = session_run_td.days, session_run_td.seconds
+    hours, minutes, secs = seconds // 3600, (seconds % 3600) // 60, seconds % 60  
+    _hours, _minutes, _secs = _seconds // 3600, (_seconds % 3600) // 60, _seconds % 60      
+    line_total_connect = f"Since Dec 29 2024 running for {days}d {hours}h {minutes}m {secs}s" if days > 0 \
                 else f"Since Dec 29 2024 running for {hours}h {minutes}m {secs}s"
+    line_session_connect = f"Current session running for {_days}d {_hours}h {_minutes}m {_secs}s" if _days > 0 \
+                else f"Current session running for {_hours}h {_minutes}m {_secs}s"
     line_msgs = f"Received: {total_received}  |  Sent: {total_sent}"
-    return line_connect, line_msgs
+    return line_total_connect, line_session_connect, line_msgs
 
 def get_about_image():
     request_url = "https://socialify.git.ci/DaBiGu/Bi_Gu-bot/png?description=1&font=Jost&logo=https://s21.ax1x.com/2024/12/29/pAxNAKS.jpg&name=1&owner=1&pattern=Plus&stargazers=1&theme=Dark"
@@ -108,7 +113,7 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot") -> MessageSegm
     disk = psutil.disk_usage("/")
     disk_used_gb, disk_total_gb = disk.used / (1024**3), disk.total / (1024**3)
     plugins_loaded = len(global_plugin_ctrl.plugin_list)
-    img_width, img_height = 1600, 2200
+    img_width, img_height = 1600, 2225
     base_img = Image.new("RGBA", (img_width, img_height), (255, 255, 255, 255))
     draw = ImageDraw.Draw(base_img)
     font_title = get_font("yahei-consolas", 80)
@@ -144,21 +149,28 @@ def generate_bot_status_image(bot_id: str, bot_name="Furina Bot") -> MessageSegm
     name_y = avatar_y + avatar_size + avatar_center_margin
     draw.text((name_x, name_y), bot_name, font=font_title, fill=(50, 50, 50))
     current_y = name_y + h_name + 80
-    line_connect, line_msgs = get_brief_bot_status(bot_id)
-    bbox_line1 = draw.textbbox((0, 0), line_connect, font=font_small)
+    line_total_connect, line_session_connect, line_msgs = get_brief_bot_status(bot_id)
+    bbox_line1 = draw.textbbox((0, 0), line_total_connect, font=font_small)
     w_line1 = bbox_line1[2] - bbox_line1[0]
     h_line1 = bbox_line1[3] - bbox_line1[1]
     line1_x = (img_width - w_line1) // 2
     line1_y = current_y
-    draw.text((line1_x, line1_y), line_connect, font=font_small, fill=(40, 40, 40))
+    draw.text((line1_x, line1_y), line_total_connect, font=font_small, fill=(40, 40, 40))
     current_y += (h_line1 + 25)
-    bbox_line2 = draw.textbbox((0, 0), line_msgs, font=font_small)
+    bbox_line2 = draw.textbbox((0, 0), line_session_connect, font=font_small)
     w_line2 = bbox_line2[2] - bbox_line2[0]
     h_line2 = bbox_line2[3] - bbox_line2[1]
     line2_x = (img_width - w_line2) // 2
     line2_y = current_y
-    draw.text((line2_x, line2_y), line_msgs, font=font_small, fill=(40, 40, 40))
-    current_y += (h_line2 + 80)
+    draw.text((line2_x, line2_y), line_session_connect, font=font_small, fill=(40, 40, 40))
+    current_y += (h_line1 + 25)
+    bbox_line3 = draw.textbbox((0, 0), line_msgs, font=font_small)
+    w_line3 = bbox_line3[2] - bbox_line3[0]
+    h_line3 = bbox_line3[3] - bbox_line3[1]
+    line3_x = (img_width - w_line3) // 2
+    line3_y = current_y
+    draw.text((line3_x, line3_y), line_msgs, font=font_small, fill=(40, 40, 40))
+    current_y += (h_line3 + 80)
     color_cpu  = (112, 194, 255)
     color_mem  = (255, 153, 153)
     color_swap = (255, 182, 113)

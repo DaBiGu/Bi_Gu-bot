@@ -64,8 +64,6 @@ async def plugin_count_handle():
 _status = on_command("status")
 @_status.handle()
 async def status_handle(bot: Bot, args = CommandArg()):
-    await on_disconnect(bot)
-    await on_connect(bot)
     if cmd_params := args.extract_plain_text():
         if cmd_params == "-b":
             line1, line2 = get_brief_bot_status(bot_id = bot.self_id)

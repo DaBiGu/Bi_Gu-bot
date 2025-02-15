@@ -10,7 +10,7 @@ from utils import global_plugin_ctrl
 
 from .config import Config
 
-import datetime, json, random, requests, time
+import datetime, json, random, requests, time, numpy
 from typing import List
 
 __plugin_meta__ = PluginMetadata(
@@ -58,6 +58,9 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
         for user_id in user_ids:
             if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "last_force_wife_date": "1970-01-01"}
             _record[group_id][user_id]["wife_count"] += -1 if delete else 1
+    def update_force_wife_count(succeed: bool):
+        if succeed: _record["force_wife_count"]["success"] += 1
+        else: _record["force_wife_count"]["fail"] += 1
     def set_force_wife_date(group_id: str, user_ids: List[str]):
         if group_id not in _record: _record[group_id] = {}
         for user_id in user_ids:
@@ -106,6 +109,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             force_wife_random = -1 if user_id == find_cp(force_target) else 114514
                         if force_wife_random <= 25:
                             force_wife_message = " 强娶成功！"
+                            update_force_wife_count(succeed = True)
                             if user_id in record[today][group_id]: 
                                 original_wife = record[today][group_id][user_id] # get B
                                 for _ in [user_id, original_wife]: del record[today][group_id][_] # delete A to B, B to A
@@ -121,7 +125,9 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             _wife = force_target
                             target = MessageSegment.at(force_target)
                         elif force_wife_random == 114514: force_wife_message = " 强娶失败！坚决抵制牛头人行为\n"
-                        else: force_wife_message = " 强娶失败!"
+                        else: 
+                            force_wife_message = " 强娶失败!"
+                            update_force_wife_count(succeed = False)
                 else: force_wife_message = " 强娶失败！今天已经强娶过了\n"
             else: force_wife_message = " 强娶失败！找不到对象: 请@要强娶的群友\n"
         if "-s" in option: 

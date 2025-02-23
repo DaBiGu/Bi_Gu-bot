@@ -65,7 +65,7 @@ def get_crypto_kline(crypto_name: str, time_interval: str = "15m") -> MessageSeg
                        mpf.make_addplot(df["upper_band"], color = "#f0b30c", width = 1),
                        mpf.make_addplot(df["lower_band"], color = "#872ff5", width = 1)]
     fig, axlist = mpf.plot(df, type="candle", volume = True, style = binance_dark, title = f"{instrument_ID} {time_interval} Kline", 
-                    figratio = (16, 12), panel_ratios=(4, 1), addplot = bollinger_bands, returnfig = True, block = False)
+                    figratio = (20, 12), panel_ratios=(4, 1), addplot = bollinger_bands, returnfig = True, block = False)
     fig.text(0.8, 0.92, get_copyright_str(), ha='center', fontsize = 10, color = "white")
     output_path = get_output_path("crypto_kline")
     fig.savefig(output_path)

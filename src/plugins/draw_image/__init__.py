@@ -74,8 +74,8 @@ async def symmetric_handle(event: GroupMessageEvent, args = CommandArg()):
         else: direction = "left"
         message = await _symmetric(original_img_path, direction, int(percent))
         if isinstance(message, MessageSegment):
-            if not symmetric_ctrl.cooldown.use(event.group_id)[0]:
-                remaining_time = symmetric_ctrl.cooldown.use(event.group_id)[1]
+            if not last_symmetric_time.use(event.group_id)[0]:
+                remaining_time = last_symmetric_time.use(event.group_id)[1]
                 await symmetric.finish(f"该功能还有{remaining_time}秒冷却时间")
             else: await symmetric.finish(message = message)
         else: await symmetric.finish(message = message)

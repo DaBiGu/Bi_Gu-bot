@@ -135,8 +135,13 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if str(member["user_id"]) == _wife: target = MessageSegment.text(" @" + member["nickname"])
     avatar_path = get_output_path(f"wife_{_wife}", temp = True)
     with open(avatar_path, "wb") as f: f.write(requests.get(f"https://q1.qlogo.cn/g?b=qq&nk={_wife}&s=640").content)
-    message = Message([MessageSegment.at(user_id), force_wife_message, MessageSegment.text(" 你今天的群老婆是 "), target,
-                       MessageSegment.image("file:///" + avatar_path)])
+    def reverse_str(s: str): return s[:-1][::-1] + '\n' if s.endswith('\n') else s[::-1]
+    if datetime.datetime.now().month == 4 and datetime.datetime.now().day == 1:
+        message = Message([MessageSegment.at(user_id), reverse_str(force_wife_message), MessageSegment.text(reverse_str(" 你今天的群老婆是 ")), target,
+                           MessageSegment.image("file:///" + avatar_path)])
+    else:
+        message = Message([MessageSegment.at(user_id), force_wife_message, MessageSegment.text(" 你今天的群老婆是 "), target,
+                           MessageSegment.image("file:///" + avatar_path)])
     to_delete = [day for day in record if day != today] 
     for day in to_delete: del record[day]
     with open(wife_today_json_path, "w") as f: json.dump(record, f)

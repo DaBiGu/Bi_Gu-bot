@@ -138,7 +138,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     def reverse_str(s: str): return s[:-1][::-1] + '\n' if s.endswith('\n') else s[::-1]
     if datetime.datetime.now().month == 4 and datetime.datetime.now().day == 1:
         message = Message([MessageSegment.at(user_id), reverse_str(force_wife_message), MessageSegment.text(reverse_str(" 你今天的群老婆是 ")), target,
-                           MessageSegment.image("file:///" + avatar_path)])
+                           MessageSegment.image("file:///" + avatar_path)][::-1])
     else:
         message = Message([MessageSegment.at(user_id), force_wife_message, MessageSegment.text(" 你今天的群老婆是 "), target,
                            MessageSegment.image("file:///" + avatar_path)])

@@ -1,9 +1,11 @@
-import requests, time
+import requests, time, datetime
 from matplotlib import pyplot as plt
 from matplotlib.patches import Patch
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from typing import List, Dict
+from typing import List, Dict, Any
 from utils.utils import get_copyright_str, get_output_path
+from utils.fonts import get_font
+from PIL import Image, ImageDraw
 import numpy as np
 
 def forward(y):
@@ -82,3 +84,48 @@ def get_raw_user_data(username: str) -> tuple[List[Dict], List[List[int]], List[
                 pt_count.append(player_info["gradingScore"])
         rank_scores.append([player["score"] for player in sorted_players])
     return res[:30][::-1], rank_scores[:30][::-1], pt_count[:30][::-1]
+
+def search_user(username: str) -> MessageSegment:
+    url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
+    user_data = requests.get(url).json()
+    if not user_data:
+        return MessageSegment.text("没有找到该用户")
+    user_id = user_data[0]["id"]
+    user_name = user_data[0]["nickname"]
+    user_level = user_data[0]["level"]
+    user_rank = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
+    return MessageSegment.text(f"用户ID: {user_id}\n昵称: {user_name}\n段位: {user_rank[user_level]}")
+
+def get_latest_match(user_id: int) -> Dict[str, Any]:
+    url = f"https://5-data.amae-koromo.com/api/v2/pl4/player_records/{user_id}/{int(time.time() * 1000)}/1262304000000?limit=141&mode=16,12,9,8&descending=true"
+    latest_match_raw = requests.get(url).json()[0]
+    latest_match = {
+        "gameId": latest_match_raw["uuid"],
+        "startTime": datetime.datetime.fromtimestamp(latest_match_raw["startTime"]).strftime("%Y-%m-%d %H:%M:%S"),
+        "endTime": datetime.datetime.fromtimestamp(latest_match_raw["endTime"]).strftime("%Y-%m-%d %H:%M:%S"),
+        "players": sorted(latest_match_raw["players"], key=lambda x: x["score"], reverse=True)
+    }
+    return latest_match
+
+def create_match_result_image(game_data, user_id: int) -> MessageSegment:
+    img_width, img_height = 1000, 400
+    img = Image.new('RGB', (1000, 400), (240, 240, 240))
+    draw = ImageDraw.Draw(img)
+    font_normal = get_font("noto-sans", 30, 400)
+    font_bold = get_font("noto-sans", 30, 500)
+    font_title = get_font("noto-sans", 36, 400)
+    player_ranks = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
+    draw.text((50, 30), game_data['gameId'], fill=(0, 0, 0), font=font_title)
+    draw.text((50, 80), f"{game_data['startTime']} ~ {game_data['endTime']}", fill=(50, 50, 50), font=font_normal)
+    draw.text((50, 120), "对局玩家:", fill=(0, 0, 0), font=font_title)
+    y_offset = 180
+    for player in game_data['players']:
+        font, text_color = (font_bold, (0, 0, 255)) if player['accountId'] == user_id else (font_normal, (0, 0, 0))
+        player_info = f"[{player_ranks[player['level']]}] {player['nickname']}: {player['score']} ({player['gradingScore']})"
+        draw.text((70, y_offset), player_info, fill=text_color, font=font)
+        y_offset += 40
+    border_color = (200, 200, 200)
+    draw.rectangle([20, 20, img_width-20, img_height-20], outline=border_color, width=2)
+    output_path = get_output_path(f"mahjongsoul_{game_data['gameId']}.png")
+    img.save(output_path)
+    return MessageSegment.image("file:///" + output_path)

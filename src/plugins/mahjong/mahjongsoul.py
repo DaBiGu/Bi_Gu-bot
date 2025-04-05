@@ -85,20 +85,10 @@ def get_raw_user_data(username: str) -> tuple[List[Dict], List[List[int]], List[
         rank_scores.append([player["score"] for player in sorted_players])
     return res[:30][::-1], rank_scores[:30][::-1], pt_count[:30][::-1]
 
-def search_user(username: str) -> MessageSegment:
-    url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
-    user_data = requests.get(url).json()
-    if not user_data:
-        return MessageSegment.text("没有找到该用户")
-    user_id = user_data[0]["id"]
-    user_name = user_data[0]["nickname"]
-    user_level = user_data[0]["level"]
-    user_rank = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
-    return MessageSegment.text(f"用户ID: {user_id}\n昵称: {user_name}\n段位: {user_rank[user_level]}")
-
-def get_latest_match(user_id: int) -> Dict[str, Any]:
+def get_latest_match(user_id: int):
     url = f"https://5-data.amae-koromo.com/api/v2/pl4/player_records/{user_id}/{int(time.time() * 1000)}/1262304000000?limit=141&mode=16,12,9,8&descending=true"
-    latest_match_raw = requests.get(url).json()[0]
+    try: latest_match_raw = requests.get(url).json()[0]
+    except Exception: return {}
     latest_match = {
         "gameId": latest_match_raw["uuid"],
         "startTime": datetime.datetime.fromtimestamp(latest_match_raw["startTime"]).strftime("%Y-%m-%d %H:%M:%S"),
@@ -106,6 +96,21 @@ def get_latest_match(user_id: int) -> Dict[str, Any]:
         "players": sorted(latest_match_raw["players"], key=lambda x: x["score"], reverse=True)
     }
     return latest_match
+
+def get_player_rank(rankid: int) -> str:
+    player_ranks = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
+    return player_ranks.get(rankid, "N/A")
+
+def search_user(username: str) -> MessageSegment:
+    url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
+    user_data = requests.get(url).json()
+    if user_data:
+        result = f'"{username}"的搜索结果:'
+        for user in user_data:
+            result += f"\n[{get_player_rank(user['level']['id'])}] {user['nickname']} (ID: {user['id']})"
+    else:
+        result = f"未找到用户名为{username}的玩家"
+    return MessageSegment.text(result)
 
 def create_match_result_image(game_data, user_id: int) -> MessageSegment:
     img_width, img_height = 1000, 400
@@ -121,7 +126,7 @@ def create_match_result_image(game_data, user_id: int) -> MessageSegment:
     y_offset = 180
     for player in game_data['players']:
         font, text_color = (font_bold, (0, 0, 255)) if player['accountId'] == user_id else (font_normal, (0, 0, 0))
-        player_info = f"[{player_ranks[player['level']]}] {player['nickname']}: {player['score']} ({player['gradingScore']})"
+        player_info = f"[{get_player_rank(player['level'])}] {player['nickname']}: {player['score']} ({player['gradingScore']})"
         draw.text((70, y_offset), player_info, fill=text_color, font=font)
         y_offset += 40
     border_color = (200, 200, 200)

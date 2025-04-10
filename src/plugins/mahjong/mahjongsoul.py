@@ -2,7 +2,7 @@ import requests, time, datetime
 from matplotlib import pyplot as plt
 from matplotlib.patches import Patch
 from nonebot.adapters.onebot.v11.message import MessageSegment
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Tuple
 from utils.utils import get_copyright_str, get_output_path
 from utils.fonts import get_font
 from PIL import Image, ImageDraw
@@ -91,6 +91,7 @@ def get_latest_match(user_id: int):
     except Exception: return {}
     latest_match = {
         "gameId": latest_match_raw["uuid"],
+        "modeId": latest_match_raw["modeId"],
         "startTime": datetime.datetime.fromtimestamp(latest_match_raw["startTime"]).strftime("%Y-%m-%d %H:%M:%S"),
         "endTime": datetime.datetime.fromtimestamp(latest_match_raw["endTime"]).strftime("%Y-%m-%d %H:%M:%S"),
         "players": sorted(latest_match_raw["players"], key=lambda x: x["score"], reverse=True)
@@ -100,6 +101,11 @@ def get_latest_match(user_id: int):
 def get_player_rank(rankid: int) -> str:
     player_ranks = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
     return player_ranks.get(rankid, "N/A")
+
+def get_gamemode_and_color(modeid: int) -> Tuple[str, Tuple[int, int, int]]:
+    game_modes = {12: "玉之間·四人南", 11: "玉之間·四人東", 9: "金之間·四人南", 8: "金之間·四人東"}
+    mode_colors = {12: (0, 150, 95), 11: (0, 150, 95), 9: (184, 134, 11), 8: (184, 134, 11)}
+    return game_modes.get(modeid, "UNKNOWN"), mode_colors.get(modeid, (0, 0, 0))
 
 def search_user(username: str) -> MessageSegment:
     url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
@@ -119,10 +125,10 @@ def create_match_result_image(game_data, user_id: int) -> MessageSegment:
     font_normal = get_font("noto-sans", 30, 400)
     font_bold = get_font("noto-sans", 30, 500)
     font_title = get_font("noto-sans", 36, 400)
-    player_ranks = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
     draw.text((50, 30), game_data['gameId'], fill=(0, 0, 0), font=font_title)
     draw.text((50, 80), f"{game_data['startTime']} ~ {game_data['endTime']}", fill=(50, 50, 50), font=font_normal)
-    draw.text((50, 120), "对局玩家:", fill=(0, 0, 0), font=font_title)
+    gamemode, mode_color = get_gamemode_and_color(game_data['modeId'])
+    draw.text((50, 120), gamemode, fill=mode_color, font=font_title)
     y_offset = 180
     for player in game_data['players']:
         font, text_color = (font_bold, (0, 0, 255)) if player['accountId'] == user_id else (font_normal, (0, 0, 0))

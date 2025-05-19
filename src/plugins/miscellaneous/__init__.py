@@ -15,7 +15,7 @@ from utils.cooldown import Cooldown
 
 from utils import global_plugin_ctrl
 
-import json, datetime
+import json, time, datetime
 
 __plugin_meta__ = PluginMetadata(
     name="miscellaneous",
@@ -119,3 +119,12 @@ async def auto_like():
         await execute_like(user_id, get_bot())
 
 like.append_handler(like_handle)
+
+gettime = on_command("time")
+
+@gettime.handle()
+async def gettime_handle():
+    unix_time = int(time.time())
+    local_time = datetime.datetime.now().astimezone()
+    total_hours = local_time.utcoffset().total_seconds() / 3600
+    await gettime.finish(f"Current time:\nUnix epoch: {unix_time}\nLocal time: {local_time.strftime('%Y-%m-%d %H:%M:%S')} [UTC{total_hours:+.0f}]")

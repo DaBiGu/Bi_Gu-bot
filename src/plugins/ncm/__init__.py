@@ -25,7 +25,7 @@ _ncm = global_plugin_ctrl.create_plugin(names = ["ncm"], description = "网易�
                                                     """,
                                        default_on = True, priority = 1)
 
-ncm = _ncm = _ncm.base_plugin
+ncm = _ncm.base_plugin
 
 @ncm.handle()
 async def ncm_handle(event: GroupMessageEvent, args = CommandArg()):

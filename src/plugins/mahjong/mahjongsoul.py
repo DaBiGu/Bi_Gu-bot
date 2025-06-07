@@ -98,24 +98,26 @@ def get_latest_match(user_id: int):
     }
     return latest_match
 
-def get_player_rank(rankid: int) -> str:
+def get_player_info(rankid: int) -> Dict[str, str]:
     player_ranks = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
-    return player_ranks.get(rankid, "N/A")
+    target_pt = {10301: "1200", 10302: "1400", 10303: "2000", 10401: "2800", 10402: "3200", 10403: "3600", 10501: "4000", 10502: "6000", 10503: "9000"}
+    return {"rank": player_ranks.get(rankid, "N/A"), "target_pt": target_pt.get(rankid, "N/A")}
 
 def get_gamemode_and_color(modeid: int) -> Tuple[str, Tuple[int, int, int]]:
     game_modes = {12: "玉之間·四人南", 11: "玉之間·四人東", 9: "金之間·四人南", 8: "金之間·四人東"}
     mode_colors = {12: (0, 150, 95), 11: (0, 150, 95), 9: (184, 134, 11), 8: (184, 134, 11)}
     return game_modes.get(modeid, "UNKNOWN"), mode_colors.get(modeid, (0, 0, 0))
 
-def search_user(username: str) -> MessageSegment:
+def search_user(username: str) -> str:
     url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
     user_data = requests.get(url).json()
     if user_data:
         result = f'"{username}"的搜索结果:'
         for user in user_data:
-            result += f"\n[{get_player_rank(user['level']['id'])}] {user['nickname']} (ID: {user['id']})"
+            player_info = get_player_info(user['level']['id'])
+            result += f"\n[{player_info['rank']} {user['level']['score'] + user['level']['delta']}/{player_info['target_pt']}] {user['nickname']} (ID: {user['id']})"
     else:
-        result = f"未找到用户名为{username}的玩家"
+        result = f"未找到用户名为 {username} 的玩家"
     return MessageSegment.text(result)
 
 def create_match_result_image(game_data, user_id: int) -> MessageSegment:
@@ -132,7 +134,7 @@ def create_match_result_image(game_data, user_id: int) -> MessageSegment:
     y_offset = 180
     for player in game_data['players']:
         font, text_color = (font_bold, (0, 0, 255)) if player['accountId'] == user_id else (font_normal, (0, 0, 0))
-        player_info = f"[{get_player_rank(player['level'])}] {player['nickname']}: {player['score']} ({player['gradingScore']})"
+        player_info = f"[{get_player_info(player['level'])['rank']}] {player['nickname']}: {player['score']} ({player['gradingScore']})"
         draw.text((70, y_offset), player_info, fill=text_color, font=font)
         y_offset += 40
     border_color = (200, 200, 200)

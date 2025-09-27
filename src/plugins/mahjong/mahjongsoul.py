@@ -86,9 +86,15 @@ def get_raw_user_data(username: str) -> tuple[List[Dict], List[List[int]], List[
     return res[:30][::-1], rank_scores[:30][::-1], pt_count[:30][::-1]
 
 def get_latest_match(user_id: int):
-    url = f"https://5-data.amae-koromo.com/api/v2/pl4/player_records/{user_id}/{int(time.time() * 1000)}/1262304000000?limit=141&mode=16,12,9,8&descending=true"
-    try: latest_match_raw = requests.get(url).json()[0]
-    except Exception: return {}
+    timestamp = int(time.time() * 1000)
+    url4 = f"https://5-data.amae-koromo.com/api/v2/pl4/player_records/{user_id}/{timestamp}/1262304000000?limit=100&mode=16,12,9,8&descending=true"
+    url3 = f"https://5-data.amae-koromo.com/api/v2/pl3/player_records/{user_id}/{timestamp}/1262304000000?limit=100&mode=26,25,24,23,22,21&descending=true"
+    try: match4 = requests.get(url4).json()[0]
+    except Exception: match4 = {}
+    try: match3 = requests.get(url3).json()[0]
+    except Exception: match3 = {}
+    latest_match_raw = match4 if match4["endTime"] > match3["endTime"] else match3 if match4 and match3 else match4 if match4 else match3 if match3 else {}
+    if not latest_match_raw: return {}
     latest_match = {
         "gameId": latest_match_raw["uuid"],
         "modeId": latest_match_raw["modeId"],
@@ -99,25 +105,32 @@ def get_latest_match(user_id: int):
     return latest_match
 
 def get_player_info(rankid: int) -> Dict[str, str]:
-    player_ranks = {10301: "杰1", 10302: "杰2", 10303: "杰3", 10401: "豪1", 10402: "豪2", 10403: "豪3", 10501: "圣1", 10502: "圣2", 10503: "圣3"}
-    target_pt = {10301: "1200", 10302: "1400", 10303: "2000", 10401: "2800", 10402: "3200", 10403: "3600", 10501: "4000", 10502: "6000", 10503: "9000"}
-    return {"rank": player_ranks.get(rankid, "N/A"), "target_pt": target_pt.get(rankid, "N/A")}
+    player_ranks = {10301: ["杰1", "1200"], 10302: ["杰2", "1400"], 10303: ["杰3", "2000"], 
+                    10401: ["豪1", "2800"], 10402: ["豪2", "3200"], 10403: ["豪3", "3600"], 
+                    10501: ["圣1", "4000"], 10502: ["圣2", "6000"], 10503: ["圣3", "9000"]}
+    player_info = player_ranks.get(rankid, player_ranks.get(rankid - 10000, ["N/A", "N/A"]))
+    return {"rank": player_info[0], "target_pt": player_info[1]}
 
 def get_gamemode_and_color(modeid: int) -> Tuple[str, Tuple[int, int, int]]:
-    game_modes = {12: "玉之間·四人南", 11: "玉之間·四人東", 9: "金之間·四人南", 8: "金之間·四人東"}
-    mode_colors = {12: (0, 150, 95), 11: (0, 150, 95), 9: (184, 134, 11), 8: (184, 134, 11)}
-    return game_modes.get(modeid, "UNKNOWN"), mode_colors.get(modeid, (0, 0, 0))
+    game_modes = {12: "玉之間·四人南", 11: "玉之間·四人東", 9: "金之間·四人南", 8: "金之間·四人東", 
+                  24: "玉之間·三人南", 23: "玉之間·三人東", 22: "金之間·三人南", 21: "金之間·三人東"}
+    mode_color = (0, 150, 95) if modeid in [12, 11, 24, 23] else (184, 134, 11) if modeid in [9, 8, 22, 21] else (0, 0, 0)
+    return game_modes.get(modeid, "UNKNOWN"), mode_color
 
 def search_user(username: str) -> str:
-    url = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
-    user_data = requests.get(url).json()
-    if user_data:
-        result = f'"{username}"的搜索结果:'
-        for user in user_data:
-            player_info = get_player_info(user['level']['id'])
-            result += f"\n[{player_info['rank']} {user['level']['score'] + user['level']['delta']}/{player_info['target_pt']}] {user['nickname']} (ID: {user['id']})"
-    else:
-        result = f"未找到用户名为 {username} 的玩家"
+    result = f'"{username}"的搜索结果:' 
+    url4 = f"https://5-data.amae-koromo.com/api/v2/pl4/search_player/{username}?limit=20&tag=all"
+    url3 = f"https://5-data.amae-koromo.com/api/v2/pl3/search_player/{username}?limit=20&tag=all"
+    for url in [url4, url3]:
+        result += "\n四麻: " if url == url4 else "\n三麻: "
+        user_data = requests.get(url).json()
+        if user_data:
+            print(user_data)
+            for user in user_data:
+                player_info = get_player_info(user['level']['id'])
+                result += f"[{player_info['rank']} {user['level']['score'] + user['level']['delta']}/{player_info['target_pt']}] {user['nickname']} (ID: {user['id']})"
+        else:
+            result = f"未找到用户名为 {username} 的玩家"
     return MessageSegment.text(result)
 
 def create_match_result_image(game_data, user_id: int) -> MessageSegment:

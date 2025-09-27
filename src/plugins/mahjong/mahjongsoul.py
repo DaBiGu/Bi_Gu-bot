@@ -93,7 +93,10 @@ def get_latest_match(user_id: int):
     except Exception: match4 = {}
     try: match3 = requests.get(url3).json()[0]
     except Exception: match3 = {}
-    latest_match_raw = match4 if match4["endTime"] > match3["endTime"] else match3 if match4 and match3 else match4 if match4 else match3 if match3 else {}
+    if match4 and match3: latest_match_raw = match4 if match4["endTime"] > match3["endTime"] else match3
+    elif match4: latest_match_raw = match4
+    elif match3: latest_match_raw = match3
+    else: latest_match_raw = {}
     if not latest_match_raw: return {}
     latest_match = {
         "gameId": latest_match_raw["uuid"],

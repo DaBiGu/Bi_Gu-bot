@@ -137,8 +137,8 @@ def search_user(username: str) -> str:
     return MessageSegment.text(result)
 
 def create_match_result_image(game_data, user_id: int) -> MessageSegment:
-    img_width, img_height = 1000, 400
-    img = Image.new('RGB', (1000, 400), (240, 240, 240))
+    img_width, img_height = 1000, 240 + 40 * len(game_data['players'])
+    img = Image.new('RGB', (1000, img_height), (240, 240, 240))
     draw = ImageDraw.Draw(img)
     font_normal = get_font("noto-sans", 30, 400)
     font_bold = get_font("noto-sans", 30, 500)

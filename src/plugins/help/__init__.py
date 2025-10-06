@@ -79,6 +79,7 @@ async def about_handle(bot: Bot, event: GroupMessageEvent):
 
 @run_postprocessor
 async def count_handler_trigger(event: GroupMessageEvent, matcher: Matcher, exception: Optional[Exception]):
+    passive_funcs = ["group_message"]
     _ = matcher.handlers
     handler = _[0] if _ else None
     if handler:
@@ -88,6 +89,7 @@ async def count_handler_trigger(event: GroupMessageEvent, matcher: Matcher, exce
         today = datetime.datetime.now().strftime("%Y-%m-%d")
         if today not in funccount: funccount[today] = {}
         if funcname:
+            if funcname in passive_funcs: return
             if funcname not in funccount[today]: funccount[today][funcname] = 0
             funccount[today][funcname] += 1
         with open(funccount_json_path, "w") as f: json.dump(funccount, f)

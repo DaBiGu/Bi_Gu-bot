@@ -11,6 +11,7 @@ from utils import global_plugin_ctrl
 from .config import Config
 
 import datetime, json, random, requests, time, numpy
+import matplotlib.pyplot as plt
 from typing import List
 
 __plugin_meta__ = PluginMetadata(
@@ -39,6 +40,8 @@ wife_ctrl = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], desc
                                          default_on = True, priority = 2)
 
 wife = wife_ctrl.base_plugin
+
+WIFE_REJECT_LIST = ["1968539712"]
 
 @wife.handle()
 async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
@@ -79,7 +82,8 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if str(member["user_id"]) != user_id and str(member["user_id"]) not in record[today][group_id]:
                     if str(member["user_id"]) in last_sent_time[group_id]:
                         if time.time() - last_sent_time[group_id][str(member["user_id"])] <= 129600:
-                            single_members.append(str(member["user_id"]))
+                            if str(member["user_id"]) not in WIFE_REJECT_LIST:
+                                single_members.append(str(member["user_id"]))
         if not single_members: message = "本群没有符合条件的群友"
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
@@ -107,6 +111,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                             return None
                         if find_cp(force_target):
                             force_wife_random = -1 if user_id == find_cp(force_target) else 114514
+                        if force_target in WIFE_REJECT_LIST: force_wife_random = 1919810
                         if force_wife_random <= 25:
                             force_wife_message = " 强娶成功！"
                             update_force_wife_count(succeed = True)
@@ -127,7 +132,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                         elif force_wife_random == 114514: force_wife_message = " 强娶失败！坚决抵制牛头人行为\n"
                         else: 
                             force_wife_message = " 强娶失败!"
-                            update_force_wife_count(succeed = False)
+                            if force_wife_random != 1919810: update_force_wife_count(succeed = False)
                 else: force_wife_message = " 强娶失败！今天已经强娶过了\n"
             else: force_wife_message = " 强娶失败！找不到对象: 请@要强娶的群友\n"
         if "-s" in option: 
@@ -161,6 +166,35 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
             count = record[group_id][user_id]["wife_count"]
     message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{count}次群友的老婆了, 可喜可贺")
     await wife_count.finish(message = message)
+
+wife_status = on_command("wife status")
+@wife_status.handle()
+async def wife_status_handle():
+    with open(wife_all_json_path, "r") as f: record = json.load(f)
+    data = record["force_wife_count"]
+    labels = list(data.keys())
+    values = list(data.values())
+    colors = ['#00A86B', '#911F21']  # soft green & muted red
+    plt.style.use('dark_background')
+    fig, ax = plt.subplots(facecolor='#222222')
+    ax.set_facecolor('#222222')
+    def make_autopct(values):
+        def _(pct):
+            total = sum(values)
+            val = int(round(pct * total / 100.0))
+            return f"{val}\n({pct:.3f}%)"
+        return _
+    wedges, texts, autotexts = ax.pie(values,
+        labels=labels, colors=colors, startangle=90,
+        autopct=make_autopct(values), pctdistance=0.5,
+        textprops={'color': 'white', 'weight': 'bold'}
+    )
+    for text in texts: text.set_fontsize(14)
+    for autotext in autotexts: autotext.set_fontsize(12)
+    ax.set_title(f"force_wife_count", color='white', fontsize=16, fontweight='bold')
+    output_path = get_output_path("force_wife_count")
+    plt.savefig(output_path, dpi = 300, bbox_inches = "tight")
+    await wife_status.finish(MessageSegment.image("file:///" + output_path))
 
 wife_bind = on_command("wife bind", aliases={"wife -b"}, priority = 1)
 @wife_bind.handle()

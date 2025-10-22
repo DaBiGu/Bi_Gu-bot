@@ -86,11 +86,11 @@ async def execute_like(user_id: str, bot: Bot) -> str:
     if user_id not in record: record[user_id] = "1970-01-01"
     status = "already_liked"
     if record[user_id] != today: 
-        record[user_id] = today
-        success = True
         try: await bot.call_api("send_like", user_id = int(user_id), times = 10)
         except Exception: status = "like_failed"
-        else: status = "like_succeed"
+        else: 
+            record[user_id] = today
+            status = "like_succeed"
     with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
     return status
 

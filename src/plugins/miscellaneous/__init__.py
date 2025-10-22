@@ -80,17 +80,19 @@ async def recall_handle(event: GroupMessageEvent, bot: Bot):
 _like = global_plugin_ctrl.create_plugin(names = ["like"], description = "qq资料卡点赞", default_on = True)
 like = _like.base_plugin
 
-async def execute_like(user_id: str, bot: Bot) -> bool:
+async def execute_like(user_id: str, bot: Bot) -> str:
     with open(get_IO_path("qq_like", "json"), "r") as f: record = json.load(f)
     today = datetime.datetime.now().strftime("%Y-%m-%d")
     if user_id not in record: record[user_id] = "1970-01-01"
-    success = False
+    status = "already_liked"
     if record[user_id] != today: 
         record[user_id] = today
         success = True
-        await bot.call_api("send_like", user_id = int(user_id), times = 10)
+        try: await bot.call_api("send_like", user_id = int(user_id), times = 10)
+        except Exception: status = "like_failed"
+        else: status = "like_succeed"
     with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
-    return success
+    return status
 
 @like.handle()
 async def like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
@@ -102,10 +104,11 @@ async def like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
             message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 添加成功，现在芙芙每天都会给你的资料卡点赞啦")])
         else: message = Message([MessageSegment.at(event.user_id), MessageSegment.text(" 已经添加过啦, 芙芙会记得点赞的")])
     else:
-        success = await execute_like(str(event.user_id), bot)
+        status = await execute_like(str(event.user_id), bot)
         message = Message([MessageSegment.text("芙芙给你的资料卡点赞啦~一天内请勿重复使用哦"),
-                           MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]) if success \
-                  else Message([MessageSegment.text("芙芙今天已经给你点过赞啦，明天再来吧")])
+                           MessageSegment.image("file:///" + get_asset_path("images/fufu.gif"))]) if status == "like_succeed" \
+                  else Message([MessageSegment.text("芙芙今天已经给你点过赞啦，明天再来吧")]) if status == "already_liked" \
+                  else Message([MessageSegment.text("点赞失败了，请检查点赞权限设置")])
     with open(get_IO_path("qq_like", "json"), "w") as f: json.dump(record, f)
     await like.finish(message)
 

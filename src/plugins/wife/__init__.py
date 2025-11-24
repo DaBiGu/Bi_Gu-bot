@@ -102,7 +102,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                 if get_force_wife_date(group_id, user_id) != today:
                     if force_target == user_id: force_wife_message = " 强娶失败！不能强娶自己\n"
                     else:
-                        set_force_wife_date(group_id, [user_id])
+                        if force_target not in WIFE_REJECT_LIST: set_force_wife_date(group_id, [user_id])
                         force_wife_random = random.randint(1, 100)
                         cps = cp_record[group_id] if group_id in cp_record else [["0"]]
                         def find_cp(user_id: str):
@@ -175,6 +175,7 @@ async def wife_status_handle():
     labels = list(data.keys())
     values = list(data.values())
     colors = ['#00A86B', '#911F21']  # soft green & muted red
+    plt.style.use('default')
     plt.style.use('dark_background')
     fig, ax = plt.subplots(facecolor='#222222')
     ax.set_facecolor('#222222')

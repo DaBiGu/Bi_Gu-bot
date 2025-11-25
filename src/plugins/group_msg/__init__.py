@@ -287,7 +287,8 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
             message = await draw_gamelist(brief = True)
         else: return
     else: 
-        message = await draw_gamelist()
+        if not await permission(bot, event): message = "由于游戏列表暂时是字符串形式过于冗长，完整版列表仅支持管理员查看。推荐使用'/gamelist -b'查看只有游戏名的简版列表，感谢理解。"
+        else: message = await draw_gamelist()
     with open(gamelist_json_path, "w") as f: json.dump(data, f)
     if message: await gamelist.finish(message)
 

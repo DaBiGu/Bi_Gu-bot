@@ -266,7 +266,9 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                         for user_id in data[group_id][game]:
                             if int(user_id) == event.user_id: continue
                             message += (MessageSegment.at(user_id) + MessageSegment.text(" "))
-                        message += MessageSegment.text(random.choice([f"来玩{game}啦~", f"byd速度上号{game}!", f"杂鱼们赶紧来玩{game}", f"玩牛子不如玩{game}"]))
+                        message += MessageSegment.text(random.choice([f"来玩{game}啦~", f"byd速度上号{game}!", f"杂鱼们赶紧来玩{game}", f"哦内盖 没有{game}的话 哇达西",
+                                                                      f"求求了，来玩{game}吧", f"约你打{game}，又不是抢你钱，总不来是什么意思",
+                                                                      f"不和我玩{game}是吧我啃你辟谷啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃"]))
             else: return
         else: return
     else: 

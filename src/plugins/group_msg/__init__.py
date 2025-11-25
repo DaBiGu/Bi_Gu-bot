@@ -282,10 +282,10 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                                                                       f"不和我玩{game}是吧我啃你辟谷啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃"]))
             else: return
         elif "-b" in cmd_params:
-            message = draw_gamelist(brief = True)
+            message = await draw_gamelist(brief = True)
         else: return
     else: 
-        message = draw_gamelist()
+        message = await draw_gamelist()
     with open(gamelist_json_path, "w") as f: json.dump(data, f)
     if message: await gamelist.finish(message)
 

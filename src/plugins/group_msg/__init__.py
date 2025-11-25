@@ -236,8 +236,8 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
             if brief: message = "====== 本群游戏列表 ======\n" + ", ".join([str(game) for game in data[group_id]])
             else:
                 message = "====== 本群游戏列表 ======"
-            for game in data[group_id]: 
-                message += f"\n{game}: " + ", ".join([nicknames[int(user_id)] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
+                for game in data[group_id]: 
+                    message += f"\n{game}: " + ", ".join([nicknames[int(user_id)] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
         return message
 
     message = None

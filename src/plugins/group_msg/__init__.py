@@ -227,6 +227,17 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
     cmd_params = args.extract_plain_text()
     if _gamelist.check_base_plugin_functions(cmd_params): return
     with open(gamelist_json_path, "r") as f: data = json.load(f)
+    async def draw_gamelist(brief: bool = False) -> str:
+        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+        nicknames = {}
+        for member in group_members_raw: nicknames[member["user_id"]] = member["nickname"]
+        if group_id not in data: message = "本群暂无游戏列表"
+        else:
+            message = "====== 本群游戏列表 ======\n" if brief else "====== 本群游戏列表 ======"
+            for game in data[group_id]: 
+                message += str(game) if brief else f"\n{game}: " + ", ".join([nicknames[int(user_id)] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
+        return message
+
     message = None
     if cmd_params:
         if " " in cmd_params:
@@ -270,16 +281,11 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                                                                       f"求求了，来玩{game}吧", f"约你打{game}，又不是抢你钱，总不来是什么意思",
                                                                       f"不和我玩{game}是吧我啃你辟谷啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃"]))
             else: return
+        elif "-b" in cmd_params:
+            message = draw_gamelist(brief = True)
         else: return
     else: 
-        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
-        nicknames = {}
-        for member in group_members_raw: nicknames[member["user_id"]] = member["nickname"]
-        if group_id not in data: message = "本群暂无游戏列表"
-        else:
-            message = "====== 本群游戏列表 ======"
-            for game in data[group_id]: 
-                message += f"\n{game}: " + ", ".join([nicknames[int(user_id)] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
+        message = draw_gamelist()
     with open(gamelist_json_path, "w") as f: json.dump(data, f)
     if message: await gamelist.finish(message)
 

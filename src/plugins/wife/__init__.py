@@ -27,6 +27,7 @@ wife_today_json_path = get_IO_path("wife_record_today", "json")
 wife_all_json_path = get_IO_path("wife_record_all", "json")
 wife_cp_json_path = get_IO_path("wife_record_cp", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
+luckiness_json_path = get_IO_path("luckiness", "json")
 
 wife_ctrl = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], description = "群老婆",
                                          help_info = """
@@ -56,6 +57,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     with open(wife_all_json_path, "r") as f: _record = json.load(f)
     with open(wife_cp_json_path, "r") as f: cp_record = json.load(f)
     with open(last_sent_time_json_path, "r") as f: last_sent_time = json.load(f)
+    with open(luckiness_json_path, "r") as f: luckiness_record = json.load(f)
     def update_wife_count(group_id: str, user_ids: List[str], delete: bool):
         if group_id not in _record: _record[group_id] = {}
         for user_id in user_ids:
@@ -71,6 +73,10 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
         for user_id in user_ids: _record[group_id][user_id]["last_force_wife_date"] = today
     def get_force_wife_date(group_id: str, user_id: str):
         return _record[group_id][user_id]["last_force_wife_date"]
+    def calculate_luckiness(date: str, user_id: str) -> int:
+        if date not in luckiness_record: return 25
+        if user_id not in luckiness_record[date]: return 25
+        return luckiness_record[date][user_id]["love"] * 0.1 + 25
     if today not in record: record[today] = {}
     if group_id not in record[today]: record[today][group_id] = {}
     if user_id in record[today][group_id]:
@@ -112,7 +118,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                         if find_cp(force_target):
                             force_wife_random = -1 if user_id == find_cp(force_target) else 114514
                         if force_target in WIFE_REJECT_LIST: force_wife_random = 1919810
-                        if force_wife_random <= 25:
+                        if force_wife_random <= calculate_luckiness(today, user_id):
                             force_wife_message = " 强娶成功！"
                             update_force_wife_count(succeed = True)
                             if user_id in record[today][group_id]: 

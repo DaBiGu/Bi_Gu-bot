@@ -175,8 +175,7 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
             _wife_count = record[group_id][user_id]["wife_count"]
             force_count = record[group_id][user_id]["force_count"]
             forced_count = record[group_id][user_id]["forced_count"]
-    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{_wife_count}次群友的老婆了, \
-                                                               自2025-12-22以来强娶成功了{force_count}次, 被强娶成功了{forced_count}次，可喜可贺")
+    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{_wife_count}次群友的老婆了, 自2025-12-22以来强娶成功了{force_count}次, 被强娶成功了{forced_count}次, 可喜可贺")
     await wife_count.finish(message = message)
 
 wife_status = on_command("wife status")

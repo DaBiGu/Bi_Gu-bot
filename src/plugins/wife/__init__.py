@@ -61,15 +61,18 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     def update_wife_count(group_id: str, user_ids: List[str], delete: bool):
         if group_id not in _record: _record[group_id] = {}
         for user_id in user_ids:
-            if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "last_force_wife_date": "1970-01-01"}
+            if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "force_count": 0, "forced_count": 0, "last_force_wife_date": "1970-01-01"}
             _record[group_id][user_id]["wife_count"] += -1 if delete else 1
-    def update_force_wife_count(succeed: bool):
-        if succeed: _record["force_wife_count"]["success"] += 1
+    def update_force_wife_count(group_id: str, user_id: str, force_target: str, succeed: bool):
+        if succeed: 
+            _record["force_wife_count"]["success"] += 1
+            _record[group_id][user_id]["force_count"] += 1
+            _record[group_id][force_target]["forced_count"] += 1
         else: _record["force_wife_count"]["fail"] += 1
     def set_force_wife_date(group_id: str, user_ids: List[str]):
         if group_id not in _record: _record[group_id] = {}
         for user_id in user_ids:
-            if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "last_force_wife_date": "1970-01-01"}
+            if user_id not in _record[group_id]: _record[group_id][user_id] = {"wife_count": 0, "force_count": 0, "forced_count": 0, "last_force_wife_date": "1970-01-01"}
         for user_id in user_ids: _record[group_id][user_id]["last_force_wife_date"] = today
     def get_force_wife_date(group_id: str, user_id: str):
         return _record[group_id][user_id]["last_force_wife_date"]
@@ -120,7 +123,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                         if force_target in WIFE_REJECT_LIST: force_wife_random = 1919810
                         if force_wife_random <= calculate_luckiness(today, user_id):
                             force_wife_message = " 强娶成功！"
-                            update_force_wife_count(succeed = True)
+                            update_force_wife_count(group_id, user_id, force_target, succeed = True)
                             if user_id in record[today][group_id]: 
                                 original_wife = record[today][group_id][user_id] # get B
                                 for _ in [user_id, original_wife]: del record[today][group_id][_] # delete A to B, B to A
@@ -138,7 +141,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                         elif force_wife_random == 114514: force_wife_message = " 强娶失败！坚决抵制牛头人行为\n"
                         else: 
                             force_wife_message = " 强娶失败!"
-                            if force_wife_random != 1919810: update_force_wife_count(succeed = False)
+                            if force_wife_random != 1919810: update_force_wife_count(group_id, user_id, force_target, succeed = False)
                 else: force_wife_message = " 强娶失败！今天已经强娶过了\n"
             else: force_wife_message = " 强娶失败！找不到对象: 请@要强娶的群友\n"
         if "-s" in option: 
@@ -169,8 +172,11 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
     with open(wife_all_json_path, "r") as f: record = json.load(f)
     if group_id in record:
         if user_id in record[group_id]:
-            count = record[group_id][user_id]["wife_count"]
-    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{count}次群友的老婆了, 可喜可贺")
+            wife_count = record[group_id][user_id]["wife_count"]
+            force_count = record[group_id][user_id]["force_count"]
+            forced_count = record[group_id][user_id]["forced_count"]
+    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{wife_count}次群友的老婆了, \
+                                                               自2025-12-22以来强娶成功了{force_count}次, 被强娶成功了{forced_count}次，可喜可贺")
     await wife_count.finish(message = message)
 
 wife_status = on_command("wife status")

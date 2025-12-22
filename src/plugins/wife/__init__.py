@@ -5,7 +5,7 @@ from nonebot.params import CommandArg
 from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageSegment, Message
 from utils.utils import get_output_path, get_IO_path
-
+from utils.draw_bargraph import draw_bargraph
 from utils import global_plugin_ctrl
 
 from .config import Config
@@ -162,9 +162,9 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
     with open(wife_all_json_path, "w") as f: json.dump(_record, f)
     await wife.finish(message = message)
 
-wife_count = on_command("rbq", aliases={"群魅魔"})
+wife_count = on_command("rbq", aliases={"群魅魔"}, priority = 2)
 @wife_count.handle()
-async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
+async def wife_count_handle(event: GroupMessageEvent):
     if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_count.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
@@ -178,9 +178,25 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
     message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{_wife_count}次群友的老婆了, 自2025-12-22以来强娶成功了{force_count}次, 被强娶成功了{forced_count}次, 可喜可贺")
     await wife_count.finish(message = message)
 
-wife_status = on_command("wife status")
+wife_count_list = on_command("rbq list", priority = 1)
+@wife_count_list.handle()
+async def wife_count_list_handle(bot: Bot,event: GroupMessageEvent):
+    if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_count_list.finish("该插件在本群中已关闭") 
+    group_id = str(event.group_id)
+    nicknames = {}
+    group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
+    for member in group_members_raw:
+        nicknames[member["user_id"]] = member["nickname"]
+    with open(wife_all_json_path, "r") as f: record = json.load(f)
+    sorted_wife_count = dict(sorted([(user_id, user_data.get("wife_count", 0)) for user_id, user_data in record[group_id].items()], key = lambda x: x[1], reverse = True))
+    if len(sorted_wife_count) > 10: sorted_wife_count = dict(list(sorted_wife_count.items())[:10])
+    message = await draw_bargraph(sorted_wife_count, '你群top10群老婆排行榜', '成为群老婆次数', nicknames)
+    await wife_count_list.finish(message = message)
+
+wife_status = on_command("wife status", priority = 1)
 @wife_status.handle()
-async def wife_status_handle():
+async def wife_status_handle(event: GroupMessageEvent):
+    if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_status.finish("该插件在本群中已关闭")
     with open(wife_all_json_path, "r") as f: record = json.load(f)
     data = record["force_wife_count"]
     labels = list(data.keys())

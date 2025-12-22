@@ -7,8 +7,9 @@ from nonebot.permission import SUPERUSER
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from .config import Config
-from .chatcount import get_chatcount, draw_chatcount_bargraph
+from .chatcount import get_chatcount
 from utils.utils import get_IO_path, random_trigger
+from utils.draw_bargraph import draw_bargraph
 from typing import Dict, Any, Optional
 
 from utils import global_plugin_ctrl
@@ -111,11 +112,11 @@ async def chatcount_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg
             kawaii = False if _[-1] == "-o" else True
         else: time_range, kawaii = cmd_params, True
         if time_range in ["today", "yesterday", "week", "month", "year", "last week", "last month"]: 
-            message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), time_range), time_range, nicknames, kawaii)
+            message = await draw_bargraph(get_chatcount(str(event.group_id), time_range), '你群{time_range}top10 b话王', 'b话量', nicknames, time_range, kawaii)
         elif time_range == "-o":
-            message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames, kawaii = False)
+            message = await draw_bargraph(get_chatcount(str(event.group_id), "week"), '你群本周top10 b话王', 'b话量', nicknames, "week", kawaii = False)
         else: message = "不支持的时间范围\n目前支持today|yesterday|(last) week|(last) month|year"
-    else: message = await draw_chatcount_bargraph(get_chatcount(str(event.group_id), "week"), "week", nicknames)
+    else: message = await draw_bargraph(get_chatcount(str(event.group_id), "week"), '你群本周top10 b话王', 'b话量', nicknames, "week")
     await chatcount.finish(message = message)
 
 antirecall = on_notice()

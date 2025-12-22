@@ -70,7 +70,7 @@ async def draw_bargraph(data: Dict[str, int], title: str, ylabel: str, nicknames
     plt.title(title, fontproperties = get_fontprop(font_path, 16), loc='center', x=0.5, y=1.05)
     if support_time_range:
         now = "23:59" if time_range in ["yesterday", "last week", "last month"] else datetime.datetime.now().strftime("%H:%M")
-    fig.text(0.75, 0.9, f"数据范围: {get_datelist(time_range)[0]} 00:00 至{get_datelist(time_range)[-1]} {now}", ha='center', fontproperties = get_fontprop(font_path, 12))
+        fig.text(0.75, 0.9, f"数据范围: {get_datelist(time_range)[0]} 00:00 至{get_datelist(time_range)[-1]} {now}", ha='center', fontproperties = get_fontprop(font_path, 12))
     plt.xticks(rotation=45)
     output_path = get_output_path("bargraph")
     plt.savefig(output_path, dpi = 300, bbox_inches = "tight")

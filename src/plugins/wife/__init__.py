@@ -168,7 +168,7 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
     if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_count.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
-    count = 0
+    wife_count, force_count, forced_count = 0, 0, 0
     with open(wife_all_json_path, "r") as f: record = json.load(f)
     if group_id in record:
         if user_id in record[group_id]:

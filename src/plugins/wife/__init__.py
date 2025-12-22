@@ -168,14 +168,14 @@ async def wife_count_handle(bot: Bot, event: GroupMessageEvent):
     if not wife_ctrl.check_plugin_ctrl(event.group_id): await wife_count.finish("该插件在本群中已关闭")
     group_id = str(event.group_id)
     user_id = str(event.user_id)
-    wife_count, force_count, forced_count = 0, 0, 0
+    _wife_count, force_count, forced_count = 0, 0, 0
     with open(wife_all_json_path, "r") as f: record = json.load(f)
     if group_id in record:
         if user_id in record[group_id]:
-            wife_count = record[group_id][user_id]["wife_count"]
+            _wife_count = record[group_id][user_id]["wife_count"]
             force_count = record[group_id][user_id]["force_count"]
             forced_count = record[group_id][user_id]["forced_count"]
-    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{wife_count}次群友的老婆了, \
+    message = MessageSegment.at(user_id) + MessageSegment.text(f" 自2024-09-21以来已经成为{_wife_count}次群友的老婆了, \
                                                                自2025-12-22以来强娶成功了{force_count}次, 被强娶成功了{forced_count}次，可喜可贺")
     await wife_count.finish(message = message)
 

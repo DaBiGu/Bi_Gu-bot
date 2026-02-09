@@ -42,7 +42,7 @@ wife_ctrl = global_plugin_ctrl.create_plugin(names = ["wife", "群老婆"], desc
 
 wife = wife_ctrl.base_plugin
 
-WIFE_REJECT_LIST = ["1968539712"]
+WIFE_REJECT_LIST = ["1968539712", "213235871"]
 
 @wife.handle()
 async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):

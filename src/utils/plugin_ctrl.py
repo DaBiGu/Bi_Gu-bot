@@ -29,13 +29,13 @@ class Plugin:
                     if not await permission(bot, event): await self.base_plugin.finish("你没有权限执行此操作")
                     if (group_id not in group_list and not default_on) or (group_id in group_list and default_on):
                         group_list.append(group_id) if not default_on else group_list.remove(group_id)
-                        await self.base_plugin.send(f"已成功开启本群{description}")
+                        await self.base_plugin.finish(f"已成功开启本群{description}")
                     else: await self.base_plugin.finish(f"本群{description}已处于开启状态，无需重复开启")
                 elif cmd_params == "off":
                     if not await permission(bot, event): await self.base_plugin.finish("你没有权限执行此操作")
                     if (group_id in group_list and not default_on) or (group_id not in group_list and default_on):
                         group_list.remove(group_id) if not default_on else group_list.append(group_id)
-                        await self.base_plugin.send(f"已成功关闭本群{description}")
+                        await self.base_plugin.finish(f"已成功关闭本群{description}")
                     else: await self.base_plugin.finish(f"本群{description}已处于关闭状态，无需重复关闭")
                 elif cmd_params == "help":
                     await self.base_plugin.finish(textwrap.dedent(self.help_info).strip())

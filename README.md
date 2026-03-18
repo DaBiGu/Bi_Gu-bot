@@ -28,6 +28,7 @@
 * `/gamelist|gl` 查看本群游戏列表
 * `/gamelist add|remove [game]` 本群游戏列表添加/删除`[game]` (需要管理员权限)
 * `/gamelist join|quit [game]` 加入/退出`[game]`
+* `/gamelist summon [game]` @本群中在`[game]`列表中的群友来玩
 
 ## `group_msg`
 * 自动复读群内消息，每2条重复消息复读一次 [40%概率触发]
@@ -47,8 +48,14 @@
 * 对图片回复`/对称 左|右|上|下 [percent]` 将图片(以`[percent]`%为轴)进行对称翻转
 * `/ba [left] [right]` 生成自定义ba风格标题
 
+## `like`
+* `/like` 让芙芙给你的qq资料卡点赞吧
+* `/like auto` 每天自动点赞 (通常为服务器时间4am)
+
 ## `mahjong`
 * `/qh [username]` 查询`[username]`的近30局雀魂战绩
+* `/qh search [username]` 搜索雀魂玩家`[username]`
+* `/qh add|bind [user_id]` 添加雀魂账号`[user_id]`到列表，群内自动播报最新战绩
 * 数据来自于[雀魂牌谱屋](https://amae-koromo.sapk.ch/)
 
 ## `ncm`
@@ -109,8 +116,6 @@
 * `/help` 查看目前支持的指令列表
 * `/ys|今日运势` 查看今日运势
 * `/早安` 对芙芙说早安吧
-* `/like` 让芙芙给你的qq资料卡点赞吧
-* `/like auto` 每天自动点赞 (通常为服务器时间4am)
 * `/plugin count|pc` 查看各插件使用量
 * `/update log` 查看本项目更新日志
 * `/update` 更新芙芙 (需要`SUPERUSER`权限)

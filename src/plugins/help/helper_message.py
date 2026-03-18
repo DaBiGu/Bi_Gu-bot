@@ -36,6 +36,8 @@ class Helper_Messages:
                                 
                                 ———————— mahjong ————————
                                 /qh [username] 查看[username]的近30局雀魂战绩
+                                /qh search [username] 搜索雀魂玩家[username]
+                                /qh add|bind [user_id] 添加雀魂账号[user_id]到列表，群内自动播报最新战绩
                                 
                                 ———————— ncm ————————
                                 /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲
@@ -158,22 +160,31 @@ class Helper_Messages:
                             """
                             Nov 3 2024: 支持绑定群cp 
                             Nov 8 2024: 更好的网易云音乐歌曲搜索卡片
-                            Nov 17 2024 支持模糊搜索phigros歌曲
-                            Nov 20 2024 支持查询用户github contributions chart
-                            Nov 23 2024 支持查看昨日群发言排行
-                            Nov 26 2024 增加用户黑名单
-                            
-                            Dec 18 2024 给插件增加全局开关模块
-                            Dec 21 2024 重构插件创建方式
-                            Dec 22 2024 给每个插件添加单独的帮助信息; 支持qq资料卡点赞
-                            Dec 25 2024 支持查看用户steam总游戏时长/游玩时长top 10
-                            Dec 27 2024 支持查看bot运行状态
-                            Dec 30 2024 支持查看上周/上月b话量统计
+                            Nov 17 2024: 支持模糊搜索phigros歌曲
+                            Nov 20 2024: 支持查询用户github contributions chart
+                            Nov 23 2024: 支持查看昨日群发言排行
+                            Nov 26 2024: 增加用户黑名单
 
-                            Jan 3 2025 支持统计各插件使用量
-                            Jan 4 2025 支持获取httpcat meme
-                            Jan 19 2025 自动更新phigros资源
-                            Jan 23 2025 自动资料卡点赞; 支持群友游戏列表管理
+                            Dec 18 2024: 给插件增加全局开关模块
+                            Dec 21 2024: 重构插件创建方式
+                            Dec 22 2024: 给每个插件添加单独的帮助信息; 支持qq资料卡点赞
+                            Dec 25 2024: 支持查看用户steam总游戏时长/游玩时长top 10
+                            Dec 27 2024: 支持查看bot运行状态
+                            Dec 30 2024: 支持查看上周/上月b话量统计
+
+                            Jan 3 2025: 支持统计各插件使用量
+                            Jan 4 2025: 支持获取httpcat meme
+                            Jan 19 2025: 自动更新phigros资源
+                            Jan 23 2025: 自动资料卡点赞; 支持群友游戏列表管理
+                            Feb 1 2025: 支持召集游戏列表中玩某个游戏的群友
+                            Feb 13 2025: 更新bot运行状态统计
+                            Mar 13 2025: 支持crypto1/5分钟k线图
+                            Apr 4 2025: 支持自动播报雀魂对局信息
+                            Jun 7 2025: 支持雀魂搜索玩家时获取当前pt
+                            Sep 27 2025: 支持雀魂三麻搜索
+                            Oct 22 2025: 支持查看群内强娶成功率统计
+                            Nov 25 2025: 支持简短的群游戏列表显示
+                            Dec 14 2025: 将爱情运势加入强娶成功率
                             """]
     
     def get_helper_messages(self):

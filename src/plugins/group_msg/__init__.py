@@ -215,6 +215,7 @@ _gamelist = global_plugin_ctrl.create_plugin(names = ["gamelist", "gl"], descrip
                                                             /gamelist|gl 查看本群游戏列表
                                                             /gamelist add|remove [game] 添加/删除游戏 (需要管理员权限)
                                                             /gamelist join|quit [game] 加入/退出[game]列表 
+                                                            /gamelist summon [game] @本群中在[game]列表中的群友来玩
                                                           """,
                                              default_on = True, priority = 1)
 

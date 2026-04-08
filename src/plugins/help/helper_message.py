@@ -33,6 +33,7 @@ class Helper_Messages:
                                 /悲报 [content] 绘制内容为[content]的悲报
                                 对图片回复 /对称 左|右|上|下 [percent] 将图片(以[percent]%为轴)进行对称翻转
                                 /ba [left] [right] 生成自定义ba风格标题
+                                对群内某条消息回复 /q 生成引用消息卡片图
                                 
                                 ———————— mahjong ————————
                                 /qh [username] 查看[username]的近30局雀魂战绩
@@ -185,6 +186,8 @@ class Helper_Messages:
                             Oct 22 2025: 支持查看群内强娶成功率统计
                             Nov 25 2025: 支持简短的群游戏列表显示
                             Dec 14 2025: 将爱情运势加入强娶成功率
+                            
+                            Apr 9 2026: 支持/q引用消息生成卡片图
                             """]
     
     def get_helper_messages(self):

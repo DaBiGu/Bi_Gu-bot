@@ -1,7 +1,7 @@
 from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
-from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message, MessageSegment
 from utils.utils import get_output_path
 from utils.cooldown import Cooldown
 
@@ -9,6 +9,7 @@ from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
 from .symmetric import _symmetric
 from .gen_ba import gen_ba
+from .quote import draw_quote_from_reply
 
 from utils import global_plugin_ctrl
 
@@ -96,4 +97,19 @@ async def ba_handle(event: GroupMessageEvent, args = CommandArg()):
         message = await gen_ba(left, right)
         await ba.finish(message = message)
 
-xb.append_handler(xb_handle); bb.append_handler(bb_handle); symmetric.append_handler(symmetric_handle); ba.append_handler(ba_handle)
+_q = global_plugin_ctrl.create_plugin(names = ["q", "quote"], description = "引用消息生成卡片",
+                                      help_info = "/q 对群内某条消息进行回复后发送该指令，生成引用图",
+                                      default_on = True, priority = 1)
+q = _q.base_plugin
+
+@q.handle()
+async def q_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    if not _q.check_plugin_ctrl(event.group_id): await q.finish("该插件在本群中已关闭")
+    if _q.check_base_plugin_functions(cmd_params := args.extract_plain_text()): return
+    if cmd_params.strip():
+        await q.finish("不需要额外参数，请对消息回复后直接发送/q")
+    message = await draw_quote_from_reply(bot, event)
+    await q.finish(message = message)
+
+xb.append_handler(xb_handle); bb.append_handler(bb_handle); symmetric.append_handler(symmetric_handle)
+ba.append_handler(ba_handle); q.append_handler(q_handle)

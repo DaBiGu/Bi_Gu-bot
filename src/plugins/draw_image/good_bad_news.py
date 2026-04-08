@@ -1,28 +1,11 @@
-import cv2, jieba
+import cv2
 import numpy as np
 from PIL import ImageFont, ImageDraw, Image
 from typing import List
 from utils.fonts import get_font
 from utils.utils import get_output_path, get_asset_path
+from utils.text_layout import tokenize_text, wrap_tokens_in_box
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
-
-def auto_warp(text_list: List[str], font: ImageFont, image: Image, force: bool = False) -> str | None:
-    def judge_shape(_text: str) -> tuple[bool, bool]:
-        bbox = draw.textbbox((0, 0), _text, font = font, align = "center")
-        [width, height] = [bbox[2] - bbox[0], bbox[3] - bbox[1]]
-        return [True if width > 3 * image.size[0] // 4 else False, True if height > 550 else False]
-    text_list = text_list.copy()
-    draw = ImageDraw.Draw(image)
-    result = [""]
-    while text_list:
-        current_text = result[-1] + text_list[0]
-        if judge_shape(current_text)[0]:
-            result.append(text_list.pop(0))
-            if judge_shape("\n".join(result))[1]:
-                return "\n".join(result[:-1]) if force else None
-        else:
-            result[-1] += text_list.pop(0)
-    return "\n".join(result)
 
 def multiply_image(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
     return ((img1/255) * (img2/255) * 255).astype(np.uint8)
@@ -35,31 +18,27 @@ def overlay_image(upper: np.ndarray, lower: np.ndarray) -> np.ndarray:
     lower_bg = cv2.bitwise_and(lower, lower, mask = mask_inv)
     return cv2.add(upper_fg, lower_bg)
 
-def regularize_cut(text_cut: List[str]) -> List[str]:
-    ret = []
-    for phrase in text_cut:
-        while len(phrase) > 20:
-            ret.append(phrase[:20])
-            phrase = phrase[20:]
-        ret.append(phrase)
-    return ret
-
 def get_text_mask(text: str, img: np.ndarray) -> np.ndarray:
     shape = img.shape
     img = np.ones(shape, dtype = np.uint8) * 255
     center_pos = (shape[1] // 2, shape[0] * 9 // 20)
     scales = [96, 64, 48, 32, 24, 16]
     auto_scale = 0
-    text_cut = regularize_cut(jieba.lcut(text))
+    text_cut = tokenize_text(text, use_jieba = True, max_token_len = 20)
     while True:
         font = get_font("xi_bei-bao", scales[auto_scale])
         img_pil = Image.fromarray(img)
         draw = ImageDraw.Draw(img_pil)
-        text_wrap = auto_warp(text_cut, font, img_pil)
+        text_wrap = wrap_tokens_in_box(text_cut, font, img_pil,
+                                       max_line_width = 3 * img_pil.size[0] // 4,
+                                       max_total_height = 550)
         if text_wrap is None:
             if auto_scale < len(scales) - 1: auto_scale += 1
             else:
-                text_wrap = auto_warp(text_cut, font, img_pil, force = True)
+                text_wrap = wrap_tokens_in_box(text_cut, font, img_pil,
+                                               max_line_width = 3 * img_pil.size[0] // 4,
+                                               max_total_height = 550,
+                                               force = True)
                 break
         else: break
     bbox = draw.textbbox(center_pos, text_wrap, font = font, align = "center")

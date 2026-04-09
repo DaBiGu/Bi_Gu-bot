@@ -10,7 +10,8 @@ FONTS = {"noto-sans": os.getcwd() + "/src/assets/fonts/NotoSansCJKsc-VF.otf",
          "HYWenHei-65W": os.getcwd() + "/src/assets/fonts/HYWenHei-65W.ttf",
          "HYWenHei-85W": os.getcwd() + "/src/assets/fonts/HYWenHei-85W.otf",
          "Saira": os.getcwd() + "/src/assets/fonts/Saira-Regular.ttf",
-         "sourcehan-sans": os.getcwd() + "/src/assets/fonts/SourceHanSansSC-Regular.ttf",}
+         "sourcehan-sans": os.getcwd() + "/src/assets/fonts/SourceHanSansSC-Regular.ttf",
+         "noto-color-emoji": os.getcwd() + "/src/assets/fonts/NotoColorEmoji-Regular.ttf",}
 
 def get_font_path(font_name: str) -> str:
     return FONTS[font_name]
@@ -19,3 +20,8 @@ def get_font(font_name: str, size: int, weight: int = None) -> ImageFont:
     font = ImageFont.truetype(FONTS[font_name], size)
     if weight: font.set_variation_by_axes([weight])
     return font
+
+def get_embedded_font(font_name_1: str, font_name_2: str, size: int, weight: int = None) -> ImageFont:
+    font1 = get_font(font_name_1, size, weight)
+    font2 = get_font(font_name_2, size, weight)
+    return ImageFont.FreeTypeFontFamily(font1, font2)

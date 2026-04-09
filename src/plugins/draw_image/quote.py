@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment, GroupMessageEvent
 
-from utils.fonts import get_font
+from utils.fonts import get_font, get_embedded_font
 from utils.text_layout import pick_font_and_wrap_by_width
 from utils.utils import get_copyright_str, get_output_path
 
@@ -83,7 +83,7 @@ def fix_tail_single_char(lines: list[str], draw: ImageDraw.ImageDraw,
 def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str = "") -> Image.Image:
     width, height = image.size
     draw = ImageDraw.Draw(image)
-    name_font = get_font("sourcehan-sans", int(height * 0.08))
+    name_font = get_embedded_font("sourcehan-sans", "noto-color-emoji", size = int(height * 0.08))
     time_font = get_font("sourcehan-sans", int(height * 0.05))
     max_width = int(width * 0.48)
     right_padding = int(width * 0.07)
@@ -91,11 +91,10 @@ def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str =
     text_left = right_edge - max_width
     text = _format_quote_text(text)
     quote_font, lines, line_gap, line_height = pick_font_and_wrap_by_width(
-        text, draw, get_font, "sourcehan-sans",
+        text, draw, get_embedded_font, ("sourcehan-sans", "noto-color-emoji"),
         [int(height * p) for p in [0.16, 0.14, 0.12, 0.10, 0.085, 0.074, 0.064, 0.056, 0.050]],
-        max_width = max_width, max_lines = 4, use_jieba = True,
-        line_gap = int(height * 0.02), max_text_height = int(height * 0.52), min_font_size = 16,
-    )
+        max_width = max_width, max_lines = 10, use_jieba = True,
+        line_gap = int(height * 0.02), max_text_height = int(height * 0.52), min_font_size = 16)
     lines = fix_tail_single_char(lines, draw, quote_font, max_width)
     quote_h = len(lines) * line_height + (len(lines) - 1) * line_gap
     name_h = name_font.getbbox("Ag")[3] - name_font.getbbox("Ag")[1]

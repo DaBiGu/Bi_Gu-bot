@@ -74,18 +74,22 @@ def wrap_text_by_width(text: str, draw: ImageDraw.ImageDraw, font: ImageFont.Ima
     return lines
 
 def pick_font_and_wrap_by_width(text: str, draw: ImageDraw.ImageDraw,
-                                get_font_func: Callable[[str, int], ImageFont.ImageFont],
-                                font_name: str, font_sizes: List[int], max_width: int,
+                                get_font_func: Callable[..., ImageFont.ImageFont],
+                                font_name: str | tuple[str, str], font_sizes: List[int], max_width: int,
                                 max_lines: int = 4, use_jieba: bool = True,
                                 line_gap: int = 0, max_text_height: int | None = None,
                                 min_font_size: int = 16) -> tuple[ImageFont.ImageFont, list[str], int, int]:
+    def build_font(size: int) -> ImageFont.ImageFont:
+        size = max(min_font_size, size)
+        return get_font_func(font_name[0], font_name[1], size) if isinstance(font_name, tuple) else get_font_func(font_name, size)
+
     for size in font_sizes:
-        font = get_font_func(font_name, max(min_font_size, size))
+        font = build_font(size)
         lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
         line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
         text_h = len(lines) * line_height + (len(lines) - 1) * line_gap
         if max_text_height is None or text_h <= max_text_height: return font, lines, line_gap, line_height
-    font = get_font_func(font_name, max(min_font_size, font_sizes[-1]))
+    font = build_font(font_sizes[-1])
     lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
     line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
     return font, lines, line_gap, line_height

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Callable
 
 import jieba
 from PIL import Image, ImageDraw, ImageFont
@@ -72,3 +72,20 @@ def wrap_text_by_width(text: str, draw: ImageDraw.ImageDraw, font: ImageFont.Ima
         clipped[-1] = (clipped[-1] + "...") if clipped[-1] else "..."
         return clipped
     return lines
+
+def pick_font_and_wrap_by_width(text: str, draw: ImageDraw.ImageDraw,
+                                get_font_func: Callable[[str, int], ImageFont.ImageFont],
+                                font_name: str, font_sizes: List[int], max_width: int,
+                                max_lines: int = 4, use_jieba: bool = True,
+                                line_gap: int = 0, max_text_height: int | None = None,
+                                min_font_size: int = 16) -> tuple[ImageFont.ImageFont, list[str], int, int]:
+    for size in font_sizes:
+        font = get_font_func(font_name, max(min_font_size, size))
+        lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
+        line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
+        text_h = len(lines) * line_height + (len(lines) - 1) * line_gap
+        if max_text_height is None or text_h <= max_text_height: return font, lines, line_gap, line_height
+    font = get_font_func(font_name, max(min_font_size, font_sizes[-1]))
+    lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
+    line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
+    return font, lines, line_gap, line_height

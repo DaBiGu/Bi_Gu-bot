@@ -1,5 +1,6 @@
 from io import BytesIO
 from typing import Iterable
+import datetime
 
 import requests, numpy as np
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
@@ -7,7 +8,7 @@ from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
 from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment, GroupMessageEvent
 
 from utils.fonts import get_font
-from utils.text_layout import wrap_text_by_width
+from utils.text_layout import pick_font_and_wrap_by_width
 from utils.utils import get_copyright_str, get_output_path
 
 def load_qq_avatar(qq: int | str, size: int = 640) -> Image.Image:
@@ -53,27 +54,55 @@ def get_arc_fade_mask(width: int, height: int, radius_ratio: float = 3.8,
     alpha = np.where(xs <= (boundary_2d - fade_width), 255.0, np.where(xs >= boundary_2d, 0.0, 255.0 * (boundary_2d - xs) / max(1, fade_width)))
     return Image.fromarray(alpha.astype(np.uint8), mode = "L")
 
-def put_quote_text(image: Image.Image, text: str, nickname: str) -> Image.Image:
+def _format_quote_text(text: str) -> str:
+    text = text.strip()
+    return "「[N/A]」" if not text else text if (text.startswith("「") and text.endswith("」")) else f"「{text}」"
+
+
+def _format_msg_time(raw_time: int | float | None) -> str:
+    if raw_time is None: return ""
+    try: return datetime.datetime.fromtimestamp(int(raw_time)).strftime("%Y-%m-%d %H:%M:%S")
+    except Exception: return ""
+
+
+def fix_tail_single_char(lines: list[str], draw: ImageDraw.ImageDraw,
+                          font: Image.Image, max_width: int) -> list[str]:
+    if len(lines) < 2: return lines
+    tail = lines[-1].strip()
+    if len(tail) != 1: return lines
+    merged = lines[-2] + lines[-1]
+    if draw.textlength(merged, font = font) <= max_width:
+        lines[-2] = merged
+        lines.pop()
+        return lines
+    if len(lines[-2]) >= 2:
+        lines[-1] = lines[-2][-1] + lines[-1]
+        lines[-2] = lines[-2][:-1]
+    return lines
+
+def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str = "") -> Image.Image:
     width, height = image.size
     draw = ImageDraw.Draw(image)
-    quote_font = get_font("sourcehan-sans", int(height * 0.085))
-    name_font = get_font("sourcehan-sans", int(height * 0.06))
+    name_font = get_font("sourcehan-sans", int(height * 0.08))
+    time_font = get_font("sourcehan-sans", int(height * 0.05))
     max_width = int(width * 0.48)
     right_padding = int(width * 0.07)
     right_edge = width - right_padding
     text_left = right_edge - max_width
-    def format_quote_text(text: str) -> str:
-        text = text.strip()
-        return "「[N/A]」" if not text else text if (text.startswith("「") and text.endswith("」")) else f"「{text}」"
-    text = format_quote_text(text)
-    lines = wrap_text_by_width(text, draw, quote_font, max_width = max_width, max_lines = 4, use_jieba = True)
-
-    line_gap = int(height * 0.02)
-    line_height = quote_font.getbbox("测")[3] - quote_font.getbbox("测")[1]
+    text = _format_quote_text(text)
+    quote_font, lines, line_gap, line_height = pick_font_and_wrap_by_width(
+        text, draw, get_font, "sourcehan-sans",
+        [int(height * p) for p in [0.16, 0.14, 0.12, 0.10, 0.085, 0.074, 0.064, 0.056, 0.050]],
+        max_width = max_width, max_lines = 4, use_jieba = True,
+        line_gap = int(height * 0.02), max_text_height = int(height * 0.52), min_font_size = 16,
+    )
+    lines = fix_tail_single_char(lines, draw, quote_font, max_width)
     quote_h = len(lines) * line_height + (len(lines) - 1) * line_gap
     name_h = name_font.getbbox("Ag")[3] - name_font.getbbox("Ag")[1]
-    name_gap = int(height * 0.08)
-    block_h = quote_h + name_gap + name_h
+    time_h = time_font.getbbox("Ag")[3] - time_font.getbbox("Ag")[1] if msg_time else 0
+    name_gap = int(height * 0.07)
+    time_gap = int(height * 0.05) if msg_time else 0
+    block_h = quote_h + name_gap + name_h + time_gap + time_h
     start_y = (height - block_h) // 2
 
     y = start_y
@@ -84,6 +113,10 @@ def put_quote_text(image: Image.Image, text: str, nickname: str) -> Image.Image:
     nickname_text = f"-- {nickname}"
     nickname_w = draw.textlength(nickname_text, font = name_font)
     draw.text((right_edge - nickname_w, y), nickname_text, fill = (130, 130, 130), font = name_font)
+    if msg_time:
+        y += name_h + time_gap
+        time_w = draw.textlength(msg_time, font = time_font)
+        draw.text((right_edge - time_w, y), msg_time, fill = (110, 110, 110), font = time_font)
     '''
     copyright_font = get_font("sourcehan-sans", int(height * 0.036))
     copyright_text = get_copyright_str()
@@ -97,6 +130,7 @@ def put_quote_text(image: Image.Image, text: str, nickname: str) -> Image.Image:
 
 
 def render_quote_card(text: str, nickname: str, qq: int | str,
+                      msg_time: str = "",
                       output_path: str | None = None,
                       size: tuple[int, int] = (2160, 720)) -> str:
     width, height = size
@@ -111,7 +145,7 @@ def render_quote_card(text: str, nickname: str, qq: int | str,
     mask = get_arc_fade_mask(left_width, height, radius_ratio = 7.2,
                              center_y_ratio = 0.60, edge_offset = 36, fade_width = 28)
     quote_img.paste(avatar_panel, (0, 0), mask)
-    quote_img = put_quote_text(quote_img, text, nickname)
+    quote_img = put_quote_text(quote_img, text, nickname, msg_time = msg_time)
 
     output_path = output_path or get_output_path("quote")
     quote_img.save(output_path)
@@ -140,7 +174,8 @@ async def draw_quote_from_reply(bot: Bot, event: GroupMessageEvent) -> Message |
                                     user_id = user_id, no_cache = True)
         nickname = member.get("card") or member.get("nickname") or str(user_id)
         quote_text = extract_plain_text(raw_msg.get("message", []))
-        output_path = render_quote_card(quote_text, nickname, user_id)
+        msg_time = _format_msg_time(raw_msg.get("time"))
+        output_path = render_quote_card(quote_text, nickname, user_id, msg_time = msg_time)
         return Message([MessageSegment.image("file:///" + output_path)])
     except Exception as exc:
         return f"生成引用图失败: {exc}"

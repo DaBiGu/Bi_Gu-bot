@@ -1,10 +1,9 @@
 import cv2
 import numpy as np
-from PIL import ImageFont, ImageDraw, Image
-from typing import List
+from PIL import ImageDraw, Image
 from utils.fonts import get_font
 from utils.utils import get_output_path, get_asset_path
-from utils.text_layout import tokenize_text, wrap_tokens_in_box
+from utils.text_layout import pick_font_and_wrap_by_width
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 
 def multiply_image(img1: np.ndarray, img2: np.ndarray) -> np.ndarray:
@@ -23,28 +22,22 @@ def get_text_mask(text: str, img: np.ndarray) -> np.ndarray:
     img = np.ones(shape, dtype = np.uint8) * 255
     center_pos = (shape[1] // 2, shape[0] * 9 // 20)
     scales = [96, 64, 48, 32, 24, 16]
-    auto_scale = 0
-    text_cut = tokenize_text(text, use_jieba = True, max_token_len = 20)
-    while True:
-        font = get_font("xi_bei-bao", scales[auto_scale])
-        img_pil = Image.fromarray(img)
-        draw = ImageDraw.Draw(img_pil)
-        text_wrap = wrap_tokens_in_box(text_cut, font, img_pil,
-                                       max_line_width = 3 * img_pil.size[0] // 4,
-                                       max_total_height = 550)
-        if text_wrap is None:
-            if auto_scale < len(scales) - 1: auto_scale += 1
-            else:
-                text_wrap = wrap_tokens_in_box(text_cut, font, img_pil,
-                                               max_line_width = 3 * img_pil.size[0] // 4,
-                                               max_total_height = 550,
-                                               force = True)
-                break
-        else: break
-    bbox = draw.textbbox(center_pos, text_wrap, font = font, align = "center")
-    width, height = bbox[2] - bbox[0], bbox[3] - bbox[1]
-    center_pos = (center_pos[0] - width // 2, center_pos[1] - height // 3)
-    draw.text(center_pos, text_wrap, fill = (35, 48, 220), font = font, align = "center")
+    img_pil = Image.fromarray(img)
+    draw = ImageDraw.Draw(img_pil)
+    font, lines, line_gap, line_height = pick_font_and_wrap_by_width(
+        text, draw, get_font, "xi_bei-bao", scales,
+        max_width = 3 * img_pil.size[0] // 4,
+        max_lines = 12, use_jieba = True,
+        line_gap = 0, max_text_height = 550, min_font_size = 16,
+    )
+
+    text_h = len(lines) * line_height + (len(lines) - 1) * line_gap
+    y = center_pos[1] - text_h // 3
+    for line in lines:
+        line_w = draw.textlength(line, font = font)
+        draw.text((center_pos[0] - line_w // 2, y), line, fill = (35, 48, 220), font = font)
+        y += line_height + line_gap
+
     img = np.asarray(img_pil)
     img_cny = cv2.Canny(img, 100, 200)
     contour = cv2.findContours(img_cny, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)

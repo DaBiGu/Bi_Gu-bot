@@ -34,6 +34,9 @@ class Helper_Messages:
                                 对图片回复 /对称 左|右|上|下 [percent] 将图片(以[percent]%为轴)进行对称翻转
                                 /ba [left] [right] 生成自定义ba风格标题
                                 对群内某条消息回复 /q 生成引用消息卡片图
+                                /q -s [keyword] 随机返回本群包含关键词的引用卡片
+                                /q -s [keyword] -all 以文本形式返回本群所有包含关键词的引用内容
+                                /q -id [id] 按编号返回对应引用卡片(若不在本群则提示)
                                 
                                 ———————— mahjong ————————
                                 /qh [username] 查看[username]的近30局雀魂战绩
@@ -188,6 +191,7 @@ class Helper_Messages:
                             Dec 14 2025: 将爱情运势加入强娶成功率
                             
                             Apr 9 2026: 支持/q引用消息生成卡片图
+                            Apr 15 2026: 支持按关键词/索引搜索引用记录
                             """]
     
     def get_helper_messages(self):

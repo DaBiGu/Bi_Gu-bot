@@ -229,10 +229,11 @@ def extract_plain_text(message_segments: Iterable[dict]) -> str:
 
 
 async def get_member_nickname(bot: Bot, group_id: int, user_id: int | str) -> str:
-    group_members_raw = await bot.call_api("get_group_member_list", group_id = group_id)
-    for member in group_members_raw:
-        if str(member.get("user_id")) == str(user_id): return member["nickname"]
-    return str(user_id)
+    member = await bot.call_api("get_group_member_info", group_id = group_id, user_id = user_id, no_cache = True)
+    nickname = str(user_id)
+    try: nickname = member.get("card") or member.get("nickname") or str(user_id)
+    except Exception: nickname = str(user_id)
+    return nickname
 
 async def draw_quote_from_reply(bot: Bot, event: GroupMessageEvent) -> Message | str:
     if not event.reply: return "请先回复一条群消息，再使用 /q"

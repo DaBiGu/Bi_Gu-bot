@@ -1,0 +1,113 @@
+:root {
+    --bg: #0f1220;
+    --panel: #171a2b;
+    --panel-2: #1f2338;
+    --text: #f4f6ff;
+    --muted: #aeb5d0;
+    --line: rgba(255,255,255,0.08);
+    --accent: #70b8ff;
+}
+* { box-sizing: border-box; }
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: radial-gradient(1200px 500px at 20% -20%, #273158 0%, transparent 70%),
+                radial-gradient(1200px 500px at 100% 120%, #1b5c63 0%, transparent 72%),
+                var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+.root {
+    width: 1580px;
+    margin: 0;
+    padding: 42px 44px 30px;
+}
+.header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 26px;
+    gap: 16px;
+}
+.title {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    color: var(--text);
+}
+.subtitle {
+    font-size: 22px;
+    color: var(--muted);
+}
+.keyword {
+    color: var(--accent);
+    font-size: 22px;
+    font-weight: 700;
+    margin-left: 8px;
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+.item {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 18px;
+    min-height: 186px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%);
+    padding: 12px;
+    overflow: hidden;
+}
+.cover {
+    width: 170px;
+    height: 170px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #2e3454;
+}
+.meta {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding-right: 8px;
+}
+.meta .title {
+    font-size: 31px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #fff;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+.artist {
+    color: var(--muted);
+    font-size: 24px;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+}
+.song-id {
+    color: #d8def8;
+    font-size: 22px;
+    letter-spacing: 0.2px;
+}
+.footer {
+    margin-top: 22px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 18px;
+}

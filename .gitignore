@@ -142,7 +142,9 @@ dmypy.json
 # End of https://www.toptal.com/developers/gitignore/api/python
 
 src/data/
-src/assets/
+src/assets/*
+!src/assets/custom_html/
+!src/assets/custom_html/**
 passwords/
 .vs/
 .vscode/

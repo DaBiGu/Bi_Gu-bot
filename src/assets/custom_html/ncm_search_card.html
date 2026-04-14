@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>NCM Search Card</title>
+    {{STYLE_BLOCK}}
+</head>
+<body>
+    <div class="root" id="card-root">
+        <div class="header">
+            <div class="title">NCM Search Result</div>
+            <div class="subtitle">keyword<span class="keyword">{{KEYWORD}}</span></div>
+        </div>
+        <div class="grid">
+{{CARD_ITEMS}}
+        </div>
+        <div class="footer">{{FOOTER}}</div>
+    </div>
+</body>
+</html>

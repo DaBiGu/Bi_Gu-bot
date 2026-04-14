@@ -262,14 +262,15 @@ async def draw_quote_from_search(bot: Bot, event: GroupMessageEvent, keyword: st
     output_path = render_quote_card(quote_text, nickname, user_id, msg_time = msg_time, quote_id = quote_id)
     return Message([MessageSegment.image("file:///" + output_path)])
 
-def get_search_result_text(group_id: int, keyword: str) -> str:
+async def get_search_result_text(bot: Bot, group_id: int, keyword: str) -> str:
     matched = search_quote_records(group_id, keyword)
     if not matched: return f"本群未找到包含关键词“{keyword}”的引用内容"
     lines = [f"本群包含关键词“{keyword}”的引用内容如下："]
     for quote_id, record in sorted(matched, key = lambda item: item[0]):
         user_id = record.get("user_id", "[N/A]")
+        nickname = await get_member_nickname(bot, group_id, user_id)
         content = str(record.get("quote_text", "[N/A]")).replace("\n", " ")
-        lines.append(f"Quote #{quote_id:06d} | {user_id} | {content}")
+        lines.append(f"Quote #{quote_id:06d} | {nickname} | {content}")
     return "\n".join(lines)
 
 async def draw_quote_from_id(bot: Bot, event: GroupMessageEvent, quote_id: int) -> Message | str:

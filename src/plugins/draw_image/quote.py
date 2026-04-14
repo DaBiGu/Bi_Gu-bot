@@ -1,6 +1,8 @@
 from io import BytesIO
 from typing import Iterable
 import datetime
+import json
+import os
 
 import requests, numpy as np
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter
@@ -9,7 +11,9 @@ from nonebot.adapters.onebot.v11 import Bot, Message, MessageSegment, GroupMessa
 
 from utils.fonts import get_font, get_embedded_font
 from utils.text_layout import pick_font_and_wrap_by_width
-from utils.utils import get_copyright_str, get_output_path
+from utils.utils import get_IO_path, get_copyright_str, get_output_path
+
+QUOTE_COUNTER_JSON_PATH = get_IO_path("quote", "json")
 
 def load_qq_avatar(qq: int | str, size: int = 640) -> Image.Image:
     qq_str = str(qq).strip()
@@ -64,6 +68,11 @@ def _format_msg_time(raw_time: int | float | None) -> str:
     try: return datetime.datetime.fromtimestamp(int(raw_time)).strftime("%Y-%m-%d %H:%M:%S")
     except Exception: return ""
 
+def get_quote_id() -> int:
+    with open(QUOTE_COUNTER_JSON_PATH, "r") as f: count = json.load(f)
+    print(f"Current quote count: {count}")
+    with open(QUOTE_COUNTER_JSON_PATH, "w") as f: json.dump(count + 1, f)
+    return count + 1
 
 def fix_tail_single_char(lines: list[str], draw: ImageDraw.ImageDraw,
                           font: Image.Image, max_width: int) -> list[str]:
@@ -80,7 +89,7 @@ def fix_tail_single_char(lines: list[str], draw: ImageDraw.ImageDraw,
         lines[-2] = lines[-2][:-1]
     return lines
 
-def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str = "") -> Image.Image:
+def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str = "", quote_id: int = 0) -> Image.Image:
     width, height = image.size
     draw = ImageDraw.Draw(image)
     name_font = get_embedded_font("sourcehan-sans", "noto-color-emoji", size = int(height * 0.08))
@@ -109,13 +118,17 @@ def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str =
         draw.text((text_left, y), line, fill = (244, 244, 244), font = quote_font)
         y += line_height + line_gap
     y += name_gap
-    nickname_text = f"-- {nickname}"
+    nickname_text = f"@{nickname}"
     nickname_w = draw.textlength(nickname_text, font = name_font)
     draw.text((right_edge - nickname_w, y), nickname_text, fill = (130, 130, 130), font = name_font)
     if msg_time:
         y += name_h + time_gap
         time_w = draw.textlength(msg_time, font = time_font)
         draw.text((right_edge - time_w, y), msg_time, fill = (110, 110, 110), font = time_font)
+    quote_id_text = f"Quote #{quote_id:06d}"
+    quote_id_w = draw.textlength(quote_id_text, font = time_font)
+    draw.text((right_edge - quote_id_w, y + name_gap), quote_id_text,
+              fill = (110, 110, 110), font = time_font)
     '''
     copyright_font = get_font("sourcehan-sans", int(height * 0.036))
     copyright_text = get_copyright_str()
@@ -130,6 +143,7 @@ def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str =
 
 def render_quote_card(text: str, nickname: str, qq: int | str,
                       msg_time: str = "",
+                      quote_id: int = 0,
                       output_path: str | None = None,
                       size: tuple[int, int] = (2160, 720)) -> str:
     width, height = size
@@ -144,7 +158,7 @@ def render_quote_card(text: str, nickname: str, qq: int | str,
     mask = get_arc_fade_mask(left_width, height, radius_ratio = 7.2,
                              center_y_ratio = 0.60, edge_offset = 36, fade_width = 28)
     quote_img.paste(avatar_panel, (0, 0), mask)
-    quote_img = put_quote_text(quote_img, text, nickname, msg_time = msg_time)
+    quote_img = put_quote_text(quote_img, text, nickname, msg_time = msg_time, quote_id = quote_id)
 
     output_path = output_path or get_output_path("quote")
     quote_img.save(output_path)
@@ -174,7 +188,8 @@ async def draw_quote_from_reply(bot: Bot, event: GroupMessageEvent) -> Message |
         nickname = member.get("card") or member.get("nickname") or str(user_id)
         quote_text = extract_plain_text(raw_msg.get("message", []))
         msg_time = _format_msg_time(raw_msg.get("time"))
-        output_path = render_quote_card(quote_text, nickname, user_id, msg_time = msg_time)
+        quote_id = get_quote_id()
+        output_path = render_quote_card(quote_text, nickname, user_id, msg_time = msg_time, quote_id = quote_id)
         return Message([MessageSegment.image("file:///" + output_path)])
     except Exception as exc:
         return f"生成引用图失败: {exc}"

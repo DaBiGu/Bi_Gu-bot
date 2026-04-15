@@ -118,7 +118,7 @@ async def q_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
     if len(params) >= 2 and params[0] == "-s":
         keyword = params[1]
         if "-all" in params[2:]: message = await get_search_result_text(bot, event.group_id, keyword)
-        message = await draw_quote_from_search(bot, event, keyword)
+        else: message = await draw_quote_from_search(bot, event, keyword)
         await q.finish(message = message)
 
     if len(params) == 2 and params[0] == "-id":

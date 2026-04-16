@@ -60,6 +60,7 @@
 * `/qh [username]` 查询`[username]`的近30局雀魂战绩
 * `/qh search [username]` 搜索雀魂玩家`[username]`
 * `/qh add|bind [user_id]` 添加雀魂账号`[user_id]`到列表，群内自动播报最新战绩
+* `/qh delete|unbind [user_id]` 解除雀魂账号`[user_id]`的绑定
 * 数据来自于[雀魂牌谱屋](https://amae-koromo.sapk.ch/)
 
 ## `ncm`

@@ -42,6 +42,7 @@ class Helper_Messages:
                                 /qh [username] 查看[username]的近30局雀魂战绩
                                 /qh search [username] 搜索雀魂玩家[username]
                                 /qh add|bind [user_id] 添加雀魂账号[user_id]到列表，群内自动播报最新战绩
+                                /qh delete|unbind [user_id] 解除雀魂账号[user_id]的绑定
                                 
                                 ———————— ncm ————————
                                 /ncm search [keyword] [num] 网易云搜索前num首关键词为keyword的歌曲
@@ -192,6 +193,7 @@ class Helper_Messages:
                             
                             Apr 9 2026: 支持/q引用消息生成卡片图
                             Apr 15 2026: 支持按关键词/索引搜索引用记录
+                            Apr 16 2026: 支持雀魂账号解绑
                             """]
     
     def get_helper_messages(self):

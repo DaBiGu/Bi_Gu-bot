@@ -18,6 +18,11 @@ def get_IO_path(filename: str, file_type: str) -> str:
 def get_asset_path(subpath: str) -> str:
     return os.getcwd() + f"/src/assets/{subpath}"
 
+def load_asset_html(subpath: str) -> tuple[str, str]:
+    with open(get_asset_path(f"custom_html/{subpath}.html"), "r", encoding = "utf-8") as f: template = f.read()
+    with open(get_asset_path(f"custom_html/{subpath}.css"), "r", encoding = "utf-8") as f: css = f.read()
+    return template, css
+
 def second_to_hms(seconds, eng: bool = False) -> str:
     h, r = divmod(seconds, 3600)
     m, s = divmod(r, 60)

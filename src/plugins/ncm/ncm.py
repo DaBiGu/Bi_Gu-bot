@@ -2,20 +2,10 @@ from pyncm import apis
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from typing import Dict, List, Any, Tuple
 from PIL import Image, ImageDraw
-from selenium.webdriver.common.by import By
-from utils.chrome import get_chromedriver
-from utils.utils import get_asset_path, get_copyright_str, get_output_path
-import html, os, tempfile, asyncio, re
+from utils.chrome import screenshot_html_card
+from utils.utils import get_asset_path, get_copyright_str, get_output_path, load_asset_html
+import html, os, tempfile, re
 from utils.fonts import get_font
-
-ncm_search_card_template_path = get_asset_path("custom_html/ncm_search_card.html")
-ncm_search_card_css_path = get_asset_path("custom_html/ncm_search_card.css")
-
-
-def load_search_card_assets() -> tuple[str, str]:
-    with open(ncm_search_card_template_path, "r", encoding = "utf-8") as f: template = f.read()
-    with open(ncm_search_card_css_path, "r", encoding = "utf-8") as f: css = f.read()
-    return template, css
 
 def ncm_search_song(keyword: str, limit: int = 20) -> Dict[str, Any]:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
@@ -31,7 +21,7 @@ def ncm_search_song(keyword: str, limit: int = 20) -> Dict[str, Any]:
 
 
 def build_search_card_html(keyword: str, songs: List[Dict[str, Any]]) -> str:
-    template, css = load_search_card_assets()
+    template, css = load_asset_html("ncm_search_card")
     card_items = []
     for song in songs:
         title = html.escape(str(song.get("title", "")))
@@ -61,20 +51,8 @@ async def draw_search_card(keyword: str, limit: int = 20) -> MessageSegment:
         f.write(html_content)
         html_path = f.name
     output_path = get_output_path("ncm_search_card")
-    chrome = await get_chromedriver()
-    try:
-        chrome.get("file:///" + html_path.replace("\\", "/"))
-        await asyncio.sleep(0.9)
-        size = chrome.execute_script("""
-            const root = document.getElementById('card-root');
-            const rect = root.getBoundingClientRect();
-            return {width: Math.ceil(rect.width), height: Math.ceil(rect.height)};
-        """)
-        chrome.set_window_size(max(1700, int(size["width"]) + 80), max(900, int(size["height"]) + 120))
-        await asyncio.sleep(0.3)
-        chrome.find_element(By.ID, "card-root").screenshot(output_path)
-    finally:
-        chrome.quit()
+    try: await screenshot_html_card(html_path = html_path, output_path = output_path, min_window_width = 1700, min_window_height = 900)
+    finally: 
         if os.path.exists(html_path): os.remove(html_path)
     return MessageSegment.image("file:///" + output_path)
 

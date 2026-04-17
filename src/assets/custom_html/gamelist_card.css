@@ -1,0 +1,123 @@
+:root {
+    --bg: #111426;
+    --panel: #191d33;
+    --panel-2: #212743;
+    --text: #f4f6ff;
+    --muted: #aeb5d0;
+    --line: rgba(255,255,255,0.08);
+    --accent: #70b8ff;
+}
+* { box-sizing: border-box; }
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: radial-gradient(1000px 420px at 15% -10%, #2d3562 0%, transparent 72%),
+                radial-gradient(900px 360px at 100% 120%, #1f5d67 0%, transparent 75%),
+                var(--bg);
+    color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+.root {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: var(--page-width, 1320px);
+    height: var(--page-height, 900px);
+    padding: 34px 36px 24px;
+    overflow: hidden;
+    border-radius: 18px;
+    isolation: isolate;
+}
+.root::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url("{{BG_IMAGE_URL}}");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(6px) brightness(0.78);
+    transform: scale(1.02);
+}
+.root::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(180deg, rgba(9, 12, 22, 0.36) 0%, rgba(9, 12, 22, 0.78) 100%);
+}
+.header, .rows, .footer {
+    position: relative;
+    z-index: 1;
+}
+.header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.title {
+    font-size: 38px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+.subtitle {
+    font-size: 20px;
+    color: var(--muted);
+}
+.rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+    min-height: 0;
+}
+.row {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(25, 29, 51, 0.82) 0%, rgba(33, 39, 67, 0.82) 100%);
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 14px;
+    align-items: center;
+}
+.game-name {
+    font-size: 26px;
+    font-weight: 700;
+    color: #f9fbff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.avatars {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    min-height: 56px;
+}
+.avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 9999px;
+    border: 2px solid rgba(255,255,255,0.2);
+    object-fit: cover;
+    background: #2e3454;
+}
+.empty {
+    color: var(--muted);
+    font-size: 18px;
+}
+.footer {
+    margin-top: auto;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--muted);
+    font-size: 18px;
+}

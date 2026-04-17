@@ -8,6 +8,7 @@ from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNotic
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
 from .config import Config
 from .chatcount import get_chatcount
+from .gamelist import draw_gamelist
 from utils.utils import get_IO_path, random_trigger
 from utils.draw_bargraph import draw_bargraph
 from typing import Dict, Any, Optional
@@ -229,18 +230,6 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
     cmd_params = args.extract_plain_text()
     if _gamelist.check_base_plugin_functions(cmd_params): return
     with open(gamelist_json_path, "r") as f: data = json.load(f)
-    async def draw_gamelist(brief: bool = False) -> str:
-        group_members_raw = await bot.call_api("get_group_member_list", group_id = event.group_id)
-        nicknames = {}
-        for member in group_members_raw: nicknames[member["user_id"]] = member["nickname"]
-        if group_id not in data: message = "本群暂无游戏列表"
-        else:
-            if brief: message = "====== 本群游戏列表 ======\n" + ", ".join([str(game) for game in data[group_id]])
-            else:
-                message = "====== 本群游戏列表 ======"
-                for game in data[group_id]: 
-                    message += f"\n{game}: " + ", ".join([nicknames[int(user_id)] if int(user_id) in nicknames else user_id for user_id in data[group_id][game]])
-        return message
 
     message = None
     if cmd_params:
@@ -286,11 +275,11 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
                                                                       f"不和我玩{game}是吧我啃你辟谷啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃啃"]))
             else: return
         elif "-b" in cmd_params:
-            message = await draw_gamelist(brief = True)
+            message = await draw_gamelist(data = data, group_id = group_id, bot = bot, event = event, brief = True)
         else: return
     else: 
-        if not await permission(bot, event): message = "由于游戏列表暂时是字符串形式过于冗长，完整版列表仅支持管理员查看。推荐使用'/gamelist -b'查看只有游戏名的简版列表，感谢理解。"
-        else: message = await draw_gamelist()
+        if not await permission(bot, event): message = "由于完整版游戏列表会渲染为图片且内容较多，目前仅支持管理员查看。推荐使用'/gamelist -b'查看只有游戏名的简版列表，感谢理解。"
+        else: message = await draw_gamelist(data = data, group_id = group_id, bot = bot, event = event)
     with open(gamelist_json_path, "w") as f: json.dump(data, f)
     if message: await gamelist.finish(message)
 

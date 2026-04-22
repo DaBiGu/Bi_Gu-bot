@@ -9,7 +9,12 @@ from .config import Config
 from .good_bad_news import draw_good_news, draw_bad_news
 from .symmetric import _symmetric
 from .gen_ba import gen_ba
-from .quote import draw_quote_from_reply, draw_quote_from_search, get_search_result_text, draw_quote_from_id
+from .quote import (
+    draw_quote_from_reply,
+    draw_quote_from_search,
+    get_search_result_text,
+    draw_quote_from_id,
+)
 
 from utils import global_plugin_ctrl
 
@@ -101,6 +106,8 @@ _q = global_plugin_ctrl.create_plugin(names = ["q", "quote"], description = "引
                                       help_info = "/q 对群内某条消息进行回复后发送该指令，生成引用图\n"
                                                   "/q -s [keyword] 随机返回本群包含关键词的引用卡片\n"
                                                   "/q -s [keyword] -all 返回本群包含关键词的全部引用文本\n"
+                                                  "/q -s [@target] 随机返回本群该成员的一条引用卡片\n"
+                                                  "/q -s [@target] -all 返回本群该成员的全部引用文本\n"
                                                   "/q -id [id] 按编号返回对应引用卡片",
                                       default_on = True, priority = 1)
 q = _q.base_plugin
@@ -115,11 +122,31 @@ async def q_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
         await q.finish(message = message)
 
     params = cmd_params.split()
-    if len(params) >= 2 and params[0] == "-s":
-        keyword = params[1]
-        if "-all" in params[2:]: message = await get_search_result_text(bot, event.group_id, keyword)
-        else: message = await draw_quote_from_search(bot, event, keyword)
-        await q.finish(message = message)
+    if params and params[0] == "-s":
+        at_user_id = None
+        for seg in event.message:
+            if seg.type == "at":
+                qq = str(seg.data.get("qq", "")).strip()
+                if qq.isdigit():
+                    at_user_id = int(qq)
+                    break
+
+        if at_user_id is not None:
+            if "-all" in params[1:]:
+                message = await get_search_result_text(bot, event.group_id, target_user_id = at_user_id)
+            else:
+                message = await draw_quote_from_search(bot, event, target_user_id = at_user_id)
+            await q.finish(message = message)
+
+        if len(params) >= 2:
+            keyword = params[1]
+            if "-all" in params[2:]: message = await get_search_result_text(bot, event.group_id, keyword)
+            else: message = await draw_quote_from_search(bot, event, keyword)
+            await q.finish(message = message)
+
+        await q.finish("请提供关键词或@某人\n"
+                       "示例：/q -s test\n"
+                       "示例：/q -s [@target]")
 
     if len(params) == 2 and params[0] == "-id":
         if not params[1].isdigit(): await q.finish("编号必须是正整数")
@@ -130,6 +157,8 @@ async def q_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
                    "/q\n"
                    "/q -s [keyword]\n"
                    "/q -s [keyword] -all\n"
+                   "/q -s [@target]\n"
+                   "/q -s [@target] -all\n"
                    "/q -id [id]")
 
 xb.append_handler(xb_handle); bb.append_handler(bb_handle); symmetric.append_handler(symmetric_handle)

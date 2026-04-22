@@ -1,5 +1,5 @@
 from io import BytesIO
-from typing import Iterable
+from typing import Iterable, Optional
 import datetime
 import json
 import os
@@ -37,30 +37,41 @@ def get_next_quote_id(db: dict) -> int:
     db["current_quote_id"] = next_id
     return next_id
 
-def save_quote_record(group_id: int, user_id: int, quote_text: str, msg_time: str = "") -> int:
+def save_quote_record(group_id: int, user_id: int, quote_text: str, msg_time: str = "") -> Optional[int]:
     db = load_quote_db()
-    quote_id = get_next_quote_id(db)
     data = db.setdefault("data", {})
     group_key = str(group_id)
     if group_key not in data or not isinstance(data[group_key], dict): data[group_key] = {}
+    if any(isinstance(record, dict)
+        and int(record.get("user_id", 0) or 0) == int(user_id)
+        and str(record.get("msg_time", "")) == str(msg_time)
+        and str(record.get("quote_text", "")) == str(quote_text)
+        for record in data[group_key].values()
+    ): return None
+    quote_id = get_next_quote_id(db)
     data[group_key][str(quote_id)] = {"user_id": user_id, "quote_text": quote_text, "msg_time": msg_time}
     save_quote_db(db)
     return quote_id
 
-def search_quote_records(group_id: int, keyword: str) -> list[tuple[int, dict]]:
+def search_quote_records(group_id: int, keyword: Optional[str] = None,
+                         target_user_id: Optional[int] = None) -> list[tuple[int, dict]]:
     db = load_quote_db()
     group_quotes = db.get("data", {}).get(str(group_id), {})
     if not isinstance(group_quotes, dict): return []
     matched: list[tuple[int, dict]] = []
     for quote_id_str, record in group_quotes.items():
         if not isinstance(record, dict): continue
+        record_user_id = int(record.get("user_id", 0) or 0)
         text = str(record.get("quote_text", ""))
-        if keyword in text:
-            quote_id = int(quote_id_str)
-            matched.append((quote_id, record))
+        if target_user_id is not None and record_user_id != int(target_user_id):
+            continue
+        if keyword is not None and keyword not in text:
+            continue
+        quote_id = int(quote_id_str)
+        matched.append((quote_id, record))
     return matched
 
-def get_quote_record_by_id(group_id: int, quote_id: int) -> tuple[dict | None, bool]:
+def get_quote_record_by_id(group_id: int, quote_id: int) -> tuple[Optional[dict], bool]:
     db = load_quote_db()
     quote_key = str(quote_id)
     data = db.get("data", {})
@@ -122,7 +133,7 @@ def _format_quote_text(text: str) -> str:
     return "「[N/A]」" if not text else text if (text.startswith("「") and text.endswith("」")) else f"「{text}」"
 
 
-def _format_msg_time(raw_time: int | float | None) -> str:
+def _format_msg_time(raw_time: Optional[int | float]) -> str:
     if raw_time is None: return ""
     try: return datetime.datetime.fromtimestamp(int(raw_time)).strftime("%Y-%m-%d %H:%M:%S")
     except Exception: return ""
@@ -197,7 +208,7 @@ def put_quote_text(image: Image.Image, text: str, nickname: str, msg_time: str =
 def render_quote_card(text: str, nickname: str, qq: int | str,
                       msg_time: str = "",
                       quote_id: int = 0,
-                      output_path: str | None = None,
+                      output_path: Optional[str] = None,
                       size: tuple[int, int] = (2160, 720)) -> str:
     width, height = size
     avatar = load_qq_avatar(qq, size = 640)
@@ -246,14 +257,21 @@ async def draw_quote_from_reply(bot: Bot, event: GroupMessageEvent) -> Message |
         quote_text = extract_plain_text(raw_msg.get("message", []))
         msg_time = _format_msg_time(raw_msg.get("time"))
         quote_id = save_quote_record(event.group_id, int(user_id), quote_text, msg_time)
+        if quote_id is None: return "该条消息已经被存入过了"
         output_path = render_quote_card(quote_text, nickname, user_id, msg_time = msg_time, quote_id = quote_id)
         return Message([MessageSegment.image("file:///" + output_path)])
     except Exception as exc:
         return f"生成引用图失败: {exc}"
 
-async def draw_quote_from_search(bot: Bot, event: GroupMessageEvent, keyword: str) -> Message | str:
-    matched = search_quote_records(event.group_id, keyword)
-    if not matched: return f"本群未找到包含关键词“{keyword}”的引用内容"
+async def draw_quote_from_search(bot: Bot, event: GroupMessageEvent,
+                                 keyword: Optional[str] = None,
+                                 target_user_id: Optional[int] = None) -> Message | str:
+    matched = search_quote_records(event.group_id, keyword = keyword, target_user_id = target_user_id)
+    if not matched:
+        if target_user_id is not None:
+            nickname = await get_member_nickname(bot, event.group_id, target_user_id)
+            return f"本群未找到成员“{nickname}”的引用内容"
+        return f"本群未找到包含关键词“{keyword}”的引用内容"
     quote_id, record = random.choice(matched)
     user_id = int(record.get("user_id", 0) or 0)
     quote_text = str(record.get("quote_text", "[N/A]"))
@@ -262,10 +280,21 @@ async def draw_quote_from_search(bot: Bot, event: GroupMessageEvent, keyword: st
     output_path = render_quote_card(quote_text, nickname, user_id, msg_time = msg_time, quote_id = quote_id)
     return Message([MessageSegment.image("file:///" + output_path)])
 
-async def get_search_result_text(bot: Bot, group_id: int, keyword: str) -> str:
-    matched = search_quote_records(group_id, keyword)
-    if not matched: return f"本群未找到包含关键词“{keyword}”的引用内容"
-    lines = [f"本群包含关键词“{keyword}”的引用内容如下："]
+async def get_search_result_text(bot: Bot, group_id: int,
+                                 keyword: Optional[str] = None,
+                                 target_user_id: Optional[int] = None) -> str:
+    matched = search_quote_records(group_id, keyword = keyword, target_user_id = target_user_id)
+    if not matched:
+        if target_user_id is not None:
+            nickname = await get_member_nickname(bot, group_id, target_user_id)
+            return f"本群未找到成员“{nickname}”的引用内容"
+        return f"本群未找到包含关键词“{keyword}”的引用内容"
+
+    if target_user_id is not None:
+        nickname = await get_member_nickname(bot, group_id, target_user_id)
+        lines = [f"本群成员“{nickname}”的引用内容如下："]
+    else: lines = [f"本群包含关键词“{keyword}”的引用内容如下："]
+
     for quote_id, record in sorted(matched, key = lambda item: item[0]):
         user_id = record.get("user_id", "[N/A]")
         nickname = await get_member_nickname(bot, group_id, user_id)

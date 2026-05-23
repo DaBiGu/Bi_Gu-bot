@@ -15,7 +15,7 @@ from .tenhou import (
 
 from utils import global_plugin_ctrl
 from utils.utils import get_IO_path
-import json, os
+import json, os, asyncio
 
 __plugin_meta__ = PluginMetadata(
     name="mahjong",
@@ -81,19 +81,19 @@ async def qh_handle(event: GroupMessageEvent, args = CommandArg()):
 
 qh.append_handler(qh_handle)
 
-@scheduler.scheduled_job("interval", minutes = 5)
+@scheduler.scheduled_job("interval", minutes = 5, misfire_grace_time = 300)
 async def qh_check_new_match():
     with open(qh_json_path, "r", encoding = "utf-8") as f:
         data = json.load(f)
     for group_id in data:
         for user_id in data[group_id]:
-            latest_match = get_latest_match(int(user_id))
+            latest_match = await asyncio.to_thread(get_latest_match, int(user_id))
             if latest_match:
                 if not data[group_id][user_id] or data[group_id][user_id]["gameId"] != latest_match["gameId"]:
                     data[group_id][user_id] = latest_match
                     with open(qh_json_path, "w", encoding = "utf-8") as f:
                         json.dump(data, f)
-                    latest_match_message = create_match_result_image(latest_match, int(user_id))
+                    latest_match_message = await asyncio.to_thread(create_match_result_image, latest_match, int(user_id))
                     await get_bot().send_group_msg(group_id = int(group_id), message = latest_match_message)
 
 
@@ -123,7 +123,7 @@ async def th_handle(event: GroupMessageEvent, args = CommandArg()):
         if cmd_params_list[0] in ["add", "bind"]:
             username = " ".join(cmd_params_list[1:]).strip()
             if not username: message = "用户名不能为空"
-            elif not th_get_latest_match(username): message = f"未找到天凤玩家「{username}」的对局数据"
+            elif not await th_get_latest_match(username): message = f"未找到天凤玩家「{username}」的对局数据"
             else:
                 with open(th_json_path, "r", encoding = "utf-8") as f:
                     data = json.load(f)
@@ -145,28 +145,28 @@ async def th_handle(event: GroupMessageEvent, args = CommandArg()):
                 message = f"成功解绑天凤账号「{username}」"
         else: return
     elif cmd_params:
-        message = th_get_user_summary(cmd_params)
+        message = await th_get_user_summary(cmd_params)
     else: return
     await th.finish(message = message)
 
 th.append_handler(th_handle)
 
-@scheduler.scheduled_job("interval", minutes = 5)
+@scheduler.scheduled_job("interval", minutes = 5, misfire_grace_time = 300)
 async def th_check_new_match():
     with open(th_json_path, "r", encoding = "utf-8") as f:
         data = json.load(f)
     for group_id in data:
         for username in data[group_id]:
-            latest_match = th_get_latest_match(username)
+            latest_match = await th_get_latest_match(username)
             if latest_match:
                 stored = data[group_id][username]
                 if not stored or stored.get("_key") != latest_match["_key"]:
                     data[group_id][username] = {"_key": latest_match["_key"]}
                     with open(th_json_path, "w", encoding = "utf-8") as f:
                         json.dump(data, f, ensure_ascii = False)
-                    msg = th_create_match_result_image(latest_match, username)
+                    msg = await th_create_match_result_image(latest_match, username)
                     await get_bot().send_group_msg(group_id = int(group_id), message = msg)
-                    change = th_get_dan_change(username)
+                    change = await th_get_dan_change(username)
                     if change:
                         (before_dan, before_pt), (after_dan, after_pt) = change
                         from .tenhou import DAN_LIST_4

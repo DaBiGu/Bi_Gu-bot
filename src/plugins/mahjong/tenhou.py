@@ -1,4 +1,4 @@
-import requests, datetime
+import httpx, datetime
 from typing import Dict, List, Tuple, Any, Optional
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from PIL import Image, ImageDraw
@@ -15,16 +15,17 @@ DAN_LIST_4: List[Tuple[str, int, int]] = [("新人", 0, 20), ("9級", 0, 20), ("
                                           ("初段", 200, 400), ("二段", 400, 800), ("三段", 600, 1200), ("四段", 800, 1600),
                                           ("五段", 1000, 2000), ("六段", 1200, 2400), ("七段", 1400, 2800), ("八段", 1600, 3200),
                                           ("九段", 1800, 3600), ("十段", 2000, 4000), ("天鳳位", 2000, 0)]
-
 _ROOM_MIN_DAN = {0: 0, 1: 10, 2: 13, 3: 16}
-
 
 def _pt_delta(rank: int, room: int, length: int, dan_idx: int) -> int:
     return 0 if rank == 3 else (0 if dan_idx < 8 else (-10 if length == 1 else -15) * (dan_idx - 7)) if rank == 4 \
              else ((20, 40, 50, 60) if rank == 1 else (10, 10, 20, 30))[room] * (3 if length == 2 else 2) // 2
 
-def _fetch_user(username: str) -> Optional[Dict[str, Any]]:
-    try: data = requests.get("https://nodocchi.moe/api/listuser.php", params={"name": username}, timeout=15).json()
+
+async def _fetch_user(username: str) -> Optional[Dict[str, Any]]:
+    try:
+        async with httpx.AsyncClient(timeout=15) as client:
+            data = (await client.get("https://nodocchi.moe/api/listuser.php", params={"name": username})).json()
     except Exception: return None
     return data if isinstance(data, dict) and data.get("list") else None
 
@@ -46,21 +47,20 @@ def _simulate_dan_4(target: str, matches: List[Dict[str, Any]]) -> Optional[Tupl
             break
     return DAN_LIST_4[dan_idx][0], pt
 
-def _is_name_ambiguous(name: str, data: Optional[Dict[str, Any]] = None) -> bool:
+async def _is_name_ambiguous(name: str, data: Optional[Dict[str, Any]] = None) -> bool:
     if not name or name == "NoName": return True
-    if data is None: data = _fetch_user(name)
+    if data is None: data = await _fetch_user(name)
     if not data: return False
     return len(data.get("rseq", []) or []) > 1 or any([match.get(f"player{pi}") for pi in range(1, 5)].count(name) > 1 for match in data.get("list", []))
 
-
-def _get_player_dan(username: str, playernum: int) -> Optional[Tuple[str, int]]:
+async def _get_player_dan(username: str, playernum: int) -> Optional[Tuple[str, int]]:
     if playernum != 4: return None
-    data = _fetch_user(username)
-    return None if not data or _is_name_ambiguous(username, data) else _simulate_dan_4(username, data.get("list", []))
+    data = await _fetch_user(username)
+    return None if not data or await _is_name_ambiguous(username, data) else _simulate_dan_4(username, data.get("list", []))
 
-def get_dan_change(username: str) -> Optional[Tuple[Tuple[str, int], Tuple[str, int]]]:
-    data = _fetch_user(username)
-    if not data or _is_name_ambiguous(username, data): return None
+async def get_dan_change(username: str) -> Optional[Tuple[Tuple[str, int], Tuple[str, int]]]:
+    data = await _fetch_user(username)
+    if not data or await _is_name_ambiguous(username, data): return None
     sorted_matches = sorted((mt for mt in data.get("list", []) if int(mt.get("playernum", 4)) == 4), key=lambda mt: mt.get("starttime", 0))
     if not sorted_matches: return None
     after = _simulate_dan_4(username, sorted_matches)
@@ -68,8 +68,8 @@ def get_dan_change(username: str) -> Optional[Tuple[Tuple[str, int], Tuple[str, 
     before = (DAN_LIST_4[start_idx][0], DAN_LIST_4[start_idx][1]) if len(sorted_matches) == 1 else _simulate_dan_4(username, sorted_matches[:-1])
     return None if after is None or before is None else (before, after)
 
-def _get_player_rate(username: str, playernum: int) -> Optional[int]:
-    data = _fetch_user(username)
+async def _get_player_rate(username: str, playernum: int) -> Optional[int]:
+    data = await _fetch_user(username)
     if not data: return None
     rate_val = (data.get("rate") or {}).get(str(playernum)) or (data.get("rate") or {}).get(playernum)
     try: return int(rate_val) if rate_val is not None else None
@@ -79,21 +79,17 @@ def _match_key(match: Dict[str, Any]) -> str:
     url = match.get("url", "") or ""
     return url.split("log=", 1)[1] if "log=" in url else f"st_{match.get('starttime', 0)}"
 
-
 def _find_player_index(match: Dict[str, Any], username: str) -> int:
     return next((pi for pi in range(1, 5) if match.get(f"player{pi}") == username), 0)
-
 
 def _get_mode_str(match: Dict[str, Any]) -> Tuple[str, Tuple[int, int, int]]:
     player_num, room_level, play_length = match.get("playernum", 4), match.get("playerlevel", 0), match.get("playlength", 2)
     room_label, room_color = ROOM_LEVELS.get(room_level, (f"Lv{room_level}", (0, 0, 0)))
     base = f"{'三' if player_num == 3 else '四'}{room_label}{'東' if play_length == 1 else '南'}"
-    return base + ("喰" if match.get("kuitanari", 1) else "") + ("赤" if match.get("akaari", 1) else "") \
-                + ("速" if match.get("speed", 0) else ""), room_color
+    return base + ("喰" if match.get("kuitanari", 1) else "") + ("赤" if match.get("akaari", 1) else "") + ("速" if match.get("speed", 0) else ""), room_color
 
-
-def get_latest_match(username: str) -> Dict[str, Any]:
-    data = _fetch_user(username)
+async def get_latest_match(username: str) -> Dict[str, Any]:
+    data = await _fetch_user(username)
     if not data: return {}
     matches = sorted(data["list"], key=lambda mt: mt.get("starttime", 0), reverse=True)
     if not matches or _find_player_index(matches[0], username) == 0: return {}
@@ -102,9 +98,8 @@ def get_latest_match(username: str) -> Dict[str, Any]:
     latest["_meta"] = {"name": data.get("name", username), "rate": data.get("rate", {}), "recent": data.get("recent", 0), "total": len(data["list"])}
     return latest
 
-
-def get_user_summary(username: str) -> MessageSegment:
-    data = _fetch_user(username)
+async def get_user_summary(username: str) -> MessageSegment:
+    data = await _fetch_user(username)
     if not data: return MessageSegment.text(f"未找到天凤玩家「{username}」的对局数据")
     matches = sorted(data["list"], key=lambda mt: mt.get("starttime", 0), reverse=True)
     rate = data.get("rate", {})
@@ -120,8 +115,7 @@ def get_user_summary(username: str) -> MessageSegment:
         lines.append(f"[{start_str}] {mode_str} 第{rank if rank else '?'}位 {ptr}pt")
     return MessageSegment.text("\n".join(lines))
 
-
-def create_match_result_image(match: Dict[str, Any], username: str) -> MessageSegment:
+async def create_match_result_image(match: Dict[str, Any], username: str) -> MessageSegment:
     player_num = match.get("playernum", 4)
     width, height = 1000, 200 + 40 * player_num
     img = Image.new("RGB", (width, height), (240, 240, 240)); draw = ImageDraw.Draw(img)
@@ -138,9 +132,9 @@ def create_match_result_image(match: Dict[str, Any], username: str) -> MessageSe
         name = match.get(f"player{pi}", "") or ""; ptr_raw = match.get(f"player{pi}ptr", "0")
         try: ptr_val = float(ptr_raw)
         except Exception: ptr_val = 0.0
-        ambiguous = _is_name_ambiguous(name)
-        dan = None if ambiguous else _get_player_dan(name, player_num)
-        rate = None if (dan or ambiguous) else _get_player_rate(name, player_num)
+        ambiguous = await _is_name_ambiguous(name)
+        dan = None if ambiguous else await _get_player_dan(name, player_num)
+        rate = None if (dan or ambiguous) else await _get_player_rate(name, player_num)
         players.append((name, ptr_raw, ptr_val, dan, rate, ambiguous))
     players.sort(key=lambda x: x[2], reverse=True)
     for rank, (name, ptr_raw, ptr_val, dan, rate, ambiguous) in enumerate(players, 1):

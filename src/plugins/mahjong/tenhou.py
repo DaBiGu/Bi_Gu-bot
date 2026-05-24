@@ -29,8 +29,21 @@ async def _fetch_user(username: str) -> Optional[Dict[str, Any]]:
     except Exception: return None
     return data if isinstance(data, dict) and data.get("list") else None
 
+def _idlife_start(matches: List[Dict[str, Any]]) -> int:
+    ordered = sorted((mt.get("starttime", 0) for mt in matches), key=lambda t: t)
+    if not ordered: return 0
+    cutoff, last_ts = ordered[0], ordered[0]
+    for ts in ordered[1:]:
+        if ts - last_ts >= 181 * 86400: cutoff = ts
+        last_ts = ts
+    return cutoff
+
 def _simulate_dan_4(target: str, matches: List[Dict[str, Any]]) -> Optional[Tuple[str, int]]:
-    sorted_matches = sorted((mt for mt in matches if int(mt.get("playernum", 4)) == 4), key=lambda mt: mt.get("starttime", 0))
+    cutoff = _idlife_start(matches)
+    sorted_matches = sorted((mt for mt in matches if int(mt.get("playernum", 4)) == 4
+                                                  and mt.get("sctype") in ("b", "c")
+                                                  and mt.get("starttime", 0) >= cutoff),
+                            key=lambda mt: mt.get("starttime", 0))
     if not sorted_matches: return None
     dan_idx = _ROOM_MIN_DAN.get(int(sorted_matches[0].get("playerlevel", 0)), 0); pt = DAN_LIST_4[dan_idx][1]
     for match in sorted_matches:
@@ -61,11 +74,16 @@ async def _get_player_dan(username: str, playernum: int) -> Optional[Tuple[str, 
 async def get_dan_change(username: str) -> Optional[Tuple[Tuple[str, int], Tuple[str, int]]]:
     data = await _fetch_user(username)
     if not data or await _is_name_ambiguous(username, data): return None
-    sorted_matches = sorted((mt for mt in data.get("list", []) if int(mt.get("playernum", 4)) == 4), key=lambda mt: mt.get("starttime", 0))
-    if not sorted_matches: return None
-    after = _simulate_dan_4(username, sorted_matches)
-    start_idx = _ROOM_MIN_DAN.get(int(sorted_matches[0].get("playerlevel", 0)), 0)
-    before = (DAN_LIST_4[start_idx][0], DAN_LIST_4[start_idx][1]) if len(sorted_matches) == 1 else _simulate_dan_4(username, sorted_matches[:-1])
+    all_matches = data.get("list", [])
+    cutoff = _idlife_start(all_matches)
+    eligible = sorted((mt for mt in all_matches if int(mt.get("playernum", 4)) == 4
+                                                and mt.get("sctype") in ("b", "c")
+                                                and mt.get("starttime", 0) >= cutoff),
+                      key=lambda mt: mt.get("starttime", 0))
+    if not eligible: return None
+    after = _simulate_dan_4(username, all_matches)
+    start_idx = _ROOM_MIN_DAN.get(int(eligible[0].get("playerlevel", 0)), 0)
+    before = (DAN_LIST_4[start_idx][0], DAN_LIST_4[start_idx][1]) if len(eligible) == 1 else _simulate_dan_4(username, [mt for mt in all_matches if mt is not eligible[-1]])
     return None if after is None or before is None else (before, after)
 
 async def _get_player_rate(username: str, playernum: int) -> Optional[int]:

@@ -157,7 +157,7 @@ async def create_match_result_image(match: Dict[str, Any], username: str) -> Mes
     players.sort(key=lambda x: x[2], reverse=True)
     for rank, (name, ptr_raw, ptr_val, dan, rate, ambiguous) in enumerate(players, 1):
         font, color = (font_bold, (0, 0, 200)) if name == username else (font_normal, (0, 0, 0))
-        tag = "-" if ambiguous else f"{dan[0]} {dan[1]}pt" if dan else f"R{rate}" if rate else f"{rank}位"
+        tag = "N/A" if ambiguous else f"{dan[0]} {dan[1]}pt" if dan else f"R{rate}" if rate else f"{rank}位"
         draw.text((70, 100 + 40 * rank), f"[{tag}] {name} ({'+' if ptr_val >= 0 else ''}{ptr_raw})", fill=color, font=font)
     draw.rectangle([20, 20, width - 20, height - 20], outline=(200, 200, 200), width=2)
     output_path = get_output_path(f"tenhou_{match_key}"); img.save(output_path)

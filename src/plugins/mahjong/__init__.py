@@ -173,8 +173,8 @@ async def th_check_new_match():
                         before_idx = next((i for i, d in enumerate(DAN_LIST_4) if d[0] == before_dan), -1)
                         after_idx = next((i for i, d in enumerate(DAN_LIST_4) if d[0] == after_dan), -1)
                         if after_idx > before_idx >= 0:
-                            text = f"恭喜{username}在刚才的对局中升段：{before_dan} {before_pt}pt → {after_dan} {after_pt}pt)"
+                            text = f"恭喜{username}在刚才的对局中升段：{before_dan} {before_pt}pt → {after_dan} {after_pt}pt"
                             await get_bot().send_group_msg(group_id = int(group_id), message = text)
                         elif 0 <= after_idx < before_idx:
-                            text = f"很遗憾，{username}在刚才的对局中掉段了：{before_dan} {before_pt}pt → {after_dan} {after_pt}pt)"
+                            text = f"很遗憾，{username}在刚才的对局中掉段了：{before_dan} {before_pt}pt → {after_dan} {after_pt}pt"
                             await get_bot().send_group_msg(group_id = int(group_id), message = text)

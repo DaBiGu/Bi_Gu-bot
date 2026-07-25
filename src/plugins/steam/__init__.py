@@ -194,14 +194,14 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
 
 steam_tracker_cwd = "C:/nginx-1.28.0/html/steam-tracker"
 
-@scheduler.scheduled_job("interval", hours = 4, misfire_grace_time = 900)
+@scheduler.scheduled_job("interval", minutes = 30, misfire_grace_time = 600)
 async def update_steam_tracker_data():
     try:
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(
             None, lambda: subprocess.run(
                 ["python", os.path.join(steam_tracker_cwd, "fetch_steam_data.py"), "--config", os.path.join(steam_tracker_cwd, "config.json"), "--workers", "8"],
-                capture_output = True, text = True, timeout = 900, cwd = steam_tracker_cwd))
+                capture_output = True, text = True, timeout = 600, cwd = steam_tracker_cwd))
         if result.returncode != 0: logger.error(f"Steam tracker 更新失败 (code={result.returncode}): {result.stderr[:500]}")
         else:
             last_lines = result.stdout.strip().split("\n")

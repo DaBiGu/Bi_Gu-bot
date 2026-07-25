@@ -2,6 +2,7 @@ from nonebot import get_plugin_config
 from nonebot.plugin import PluginMetadata
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11 import GroupMessageEvent, MessageSegment, Bot
+from nonebot_plugin_apscheduler import scheduler
 
 from .config import Config
 from .get_steam_playing import get_steam_playing
@@ -11,7 +12,9 @@ from utils.utils import get_IO_path
 
 from utils import global_plugin_ctrl
 
-import json, os, random
+import asyncio, json, logging, os, random, subprocess
+
+logger = logging.getLogger(__name__)
 
 __plugin_meta__ = PluginMetadata(
     name="steam",
@@ -188,5 +191,23 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
         else:
             message = "本群视奸列表为空\n使用/视奸群友 add [steam_id]添加群友到列表"
         await sjqy.finish(message = message)
+
+steam_tracker_cwd = "C:/nginx-1.28.0/html/steam-tracker"
+
+@scheduler.scheduled_job("interval", hours = 4, misfire_grace_time = 900)
+async def update_steam_tracker_data():
+    try:
+        loop = asyncio.get_running_loop()
+        result = await loop.run_in_executor(
+            None, lambda: subprocess.run(
+                ["python", os.path.join(steam_tracker_cwd, "fetch_steam_data.py"), "--config", os.path.join(steam_tracker_cwd, "config.json"), "--workers", "8"],
+                capture_output = True, text = True, timeout = 900, cwd = steam_tracker_cwd))
+        if result.returncode != 0: logger.error(f"Steam tracker 更新失败 (code={result.returncode}): {result.stderr[:500]}")
+        else:
+            last_lines = result.stdout.strip().split("\n")
+            summary = next((line for line in reversed(last_lines) if line.strip()), "完成")
+            logger.info(f"Steam tracker: {summary}")
+    except subprocess.TimeoutExpired: logger.error("Steam tracker 更新超时")
+    except Exception: logger.exception("Steam tracker 更新异常")
 
 steam.append_handler(steam_handle); sjqy.append_handler(sjqy_handle)

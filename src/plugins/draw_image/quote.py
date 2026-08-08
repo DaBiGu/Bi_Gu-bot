@@ -271,7 +271,7 @@ async def draw_quote_from_search(bot: Bot, event: GroupMessageEvent,
         if target_user_id is not None:
             nickname = await get_member_nickname(bot, event.group_id, target_user_id)
             return f"本群未找到成员“{nickname}”的引用内容"
-        return f"本群未找到包含关键词“{keyword}”的引用内容"
+        return f"本群未找到包含关键词“{keyword}”的引用内容" if keyword is not None else "本群暂无引用内容"
     quote_id, record = random.choice(matched)
     user_id = int(record.get("user_id", 0) or 0)
     quote_text = str(record.get("quote_text", "[N/A]"))
@@ -295,11 +295,14 @@ async def get_search_result_text(bot: Bot, group_id: int,
         lines = [f"本群成员“{nickname}”的引用内容如下："]
     else: lines = [f"本群包含关键词“{keyword}”的引用内容如下："]
 
+    content_lines: list[str] = []
     for quote_id, record in sorted(matched, key = lambda item: item[0]):
         user_id = record.get("user_id", "[N/A]")
         nickname = await get_member_nickname(bot, group_id, user_id)
         content = str(record.get("quote_text", "[N/A]")).replace("\n", " ")
-        lines.append(f"Quote #{quote_id:06d} | {nickname} | {content}")
+        content_lines.append(f"Quote #{quote_id:06d} | {nickname} | {content}")
+
+    lines += content_lines[:5] + [f"[...{len(content_lines) - 10}条更多内容...]"] + content_lines[-5:] if len(content_lines) > 12 else content_lines
     return "\n".join(lines)
 
 async def draw_quote_from_id(bot: Bot, event: GroupMessageEvent, quote_id: int) -> Message | str:

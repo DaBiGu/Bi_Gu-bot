@@ -104,6 +104,7 @@ async def ba_handle(event: GroupMessageEvent, args = CommandArg()):
 
 _q = global_plugin_ctrl.create_plugin(names = ["q", "quote"], description = "引用消息生成卡片",
                                       help_info = "/q 对群内某条消息进行回复后发送该指令，生成引用图\n"
+                                                  "/q -r 随机返回本群内的一条引用内容\n"
                                                   "/q -s [keyword] 随机返回本群包含关键词的引用卡片\n"
                                                   "/q -s [keyword] -all 返回本群包含关键词的全部引用文本\n"
                                                   "/q -s [@target] 随机返回本群该成员的一条引用卡片\n"
@@ -122,6 +123,10 @@ async def q_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
         await q.finish(message = message)
 
     params = cmd_params.split()
+    if params and params[0] == "-r":
+        message = await draw_quote_from_search(bot, event)
+        await q.finish(message = message)
+
     if params and params[0] == "-s":
         at_user_id = None
         for seg in event.message:
@@ -155,6 +160,7 @@ async def q_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
 
     await q.finish("参数格式错误\n"
                    "/q\n"
+                   "/q -r\n"
                    "/q -s [keyword]\n"
                    "/q -s [keyword] -all\n"
                    "/q -s [@target]\n"

@@ -4,8 +4,9 @@ from nonebot import on_message, on_notice, on_command, on_keyword, on_regex
 from nonebot.rule import to_me
 from nonebot.params import CommandArg, RegexGroup
 from nonebot.permission import SUPERUSER
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment
+from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, GroupRecallNoticeEvent, Message, MessageSegment, Event
 from nonebot.adapters.onebot.v11.permission import GROUP_ADMIN, GROUP_OWNER
+from nonebot.exception import FinishedException
 from .config import Config
 from .chatcount import get_chatcount
 from .gamelist import draw_gamelist
@@ -15,7 +16,7 @@ from typing import Dict, Any, Optional
 
 from utils import global_plugin_ctrl
 
-import re, time, json, datetime, random
+import re, time, json, datetime, random, asyncio
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -30,6 +31,7 @@ morning_json_path = get_IO_path("morning", "json")
 chatcount_json_path = get_IO_path("chatcount", "json")
 gamelist_json_path = get_IO_path("gamelist", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
+emoji_map_json_path = get_IO_path("emoji_map", "json")
 
 # copied from https://github.com/Utmost-Happiness-Planet/nonebot-plugin-repeater/blob/main/nonebot_plugin_repeater/__init__.py
 def message_preprocess(message: str):
@@ -284,3 +286,38 @@ async def gamelist_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg(
     if message: await gamelist.finish(message)
 
 gamelist.append_handler(gamelist_handle)
+
+_emoji_like = global_plugin_ctrl.create_plugin(
+    names = ["emoji", "emojilike", "表情点赞"], description = "消息表情点赞", 
+    help_info = """
+                    回复某条消息后发送：/emoji <表情或ID>
+                """,
+    default_on = True, priority = 1)
+
+emoji_like = _emoji_like.base_plugin
+
+def emoji_to_id(emoji_char: str) -> str:
+    return str(ord(emoji_char[0])) if emoji_char else ""
+
+def id_to_emoji(emoji_id: str) -> str:
+    try: return chr(int(emoji_id))
+    except: return ""
+
+@emoji_like.handle()
+async def emoji_like_handle(event: GroupMessageEvent, bot: Bot, args = CommandArg()):
+    if not _emoji_like.check_plugin_ctrl(event.group_id): await emoji_like.finish("该插件在本群中已关闭")
+    cmd_params = args.extract_plain_text().strip()
+    if _emoji_like.check_base_plugin_functions(cmd_params): return
+    if not event.reply: await emoji_like.finish("请先回复一条消息，再使用 /emoji <表情或ID>")
+    input_param = cmd_params.strip()
+    if not input_param:
+        await emoji_like.finish(
+            "参数错误！\n"
+            "用法：回复一条消息后发送 /emoji <表情或ID>"
+        )
+    emoji_id, emoji_char, display = input_param, id_to_emoji(emoji_id), f"{emoji_char} (ID: {emoji_id})" if emoji_char else f"ID: {emoji_id}" if input_param.isdigit() \
+        else input_param[0], emoji_to_id(emoji_char), f"{emoji_char} (ID: {emoji_id})" 
+    await bot.call_api("set_msg_emoji_like", message_id = event.reply.message_id, emoji_id = emoji_id, set = True)    
+    await emoji_like.finish(f"成功点赞表情 {display}")
+
+emoji_like.append_handler(emoji_like_handle)

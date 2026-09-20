@@ -16,7 +16,7 @@ from typing import Dict, Any, Optional
 
 from utils import global_plugin_ctrl
 
-import re, time, json, datetime, random, asyncio
+import re, time, json, datetime, random
 
 __plugin_meta__ = PluginMetadata(
     name="group_msg",
@@ -31,7 +31,6 @@ morning_json_path = get_IO_path("morning", "json")
 chatcount_json_path = get_IO_path("chatcount", "json")
 gamelist_json_path = get_IO_path("gamelist", "json")
 last_sent_time_json_path = get_IO_path("last_sent_time", "json")
-emoji_map_json_path = get_IO_path("emoji_map", "json")
 
 # copied from https://github.com/Utmost-Happiness-Planet/nonebot-plugin-repeater/blob/main/nonebot_plugin_repeater/__init__.py
 def message_preprocess(message: str):
@@ -315,8 +314,14 @@ async def emoji_like_handle(event: GroupMessageEvent, bot: Bot, args = CommandAr
             "参数错误！\n"
             "用法：回复一条消息后发送 /emoji <表情或ID>"
         )
-    emoji_id, emoji_char, display = input_param, id_to_emoji(emoji_id), f"{emoji_char} (ID: {emoji_id})" if emoji_char else f"ID: {emoji_id}" if input_param.isdigit() \
-        else input_param[0], emoji_to_id(emoji_char), f"{emoji_char} (ID: {emoji_id})" 
+    if input_param.isdigit():
+        emoji_id = input_param
+        emoji_char = id_to_emoji(emoji_id)
+        display = f"{emoji_char} (ID: {emoji_id})" if emoji_char else f"ID: {emoji_id}"
+    else:
+        emoji_char = input_param[0]
+        emoji_id = emoji_to_id(emoji_char)
+        display = f"{emoji_char} (ID: {emoji_id})" if emoji_char else f"ID: {emoji_id}"
     await bot.call_api("set_msg_emoji_like", message_id = event.reply.message_id, emoji_id = emoji_id, set = True)    
     await emoji_like.finish(f"成功点赞表情 {display}")
 

@@ -93,7 +93,7 @@ async def wife_handle(bot: Bot, event: GroupMessageEvent, args = CommandArg()):
                         if time.time() - last_sent_time[group_id][str(member["user_id"])] <= 129600:
                             if str(member["user_id"]) not in WIFE_REJECT_LIST:
                                 single_members.append(str(member["user_id"]))
-        if not single_members: message = "本群没有符合条件的群友"
+        if not single_members: await wife.finish(message = "本群没有符合条件的群友")
         _wife = random.choice(single_members)
         record[today][group_id][user_id] = _wife
         record[today][group_id][_wife] = user_id

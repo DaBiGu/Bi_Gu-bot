@@ -1,9 +1,9 @@
 from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, Message, MessageSegment
 from utils.utils import get_asset_path, get_output_path, get_copyright_str, load_asset_html
-from utils.chrome import screenshot_html_card
+from utils.chrome import Chrome, file_url
 from PIL import Image
 import html as html_utils
-import os, tempfile, math
+import math
 
 def calc_page_size_by_bg(bg_path: str) -> tuple[int, int]:
     page_width, page_height = 1320, 900
@@ -11,7 +11,6 @@ def calc_page_size_by_bg(bg_path: str) -> tuple[int, int]:
     try:
         with Image.open(bg_path) as img: bg_w, bg_h = img.size
         if bg_w > 0 and bg_h > 0:
-            # Keep ratio and allow moderate upscale inside bounds.
             max_w, max_h = 2000, 1400
             scale = min(max_w / bg_w, max_h / bg_h)
             page_width = max(1, int(bg_w * scale))
@@ -97,32 +96,26 @@ async def draw_gamelist(data: dict, group_id: str, bot: Bot, event: GroupMessage
         })
 
     bg_path = get_asset_path("images/gamelist_card_background.png")
-    bg_url = ("file:///" + bg_path.replace("\\", "/")) if bg_path else ""
+    bg_url = file_url(bg_path) if bg_path else ""
     page_width, page_height = calc_page_size_by_bg(bg_path)
     pages = split_gamelist_pages(game_rows, page_width, page_height)
 
     output_paths = []
     total_pages = len(pages)
-    for page_index, page_rows in enumerate(pages, 1):
-        page_css = css.replace("{{BG_IMAGE_URL}}", bg_url)
-        page_css += f"\n:root {{ --page-width: {page_width}px; --page-height: {page_height}px; }}\n"
-        footer = f"{get_copyright_str()} | Page {page_index} of {total_pages}"
-        html_content = template.replace("{{STYLE_BLOCK}}", f"<style>\n{page_css}\n</style>") \
-            .replace("{{GROUP_ID}}", html_utils.escape(group_id)) \
-            .replace("{{ROWS}}", "\n".join([row["row_html"] for row in page_rows])) \
-            .replace("{{FOOTER}}", html_utils.escape(footer))
+    
+    async with Chrome() as chrome:
+        for page_index, page_rows in enumerate(pages, 1):
+            page_css = css.replace("{{BG_IMAGE_URL}}", bg_url)
+            page_css += f"\n:root {{ --page-width: {page_width}px; --page-height: {page_height}px; }}\n"
+            footer = f"{get_copyright_str()} | Page {page_index} of {total_pages}"
+            html_content = template.replace("{{STYLE_BLOCK}}", f"<style>\n{page_css}\n</style>") \
+                .replace("{{GROUP_ID}}", html_utils.escape(group_id)) \
+                .replace("{{ROWS}}", "\n".join([row["row_html"] for row in page_rows])) \
+                .replace("{{FOOTER}}", html_utils.escape(footer))
 
-        with tempfile.NamedTemporaryFile(mode = "w", encoding = "utf-8", suffix = ".html", delete = False) as f:
-            f.write(html_content)
-            html_path = f.name
-
-        output_path = get_output_path(f"gamelist_p{page_index}")
-        try:
-            await screenshot_html_card(html_path = html_path, output_path = output_path, min_window_width = page_width + 80, min_window_height = page_height + 120)
+            output_path = get_output_path(f"gamelist_p{page_index}")
+            await chrome.screenshot_html(html_content, output_path, min_window_width=page_width + 80, min_window_height=page_height + 120)
             output_paths.append(output_path)
-        finally:
-            if os.path.exists(html_path):
-                os.remove(html_path)
 
     message = Message([MessageSegment.image("file:///" + path) for path in output_paths]) if len(output_paths) > 1 else MessageSegment.image("file:///" + output_paths[0])
     return message

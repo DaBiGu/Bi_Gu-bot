@@ -2,10 +2,18 @@ from pyncm import apis
 from nonebot.adapters.onebot.v11.message import MessageSegment
 from typing import Dict, List, Any, Tuple
 from PIL import Image, ImageDraw
-from utils.chrome import screenshot_html_card
+from utils.chrome import Chrome
 from utils.utils import get_asset_path, get_copyright_str, get_output_path, load_asset_html
-import html, os, tempfile, re
+import html, re, asyncio
+from concurrent.futures import ThreadPoolExecutor
 from utils.fonts import get_font
+
+_NCM_EXECUTOR = ThreadPoolExecutor(max_workers = 1, thread_name_prefix = "ncm-api")
+
+async def call_ncm_api(fn, *args, **kwargs):
+    """在线程里执行 pyncm 的同步调用。"""
+    return await asyncio.get_running_loop().run_in_executor(_NCM_EXECUTOR, lambda: fn(*args, **kwargs))
+
 
 def ncm_search_song(keyword: str, limit: int = 20) -> Dict[str, Any]:
     search_result = apis.cloudsearch.GetSearchResult(keyword = keyword, stype=1, limit = limit)["result"]["songs"]
@@ -44,20 +52,16 @@ def build_search_card_html(keyword: str, songs: List[Dict[str, Any]]) -> str:
     return template.replace("{{STYLE_BLOCK}}", style_block).replace("{{KEYWORD}}", safe_keyword).replace("{{CARD_ITEMS}}", ''.join(card_items)).replace("{{FOOTER}}", footer_text)
 
 async def draw_search_card(keyword: str, limit: int = 20) -> MessageSegment:
-    songs = ncm_search_song(keyword, limit)[:limit]
+    songs = (await call_ncm_api(ncm_search_song, keyword, limit))[:limit]
     if not songs: return MessageSegment.text(f"未找到关键词 {keyword} 的歌曲")
     html_content = build_search_card_html(keyword, songs)
-    with tempfile.NamedTemporaryFile(mode = "w", encoding = "utf-8", suffix = ".html", delete = False) as f:
-        f.write(html_content)
-        html_path = f.name
     output_path = get_output_path("ncm_search_card")
-    try: await screenshot_html_card(html_path = html_path, output_path = output_path, min_window_width = 1700, min_window_height = 900)
-    finally: 
-        if os.path.exists(html_path): os.remove(html_path)
+    async with Chrome() as chrome:
+        await chrome.screenshot_html(html_content, output_path, min_window_width=1700, min_window_height=900)
     return MessageSegment.image("file:///" + output_path)
 
-def get_ncm_song_card(song_id: int) -> MessageSegment:
-    track_detail = apis.track.GetTrackDetail(song_id)
+async def get_ncm_song_card(song_id: int) -> MessageSegment:
+    track_detail = await call_ncm_api(apis.track.GetTrackDetail, song_id)
     song_name = track_detail["songs"][0]["name"]
     artists = "/".join([track_detail["songs"][0]["ar"][x]["name"] for x in range(len(track_detail["songs"][0]["ar"]))])
     pic_url = track_detail["songs"][0]["al"]["picUrl"]
@@ -107,8 +111,7 @@ def get_raw_lyrics(song_id: int) -> Tuple[Dict[str, str], str]:
     lyrics["combined_lyrics"] = combined_lyrics
     return (lyrics, song_type)
 
-async def draw_lyrics_card(song_id: int) -> MessageSegment:
-    lyrics, song_type = get_raw_lyrics(song_id)
+def render_lyrics_image(lyrics: Dict[str, Any], song_type: str) -> str:
     song_info = {"title": lyrics["song_name"], "artists": lyrics["song_artists"]}
     combined_lyrics = lyrics["combined_lyrics"]
     max_line_width = 0
@@ -162,8 +165,9 @@ async def draw_lyrics_card(song_id: int) -> MessageSegment:
 
     output_path = get_output_path("ncm_lyrics_card")
     image.save(output_path)
+    return output_path
+
+async def draw_lyrics_card(song_id: int) -> MessageSegment:
+    lyrics, song_type = await call_ncm_api(get_raw_lyrics, song_id)
+    output_path = await asyncio.to_thread(render_lyrics_image, lyrics, song_type)
     return MessageSegment.image("file:///" + output_path) 
-
-
-
-    

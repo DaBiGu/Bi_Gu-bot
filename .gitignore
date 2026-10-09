@@ -148,4 +148,7 @@ src/assets/*
 passwords/
 .vs/
 .vscode/
+.claude/
 chromedriver.exe
+requirements.txt
+deploy/

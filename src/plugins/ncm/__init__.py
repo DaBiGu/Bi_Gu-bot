@@ -40,7 +40,7 @@ async def ncm_handle(event: GroupMessageEvent, args = CommandArg()):
             response = await draw_search_card(search_keyword)
         elif cmd_params_list[0] == "id":
             #response = MessageSegment.music(type_ = "163", id_ = cmd_params_list[1])
-            response = get_ncm_song_card(int(cmd_params_list[1]))
+            response = await get_ncm_song_card(int(cmd_params_list[1]))
         elif cmd_params_list[0] == "lyrics":
             response = await draw_lyrics_card(int(cmd_params_list[1]))
     await ncm.finish(response)

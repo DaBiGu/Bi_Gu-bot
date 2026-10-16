@@ -87,8 +87,19 @@ async def update_chromedriver():
     driver_name = chromedriver_filename()
     zip_dir = f"chromedriver-{platform_tag}"
 
+    # requests is blocking, so every call runs in a worker thread: a stalled
+    # connection must never freeze the event loop (the bot would look alive
+    # while silently dropping every message).
+    try:
+        manifest = await asyncio.to_thread(
+            lambda: requests.get(request_url, timeout = 15).json()
+        )
+    except Exception as error:
+        logger.error(f"获取 chromedriver 版本清单失败，跳过本次更新：{type(error).__name__}: {error}")
+        return
+
     download_url = None
-    for data in requests.get(request_url).json()["channels"]["Stable"]["downloads"]["chromedriver"]:
+    for data in manifest["channels"]["Stable"]["downloads"]["chromedriver"]:
         if data["platform"] == platform_tag:
             download_url = data["url"]
             break
@@ -97,7 +108,14 @@ async def update_chromedriver():
         return
 
     archive = get_data_path("chromedriver.zip", temp = True)
-    with open(archive, "wb") as file: file.write(requests.get(download_url).content)
+    try:
+        blob = await asyncio.to_thread(
+            lambda: requests.get(download_url, timeout = 120).content
+        )
+    except Exception as error:
+        logger.error(f"下载 chromedriver 失败，跳过本次更新：{type(error).__name__}: {error}")
+        return
+    with open(archive, "wb") as file: file.write(blob)
     with zipfile.ZipFile(archive, "r") as file: file.extractall(get_data_path(temp = True))
 
     output_path = get_asset_path("chrome")

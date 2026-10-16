@@ -36,14 +36,14 @@ _help = on_command("help", aliases = {"帮助"})
 @_help.handle()
 async def help_handle():
     for i in range(len(helper_messages)):
-        await _help.send(draw_help(helper_messages[i], i+1, len(helper_messages)))
+        await _help.send(await draw_help(helper_messages[i], i+1, len(helper_messages)))
 
 _update_log = on_command("update log", priority = 1)
 
 @_update_log.handle()
 async def update_log_handle():
     for i in range(len(update_logs)):
-        await _update_log.send(draw_help(update_logs[i], i+1, len(update_logs)))
+        await _update_log.send(await draw_help(update_logs[i], i+1, len(update_logs)))
 
 _plugin_status = on_command("plugin status")
 @_plugin_status.handle()
@@ -68,7 +68,7 @@ async def status_handle(bot: Bot, args = CommandArg()):
         if cmd_params == "-b":
             line1, line2 = get_brief_bot_status(bot_id = bot.self_id)
             await _status.finish(message = line1 + "\n" + line2)
-    await _status.finish(generate_bot_status_image(bot_id = bot.self_id))
+    await _status.finish(await generate_bot_status_image(bot_id = bot.self_id))
 
 _about = on_command("about")
 @_about.handle()

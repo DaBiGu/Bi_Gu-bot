@@ -11,8 +11,9 @@ from .recommend_random_game import draw_game_card, check_legal_game, get_player_
 from utils.utils import get_IO_path
 
 from utils import global_plugin_ctrl
+from utils.platforms import get_platform
 
-import asyncio, json, logging, os, random, subprocess
+import asyncio, json, logging, os, random, subprocess, sys
 
 logger = logging.getLogger(__name__)
 
@@ -192,15 +193,20 @@ async def sjqy_handle(event: GroupMessageEvent, args = CommandArg()):
             message = "本群视奸列表为空\n使用/视奸群友 add [steam_id]添加群友到列表"
         await sjqy.finish(message = message)
 
-steam_tracker_cwd = "C:/nginx-1.28.0/html/steam-tracker"
+steam_tracker_cwd = ("C:/nginx-1.28.0/html/steam-tracker" if get_platform() == "windows"
+                     else os.path.expanduser("~/steam-tracker"))
 
 @scheduler.scheduled_job("interval", minutes = 30, misfire_grace_time = 600)
 async def update_steam_tracker_data():
+    tracker_script = os.path.join(steam_tracker_cwd, "fetch_steam_data.py")
+    if not os.path.isdir(steam_tracker_cwd) or not os.path.exists(tracker_script):
+        logger.debug(f"Steam tracker 未部署于 {steam_tracker_cwd}，跳过本次更新")
+        return
     try:
         loop = asyncio.get_running_loop()
         result = await loop.run_in_executor(
             None, lambda: subprocess.run(
-                ["python", os.path.join(steam_tracker_cwd, "fetch_steam_data.py"), "--config", os.path.join(steam_tracker_cwd, "config.json"), "--workers", "8"],
+                [sys.executable, tracker_script, "--config", os.path.join(steam_tracker_cwd, "config.json"), "--workers", "8"],
                 capture_output = True, text = True, timeout = 600, cwd = steam_tracker_cwd))
         if result.returncode != 0: logger.error(f"Steam tracker 更新失败 (code={result.returncode}): {result.stderr[:500]}")
         else:

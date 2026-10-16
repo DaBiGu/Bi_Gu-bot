@@ -29,26 +29,26 @@ async def on_connect(bot: Bot):
 
 @driver.on_bot_disconnect
 async def on_disconnect(bot: Bot):
-    session_delta = datetime.datetime.now() - bot_connect_time[bot.self_id]
+    session_delta = datetime.datetime.now() - bot_connect_time.get(bot.self_id, datetime.datetime.now())
     with open(json_path, "r") as f: data = json.load(f)
     if bot.self_id not in data: data[bot.self_id] = {"total_run_seconds": 0, "total_received": 0, "total_sent": 0}
     data[bot.self_id]["total_run_seconds"] += session_delta.total_seconds()
-    data[bot.self_id]["total_received"] += receive_message_count[bot.self_id]
-    data[bot.self_id]["total_sent"] += send_message_count[bot.self_id]
+    data[bot.self_id]["total_received"] += receive_message_count.get(bot.self_id, 0)
+    data[bot.self_id]["total_sent"] += send_message_count.get(bot.self_id, 0)
     with open(json_path, "w") as f: json.dump(data, f)
-    bot_connect_time.pop(bot.self_id)
-    receive_message_count.pop(bot.self_id)
-    send_message_count.pop(bot.self_id)
+    bot_connect_time.pop(bot.self_id, None)
+    receive_message_count.pop(bot.self_id, None)
+    send_message_count.pop(bot.self_id, None)
 
 @event_preprocessor
 async def check_receive(bot: Bot, event: Event):
     if event.get_type() == "message":
-        receive_message_count[bot.self_id] += 1
+        receive_message_count[bot.self_id] = receive_message_count.get(bot.self_id, 0) + 1
 
 @Bot.on_called_api
 async def check_send(bot: Bot, exception: Optional[Exception], api: str, data: Dict[str, Any], result: Any):
     if api == "send_msg" or "send_group_msg":
-        send_message_count[bot.self_id] += 1
+        send_message_count[bot.self_id] = send_message_count.get(bot.self_id, 0) + 1
 
 def get_brief_bot_status(bot_id: str) -> Tuple[str, str, str]:
     with open(json_path, "r") as f: history_data = json.load(f)

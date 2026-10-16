@@ -18,10 +18,8 @@ def chromedriver_filename() -> str:
 
 def chromedriver_platform_tag() -> str:
     current = get_platform()
-    if current == "windows":
-        return "win64"
-    if current == "macos":
-        return "mac-arm64" if platform.machine() in ("arm64", "aarch64") else "mac-x64"
+    if current == "windows": return "win64"
+    if current == "macos": return "mac-arm64" if platform.machine() in ("arm64", "aarch64") else "mac-x64"
     return "linux64"
 
 def file_url(path: str) -> str:

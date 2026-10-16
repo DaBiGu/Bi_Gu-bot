@@ -1,69 +1,143 @@
 from utils.utils import get_asset_path
+from utils.platforms import get_platform
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-import asyncio, os, tempfile, time
+import asyncio, atexit, os, platform, tempfile, time
 from pathlib import Path
 
 PAGE_LOAD_TIMEOUT = 30.0
 SCRIPT_TIMEOUT = 15.0
 MAX_CONCURRENT_BROWSERS = 2
+HEALTH_CHECK_TIMEOUT = 5.0
 
-_slots = None
-_slots_loop = None
+EXTENSION_PATH = get_asset_path("chrome/GitHub Isometric Contributions.crx")
 
+def chromedriver_filename() -> str:
+    return "chromedriver.exe" if get_platform() == "windows" else "chromedriver"
 
-def _browser_slots() -> asyncio.Semaphore:
-    global _slots, _slots_loop
-    loop = asyncio.get_running_loop()
-    if _slots is None or _slots_loop is not loop:
-        _slots, _slots_loop = asyncio.Semaphore(MAX_CONCURRENT_BROWSERS), loop
-    return _slots
+def chromedriver_platform_tag() -> str:
+    current = get_platform()
+    if current == "windows":
+        return "win64"
+    if current == "macos":
+        return "mac-arm64" if platform.machine() in ("arm64", "aarch64") else "mac-x64"
+    return "linux64"
 
 def file_url(path: str) -> str:
     return Path(path).resolve().as_uri()
+
+def launch_driver(load_extension: bool, page_load_timeout: float):
+    options = Options()
+    options.add_argument("--headless")
+    if load_extension and os.path.exists(EXTENSION_PATH):
+        try:
+            options.add_extension(EXTENSION_PATH)
+        except Exception:
+            pass
+    driver = webdriver.Chrome(
+        executable_path = get_asset_path(f"chrome/{chromedriver_filename()}"),
+        options = options,
+    )
+    driver.set_page_load_timeout(page_load_timeout)
+    driver.set_script_timeout(SCRIPT_TIMEOUT)
+    return driver
+
+def quit_driver(driver) -> None:
+    if driver is None: return
+    try:
+        driver.quit()
+    except Exception:
+        pass
+
+class DriverPool:
+    def __init__(self, size: int) -> None:
+        self.size = max(1, int(size))
+        self.sem = None
+        self.sem_loop = None
+        self.idle = []
+
+    def semaphore(self) -> asyncio.Semaphore:
+        loop = asyncio.get_running_loop()
+        if self.sem is None or self.sem_loop is not loop:
+            self.discard_all()
+            self.sem, self.sem_loop = asyncio.Semaphore(self.size), loop
+        return self.sem
+
+    def discard_all(self) -> None:
+        for driver in self.idle: quit_driver(driver)
+        self.idle.clear()
+
+    @staticmethod
+    async def is_alive(driver) -> bool:
+        try:
+            await asyncio.wait_for(asyncio.to_thread(driver.execute_script, "return 1"), timeout = HEALTH_CHECK_TIMEOUT)
+            return True
+        except Exception:
+            return False
+
+    async def acquire(self):
+        sem = self.semaphore()
+        await sem.acquire()
+        try:
+            while self.idle:
+                driver = self.idle.pop()
+                if await self.is_alive(driver): return driver
+                await asyncio.to_thread(quit_driver, driver)
+            return await asyncio.to_thread(launch_driver, True, PAGE_LOAD_TIMEOUT)
+        except BaseException:
+            sem.release()
+            raise
+
+    async def release(self, driver, reusable: bool = True) -> None:
+        if reusable and driver is not None:
+            self.idle.append(driver)
+        else:
+            await asyncio.to_thread(quit_driver, driver)
+        self.semaphore().release()
+
+    async def close(self) -> None:
+        self.discard_all()
+
+    def shutdown(self) -> None:
+        self.discard_all()
+
+
+POOL = DriverPool(MAX_CONCURRENT_BROWSERS)
+atexit.register(POOL.shutdown)
+
+async def close_browser_pool() -> None:
+    await POOL.close()
 
 class Chrome:
     def __init__(self, page_load_timeout: float = PAGE_LOAD_TIMEOUT, load_extension: bool = True):
         self.driver = None
         self.page_load_timeout = page_load_timeout
         self.load_extension = load_extension
-        self._extension_path = get_asset_path("chrome/GitHub Isometric Contributions.crx")
-        self._slot = None
-
-    def _launch(self):
-        """同步启动 driver, 由 __aenter__ 丢到线程里执行。"""
-        options = Options()
-        options.add_argument("--headless")
-        if self.load_extension and os.path.exists(self._extension_path):
-            try:
-                options.add_extension(self._extension_path)
-            except Exception:
-                pass
-        driver = webdriver.Chrome(executable_path = get_asset_path("chrome/chromedriver.exe"), options = options)
-        driver.set_page_load_timeout(self.page_load_timeout)
-        driver.set_script_timeout(SCRIPT_TIMEOUT)
-        return driver
+        self.from_pool = False
 
     async def __aenter__(self):
-        self._slot = _browser_slots()
-        await self._slot.acquire()
+        if self.load_extension:
+            self.driver = await POOL.acquire()
+            self.from_pool = True
+        else:
+            self.driver = await asyncio.to_thread(launch_driver, False, self.page_load_timeout)
+            self.from_pool = False
+
         try:
-            self.driver = await asyncio.to_thread(self._launch)
-        except BaseException:
-            self._slot.release()
-            self._slot = None
-            raise
+            await asyncio.to_thread(self.driver.set_page_load_timeout, self.page_load_timeout)
+            await asyncio.to_thread(self.driver.set_script_timeout, SCRIPT_TIMEOUT)
+        except Exception:
+            pass
         return self
 
     async def __aexit__(self, type, val, tb):
-        try:
-            if self.driver: await self.call(self.driver.quit)
-        finally:
-            self.driver = None
-            if self._slot is not None:
-                self._slot.release()
-                self._slot = None
+        driver, self.driver = self.driver, None
+        if driver is None: return
+        if not self.from_pool:
+            await asyncio.to_thread(quit_driver, driver)
+            return
+        await POOL.release(driver, reusable = type is None)
 
     async def call(self, fn, *args, **kwargs):
         if not self.driver: raise RuntimeError("Chrome instance not initialized")
@@ -81,7 +155,7 @@ class Chrome:
             if time.monotonic() >= deadline: return False
             await asyncio.sleep(interval)
 
-    def _render_html(self, html_path: str, output_path: str, root_id: str, min_window_width: int, min_window_height: int) -> None:
+    def render_html(self, html_path: str, output_path: str, root_id: str, min_window_width: int, min_window_height: int) -> None:
         self.driver.get(file_url(html_path))
         time.sleep(0.9)
         size = self.driver.execute_script(
@@ -96,9 +170,12 @@ class Chrome:
             root_id,
         )
 
-        width = max(int(size.get("width", 0)) + 80, min_window_width)
-        height = max(int(size.get("height", 0)) + 120, min_window_height)
-        self.driver.set_window_size(max(1, width), max(1, height))
+        viewport_width = max(int(size.get("width", 0)), min_window_width, 1)
+        viewport_height = max(int(size.get("height", 0)), min_window_height, 1)
+        self.driver.execute_cdp_cmd(
+            "Emulation.setDeviceMetricsOverride",
+            {"width": viewport_width, "height": viewport_height, "deviceScaleFactor": 1, "mobile": False},
+        )
         time.sleep(0.3)
         self.driver.find_element(By.ID, root_id).screenshot(output_path)
 
@@ -115,13 +192,13 @@ class Chrome:
             html_path, temp_file = source, None
 
         try:
-            await self.call(self._render_html, html_path, output_path, root_id, min_window_width, min_window_height)
+            await self.call(self.render_html, html_path, output_path, root_id, min_window_width, min_window_height)
         finally:
             if temp_file and os.path.exists(temp_file):
                 try: os.remove(temp_file)
                 except OSError: pass
 
-    def _render_url(self, url: str, output_path: str, by, value: str, pre_sleep: float, post_scroll_sleep: float, maximize: bool) -> None:
+    def render_url(self, url: str, output_path: str, by, value: str, pre_sleep: float, post_scroll_sleep: float, maximize: bool) -> None:
         self.driver.get(url)
         time.sleep(pre_sleep)
         if maximize: self.driver.maximize_window()
@@ -133,7 +210,7 @@ class Chrome:
     async def screenshot_url(self, url: str, output_path: str, by, value: str, pre_sleep: float = 3.0, post_scroll_sleep: float = 1.0, maximize: bool = True) -> None:
         if not self.driver:
             raise RuntimeError("Chrome instance not initialized. Use 'async with Chrome()' context.")
-        await self.call(self._render_url, url, output_path, by, value, pre_sleep, post_scroll_sleep, maximize)
+        await self.call(self.render_url, url, output_path, by, value, pre_sleep, post_scroll_sleep, maximize)
 
     async def screenshot(self, source: str, output_path: str, **kwargs) -> None:
         if source.startswith(("http://", "https://")):

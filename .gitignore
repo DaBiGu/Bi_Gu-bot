@@ -152,3 +152,4 @@ passwords/
 chromedriver.exe
 requirements.txt
 deploy/
+dsh-scripts/

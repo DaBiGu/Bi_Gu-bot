@@ -1,0 +1,77 @@
+/* Bi_Gu-bot help card ------------------------------------------------------
+   Reproduces the old Pillow composition (background image faded to ~63% alpha
+   with a white veil of the same strength on top) using two stacked layers
+   instead of pixel manipulation. */
+:root {
+    --page-width: 1100px;
+    --pad-x: 52px;
+    --pad-top: 42px;
+    --pad-bottom: 92px;
+    --veil: 0.63;               /* 160 / 255, same as the Pillow version */
+    --ink: #14181f;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+}
+
+.root {
+    position: relative;
+    width: var(--page-width);
+    min-height: 1200px;
+    padding: var(--pad-top) var(--pad-x) var(--pad-bottom);
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* background photo, faded ------------------------------------------------ */
+.bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: var(--veil);
+}
+
+/* white veil on top of it ------------------------------------------------ */
+.veil {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(255, 255, 255, var(--veil));
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", sans-serif;
+    font-size: 20px;
+    line-height: 1.58;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-break: break-word;
+    tab-size: 4;
+}
+
+.footer {
+    position: absolute;
+    z-index: 1;
+    left: var(--pad-x);
+    right: var(--pad-x);
+    bottom: 30px;
+    font-family: "Consolas", "Microsoft YaHei", monospace;
+    font-size: 16px;
+    color: #3a4150;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

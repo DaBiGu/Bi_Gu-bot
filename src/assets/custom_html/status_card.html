@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bot Status</title>
+    {{STYLE_BLOCK}}
+</head>
+<body>
+    <div class="root" id="card-root">
+        <img class="furina-bg" src="{{FURINA_URL}}" alt="" />
+
+        <div class="aura aura-a"></div>
+        <div class="aura aura-b"></div>
+        <div class="aura aura-c"></div>
+
+        <header class="hero">
+            <div class="avatar-wrap">
+                <div class="avatar-ring"></div>
+                <img class="avatar" src="{{AVATAR_URL}}" alt="avatar" />
+                <span class="pulse"></span>
+            </div>
+            <h1 class="bot-name">{{BOT_NAME}}</h1>
+            <div class="flourish"><span></span><i>&#9670;</i><span></span></div>
+            <div class="status-lines">
+{{STATUS_LINES}}
+            </div>
+        </header>
+
+        <section class="metrics">
+{{METRIC_CARDS}}
+        </section>
+
+        <section class="specs">
+{{SPEC_ROWS}}
+        </section>
+
+        <footer class="footer">{{FOOTER}}</footer>
+    </div>
+</body>
+</html>

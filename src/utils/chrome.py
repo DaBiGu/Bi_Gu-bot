@@ -28,6 +28,7 @@ def file_url(path: str) -> str:
 def launch_driver(load_extension: bool, page_load_timeout: float):
     options = Options()
     options.add_argument("--headless")
+    if get_platform() == "linux": options.add_argument("--no-sandbox")
     if load_extension and os.path.exists(EXTENSION_PATH):
         try:
             options.add_extension(EXTENSION_PATH)
@@ -155,7 +156,11 @@ class Chrome:
 
     def render_html(self, html_path: str, output_path: str, root_id: str, min_window_width: int, min_window_height: int) -> None:
         self.driver.get(file_url(html_path))
-        time.sleep(0.9)
+        deadline = time.monotonic() + 10.0
+        while time.monotonic() < deadline:
+            if self.driver.execute_script("return document.fonts.status") == "loaded": break
+            time.sleep(0.05)
+        time.sleep(0.3)
         size = self.driver.execute_script(
             """
             const root = document.getElementById(arguments[0]);

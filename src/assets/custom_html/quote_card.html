@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quote Card</title>
+    {{STYLE_BLOCK}}
+</head>
+<body>
+    <div class="root" id="card-root">
+        <img class="avatar" src="{{AVATAR_SRC}}" alt="" />
+        <div class="text-panel">
+            <div class="quote-text" id="quote-text">{{QUOTE_TEXT}}</div>
+            <div class="nickname">{{NICKNAME}}</div>
+{{MSG_TIME_BLOCK}}            <div class="quote-id">{{QUOTE_ID}}</div>
+        </div>
+    </div>
+    <script>
+        document.fonts.ready.then(() => {
+            const root = document.getElementById('card-root');
+            const text = document.getElementById('quote-text');
+            const height = root.clientHeight;
+            const maxHeight = height * 0.52;
+            const maxLines = 10;
+            const range = document.createRange();
+            const measure = () => {
+                range.selectNodeContents(text);
+                const lines = range.getClientRects().length;
+                return [lines, lines * parseFloat(getComputedStyle(text).lineHeight)];
+            };
+            for (const ratio of [0.16, 0.14, 0.12, 0.10, 0.085, 0.074, 0.064, 0.056, 0.050]) {
+                text.style.fontSize = Math.round(height * ratio) + 'px';
+                const [lines, total] = measure();
+                if (lines <= maxLines && total <= maxHeight) return;
+            }
+            const full = text.textContent;
+            let low = 0, high = full.length;
+            while (low < high) {
+                const mid = (low + high + 1) >> 1;
+                text.textContent = full.slice(0, mid) + '...';
+                if (measure()[0] <= maxLines) low = mid; else high = mid - 1;
+            }
+            text.textContent = full.slice(0, low) + '...';
+        });
+    </script>
+</body>
+</html>

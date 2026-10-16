@@ -43,7 +43,7 @@ def wrap_tokens_in_box(text_list: List[str], font: ImageFont.ImageFont, image: I
 
 def wrap_text_by_width(text: str, draw: ImageDraw.ImageDraw, font: ImageFont.ImageFont,
                        max_width: int, max_lines: int = 4, use_jieba: bool = True) -> list[str]:
-    text_tokens = tokenize_text(text.strip(), use_jieba = use_jieba, max_token_len = 20)
+    text_tokens = tokenize_text(" ".join(text.split()), use_jieba = use_jieba, max_token_len = 20)
     if not text_tokens: return ["[空消息]"]
     lines = [""]
     for token in text_tokens:
@@ -53,7 +53,7 @@ def wrap_text_by_width(text: str, draw: ImageDraw.ImageDraw, font: ImageFont.Ima
             continue
         if lines[-1]: lines.append("")
         if draw.textlength(token, font = font) <= max_width: lines[-1] = token
-        else: # Safety fallback for overlong tokens.
+        else:
             buf = ""
             for ch in token:
                 _candidate = buf + ch
@@ -73,23 +73,47 @@ def wrap_text_by_width(text: str, draw: ImageDraw.ImageDraw, font: ImageFont.Ima
         return clipped
     return lines
 
+def fit_font_size(text: str, draw: ImageDraw.ImageDraw,
+                  get_font_func: Callable[..., ImageFont.ImageFont],
+                  font_name: str | tuple[str, str], font_sizes: List[int], max_width: int,
+                  max_lines: int = 4, use_jieba: bool = True,
+                  line_gap: int = 0, max_text_height: int | None = None,
+                  min_font_size: int = 16) -> tuple[int, ImageFont.ImageFont, list[str], int]:
+    def build_font(size: int) -> ImageFont.ImageFont:
+        size = max(min_font_size, size)
+        return get_font_func(font_name[0], font_name[1], size) if isinstance(font_name, tuple) else get_font_func(font_name, size)
+
+    picked = None
+    for size in font_sizes:
+        font = build_font(size)
+        lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
+        line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
+        picked = (max(min_font_size, size), font, lines, line_height)
+        if max_text_height is None or len(lines) * line_height + (len(lines) - 1) * line_gap <= max_text_height:
+            return picked
+    return picked
+
+
 def pick_font_and_wrap_by_width(text: str, draw: ImageDraw.ImageDraw,
                                 get_font_func: Callable[..., ImageFont.ImageFont],
                                 font_name: str | tuple[str, str], font_sizes: List[int], max_width: int,
                                 max_lines: int = 4, use_jieba: bool = True,
                                 line_gap: int = 0, max_text_height: int | None = None,
                                 min_font_size: int = 16) -> tuple[ImageFont.ImageFont, list[str], int, int]:
-    def build_font(size: int) -> ImageFont.ImageFont:
-        size = max(min_font_size, size)
-        return get_font_func(font_name[0], font_name[1], size) if isinstance(font_name, tuple) else get_font_func(font_name, size)
-
-    for size in font_sizes:
-        font = build_font(size)
-        lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
-        line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
-        text_h = len(lines) * line_height + (len(lines) - 1) * line_gap
-        if max_text_height is None or text_h <= max_text_height: return font, lines, line_gap, line_height
-    font = build_font(font_sizes[-1])
-    lines = wrap_text_by_width(text, draw, font, max_width = max_width, max_lines = max_lines, use_jieba = use_jieba)
-    line_height = font.getbbox("测")[3] - font.getbbox("测")[1]
+    _, font, lines, line_height = fit_font_size(
+        text, draw, get_font_func, font_name, font_sizes, max_width,
+        max_lines = max_lines, use_jieba = use_jieba, line_gap = line_gap,
+        max_text_height = max_text_height, min_font_size = min_font_size)
     return font, lines, line_gap, line_height
+
+
+def fix_tail_single_char(lines: list[str], draw: ImageDraw.ImageDraw,
+                         font: ImageFont.ImageFont, max_width: int) -> list[str]:
+    if len(lines) < 2: return lines
+    if len(lines[-1].strip()) != 1: return lines
+    if draw.textlength(lines[-2] + lines[-1], font = font) <= max_width:
+        lines[-2] += lines.pop()
+    elif len(lines[-2]) >= 2:
+        lines[-1] = lines[-2][-1] + lines[-1]
+        lines[-2] = lines[-2][:-1]
+    return lines

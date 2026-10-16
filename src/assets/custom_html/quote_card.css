@@ -1,0 +1,104 @@
+@font-face {
+    font-family: "QuoteSans";
+    src: url("{{FONT_SANS_URL}}") format("truetype");
+    font-display: block;
+}
+
+@font-face {
+    font-family: "QuoteEmoji";
+    src: url("{{FONT_EMOJI_URL}}") format("truetype");
+    font-display: block;
+}
+
+:root {
+    --card-w: {{CARD_W}};
+    --card-h: {{CARD_H}};
+
+    --avatar-width: calc(var(--card-w) * 0.40);
+    --text-left: calc(var(--card-w) * 0.45);
+    --text-right: calc(var(--card-w) * 0.07);
+    --text-max-width: calc(var(--card-w) * 0.48);
+
+    --color-bg: #000000;
+    --color-text: #f4f4f4;
+    --color-name: #828282;
+    --color-meta: #6e6e6e;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: var(--card-w);
+    height: var(--card-h);
+    overflow: hidden;
+    background: var(--color-bg);
+}
+
+.root {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    background: var(--color-bg);
+    font-family: "QuoteSans", "QuoteEmoji", sans-serif;
+    overflow: hidden;
+}
+
+.avatar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: block;
+    width: var(--avatar-width);
+    height: var(--card-h);
+}
+
+.text-panel {
+    position: absolute;
+    left: var(--text-left);
+    right: var(--text-right);
+    top: 0;
+    height: var(--card-h);
+    padding-top: calc(var(--card-h) * 0.114);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.quote-text {
+    max-width: var(--text-max-width);
+    color: var(--color-text);
+    line-height: 1.07;
+    white-space: pre-wrap;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+}
+
+.nickname {
+    margin-top: calc(var(--card-h) * 0.07);
+    font-size: calc(var(--card-h) * 0.08);
+    line-height: 1;
+    color: var(--color-name);
+    white-space: pre;
+}
+
+.msg-time {
+    margin-top: calc(var(--card-h) * 0.040);
+    font-size: calc(var(--card-h) * 0.05);
+    line-height: 1;
+    color: var(--color-meta);
+    white-space: pre;
+}
+
+.quote-id {
+    margin-top: calc(var(--card-h) * 0.021);
+    font-size: calc(var(--card-h) * 0.05);
+    line-height: 1;
+    color: var(--color-meta);
+    white-space: pre;
+}

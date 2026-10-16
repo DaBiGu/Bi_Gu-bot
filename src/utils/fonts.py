@@ -20,8 +20,3 @@ def get_font(font_name: str, size: int, weight: int = None) -> ImageFont:
     font = ImageFont.truetype(FONTS[font_name], size)
     if weight: font.set_variation_by_axes([weight])
     return font
-
-def get_embedded_font(font_name_1: str, font_name_2: str, size: int, weight: int = None) -> ImageFont:
-    font1 = get_font(font_name_1, size, weight)
-    font2 = get_font(font_name_2, size, weight)
-    return ImageFont.FreeTypeFontFamily(font1, font2)

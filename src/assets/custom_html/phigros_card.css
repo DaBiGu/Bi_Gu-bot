@@ -1,0 +1,106 @@
+@font-face {
+    font-family: "Saira";
+    src: url("{{FONT_SAIRA_URL}}") format("truetype");
+    font-display: block;
+}
+
+@font-face {
+    font-family: "SourceHanSans";
+    src: url("{{FONT_CJK_URL}}") format("truetype");
+    font-display: block;
+}
+
+:root {
+    --card-w: {{CARD_W}};
+    --card-h: {{CARD_H}};
+
+    --color-bg: #2d2d2d;
+    --color-text: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: var(--card-w);
+    height: var(--card-h);
+    overflow: hidden;
+}
+
+.root {
+    position: relative;
+    width: var(--card-w);
+    height: var(--card-h);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: "Saira", "SourceHanSans", sans-serif;
+    overflow: hidden;
+}
+
+.cover {
+    position: absolute;
+    left: 50%;
+    top: 50px;
+    transform: translateX(-50%);
+    display: block;
+    width: calc(var(--card-w) - 600px);
+}
+
+.title,
+.artist {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    line-height: 1;
+}
+
+.title {
+    top: 633px;
+    font-size: 48px;
+}
+
+.artist {
+    top: 699px;
+    font-size: 36px;
+}
+
+.difficulties {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 791px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 32px;
+    line-height: 1;
+}
+
+.tip,
+.copyright,
+.version {
+    position: absolute;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.tip {
+    left: 20px;
+    top: 928px;
+}
+
+.copyright {
+    left: 20px;
+    bottom: 10px;
+}
+
+.version {
+    right: 20px;
+    bottom: 10px;
+}

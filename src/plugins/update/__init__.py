@@ -10,7 +10,7 @@ from .config import Config
 from .draw_update_message import draw_update_message
 from ..help.about import on_disconnect
 from utils.utils import get_data_path, get_asset_path
-from utils.chrome import chromedriver_filename, chromedriver_platform_tag
+from utils.chrome import chromedriver_filename, chromedriver_platform_tag, launch_driver, quit_driver
 from utils.platforms import get_platform, restart_argv, restart_hint
 
 import subprocess, os, sys, asyncio, requests, zipfile, shutil
@@ -79,7 +79,6 @@ async def reboot_handle(bot: Bot, event: GroupMessageEvent):
     await reboot()
 
 _update_chromedriver = on_command("update chromedriver", priority = 1, permission = permission)
-@scheduler.scheduled_job("cron", hour = 0, minute = 0)
 @_update_chromedriver.handle()
 async def update_chromedriver():
     request_url = "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json"
@@ -120,9 +119,23 @@ async def update_chromedriver():
 
     output_path = get_asset_path("chrome")
     target = os.path.join(output_path, driver_name)
-    if os.path.exists(target): os.remove(target)
+    backup = f"{target}.backup"
+    if os.path.exists(backup): os.remove(backup)
+    if os.path.exists(target): shutil.copy2(target, backup)
     shutil.move(get_data_path(f"{zip_dir}/{driver_name}", temp = True), output_path)
     if get_platform() != "windows":
-        os.chmod(os.path.join(output_path, driver_name), 0o755)
+        os.chmod(target, 0o755)
+
+    # A chromedriver newer than the installed browser cannot start it and there is
+    # no reliable cross-platform way to read the browser version first, so probe
+    # the new binary once and keep the previous one when it fails.
+    try:
+        probe = await asyncio.to_thread(launch_driver, False, 10.0)
+        await asyncio.to_thread(quit_driver, probe)
+    except Exception as error:
+        if os.path.exists(backup): shutil.move(backup, target)
+        logger.error(f"新的 chromedriver 无法启动，已回滚到旧版本：{type(error).__name__}: {error}")
+        return
+    if os.path.exists(backup): os.remove(backup)
 
     logger.info(f"chromedriver 已更新（{platform_tag} -> {driver_name}）")

@@ -133,7 +133,7 @@ async def gettime_handle():
     total_hours = local_time.utcoffset().total_seconds() / 3600
     await gettime.finish(f"Current time:\nUnix epoch: {unix_time}\nLocal time: {local_time.strftime('%Y-%m-%d %H:%M:%S')} [UTC{total_hours:+.0f}]")
 
-ROB_RECALL_DELAY = 60
+ROB_RECALL_DELAY = 5
 _recall_tasks = set()  
 
 async def _recall_after(bot: Bot, message_id: int, delay: float) -> None:
@@ -157,4 +157,4 @@ async def send_group_msg_then_recall(bot: Bot, group_id: int, message: Message,
 @scheduler.scheduled_job("interval", minutes = 30)
 async def auto_rob():
     await send_group_msg_then_recall(get_bot(), 1105645724,
-                                     Message([MessageSegment.text("*抢劫 "), MessageSegment.at(2659474878)]))
+                                     Message([MessageSegment.text("*强力打劫 "), MessageSegment.at(2659474878)]))

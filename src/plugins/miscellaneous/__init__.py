@@ -3,6 +3,7 @@ from nonebot.plugin import PluginMetadata
 from nonebot.adapters.onebot.v11.adapter import Bot
 from nonebot.adapters.onebot.v11.message import Message, MessageSegment
 from nonebot.permission import SUPERUSER
+from nonebot.log import logger
 from nonebot_plugin_apscheduler import scheduler
 from nonebot.params import CommandArg
 from nonebot.adapters.onebot.v11.event import PokeNotifyEvent, GroupMessageEvent, GroupDecreaseNoticeEvent, GroupIncreaseNoticeEvent
@@ -15,7 +16,7 @@ from utils.cooldown import Cooldown
 
 from utils import global_plugin_ctrl
 
-import json, time, datetime
+import asyncio, json, time, datetime
 
 __plugin_meta__ = PluginMetadata(
     name="miscellaneous",
@@ -131,3 +132,29 @@ async def gettime_handle():
     local_time = datetime.datetime.now().astimezone()
     total_hours = local_time.utcoffset().total_seconds() / 3600
     await gettime.finish(f"Current time:\nUnix epoch: {unix_time}\nLocal time: {local_time.strftime('%Y-%m-%d %H:%M:%S')} [UTC{total_hours:+.0f}]")
+
+ROB_RECALL_DELAY = 60
+_recall_tasks = set()  
+
+async def _recall_after(bot: Bot, message_id: int, delay: float) -> None:
+    await asyncio.sleep(delay)
+    try:
+        await bot.call_api("delete_msg", message_id = message_id)
+    except Exception as e:
+        logger.warning(f"miscellaneous: recall message {message_id} failed: {type(e).__name__}: {e}")
+
+async def send_group_msg_then_recall(bot: Bot, group_id: int, message: Message,
+                                     delay: float = ROB_RECALL_DELAY) -> None:
+    result = await bot.call_api("send_group_msg", group_id = group_id, message = message)
+    message_id = result.get("message_id") if isinstance(result, dict) else None
+    if message_id is None:
+        logger.warning("miscellaneous: send_group_msg returned no message_id, recall skipped")
+        return
+    task = asyncio.create_task(_recall_after(bot, message_id, delay))
+    _recall_tasks.add(task)
+    task.add_done_callback(_recall_tasks.discard)
+
+@scheduler.scheduled_job("interval", minutes = 30)
+async def auto_rob():
+    await send_group_msg_then_recall(get_bot(), 1105645724,
+                                     Message([MessageSegment.text("*抢劫 "), MessageSegment.at(2659474878)]))

@@ -157,6 +157,6 @@ async def send_group_msg_then_recall(bot: Bot, group_id: int, message: Message,
 @scheduler.scheduled_job("interval", minutes = 30)
 async def auto_rob():
     jobs = [Message([MessageSegment.text("*打劫 "), MessageSegment.text("2659474878")])] + \
-           [Message([MessageSegment.text("*捐赠 "), MessageSegment.text(target)]) for target in ["3307881403", "2747342455", "2716796147", "1431302406"]]
+           [Message([MessageSegment.text("*捐赠 "), MessageSegment.text(target)]) for target in ["3307881403", "2747342455", "2716796147", "1431302406", "2048824835"]]
     for job in jobs:
         await send_group_msg_then_recall(get_bot(), 1105645724, job)

@@ -133,6 +133,7 @@ async def gettime_handle():
     total_hours = local_time.utcoffset().total_seconds() / 3600
     await gettime.finish(f"Current time:\nUnix epoch: {unix_time}\nLocal time: {local_time.strftime('%Y-%m-%d %H:%M:%S')} [UTC{total_hours:+.0f}]")
 
+"""
 ROB_RECALL_DELAY = 5
 _recall_tasks = set()  
 
@@ -160,3 +161,4 @@ async def auto_rob():
            [Message([MessageSegment.text("*捐赠 "), MessageSegment.text(target)]) for target in ["3307881403", "2747342455", "2716796147", "1431302406", "2048824835"]]
     for job in jobs:
         await send_group_msg_then_recall(get_bot(), 1105645724, job)
+"""
